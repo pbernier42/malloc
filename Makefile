@@ -1,18 +1,21 @@
+ifeq ($(HOSTTYPE),)
+HOSTTYPE := $(shell uname -m)_$(shell uname -s)
+endif
+
 PROJECT			=	MALLOC
+NAME			=	libft_malloc_$(HOSTTYPE).so
+LINK			=	libft_malloc.so
 
 NO_TO_BE		=	ON
-
-DIR_OBJ			=	objs/
-DIR_SRC			=	srcs/
-DIR_INC			=	includes/
-
-NAME			=	malloc.a
 
 CC				=	gcc
 WFLAGS			=	-Wall -Werror -Wextra
 DFLAGS			=	$(WFLAGS) -fsanitize=address -g
 SOFLAGS			=	-shared -o
 
+DIR_OBJ			=	objs/
+DIR_SRC			=	srcs/
+DIR_INC			=	includes/
 INCLUDES		=	-I $(DIR_INC)
 
 SRC_INCLUDE		=	malloc.h
@@ -25,9 +28,6 @@ FLAGS			=	$(WFLAGS)
 INC				=	$(addprefix $(DIR_INC),$(SRC_INCLUDE))
 SRC				=	$(addprefix $(DIR_SRC),$(SRC_FIlE))
 OBJ				=	$(addprefix $(DIR_OBJ),$(notdir $(SRC:.c=.o)))
-
-LIB_SO			=	.so
-LIB_A			=	.a
 
 UND				= \033[4m
 RES				= \033[0m
@@ -46,28 +46,24 @@ else
 endif
 	@printf "    		-- compile the project '$(NAME)'\n"
 	@printf "  $(NAME)	-- compile the project '$(NAME)'\n"
-	@printf "  al		-- switch to Archive librarie compile mode\n"
-	@printf "  so		-- switch to Shared Object compile mode\n"
 	@printf "  lldb		-- switch to lldb compile mode\n"
 	@printf "  normal	-- switch to normal compile mode\n"
 	@printf "  flag		-- shows what flags will be used with \'$(CC)\'\n"
 	@printf "  clean		-- remove \'$(DIR_OBJ)\' and all \'.o\' files from it\n"
-	@printf "  fclean	-- $(UND)clean$(RES) and remove '$(basename $(NAME))$(LIB_SO)' and '$(basename $(NAME))$(LIB_A)'\n"
+	@printf "  fclean	-- $(UND)clean$(RES) and remove '$(NAME)' and '$(LINK)'\n"
 	@printf "  re		-- $(UND)fclean$(RES) then $(UND)make$(RES)\n"
 
 $(NAME): $(DIR_OBJ) $(OBJ)
 	@printf "[$(PROJECT)] Objs compilation done.                    \n"
-ifeq ($(suffix $(NAME)), $(LIB_SO))
 	@$(CC) $(SOFLAGS) $(NAME) $(OBJ)
-else
-	@ar rc $(NAME) $(OBJ)
-	@ranlib $(NAME)
-endif
 	@printf "[$(PROJECT)] "
 ifeq ($(FLAGS),$(DFLAGS))
 	@printf "(lldb mode) "
 endif
-	@printf "$(NAME) compiled.\n"
+	@printf "$(NAME) compiled"
+	@ln -fs $(NAME) $(LINK)
+	@printf " and linked to $(LINK).\n"
+
 
 $(DIR_OBJ)%.o: $(DIR_SRC)%.c $(INC) Makefile
 	@printf "[$(PROJECT)] Compiling $(notdir $<) to $(notdir $@)              \r"
@@ -75,24 +71,6 @@ $(DIR_OBJ)%.o: $(DIR_SRC)%.c $(INC) Makefile
 
 $(DIR_OBJ):
 	@mkdir -p $(DIR_OBJ)
-
-al:
-ifeq ($(suffix $(NAME)), $(LIB_SO))
-	@sed '/^NAME/ s/$(NAME)/$(basename $(NAME))$(LIB_A)/g' Makefile > Makefile.tmp
-	@mv	Makefile.tmp Makefile
-	@printf "[$(PROJECT)] Swap to Archive librarie mode.\n"
-else
-	@printf "[$(PROJECT)] Already in Archive librarie mode.\n"
-endif
-
-so:
-ifneq ($(suffix $(NAME)), $(LIB_SO))
-	@sed '/^NAME/ s/$(NAME)/$(basename $(NAME))$(LIB_SO)/g' Makefile > Makefile.tmp
-	@mv	Makefile.tmp Makefile
-	@printf "[$(PROJECT)] Swap to Shared Object mode.\n"
-else
-	@printf "[$(PROJECT)] Already in Shared Object mode.\n"
-endif
 
 lldb:
 ifeq ($(FLAGS),$(WFLAGS))
@@ -119,22 +97,18 @@ ifeq ($(FLAGS),$(WFLAGS))
 else
 	@printf " (lldb mode).\n"
 endif
-	@printf "[$(PROJECT)] Will be create in "
-ifeq ($(suffix $(NAME)), $(LIB_SO))
-	@printf "Shared Object mode using {$(SOFLAGS)} : $(UND)$(NAME)$(RES)\n"
-else
-	@printf "Archive librarie mode : $(UND)$(NAME)$(RES)\n"
-endif
+	@printf "[$(PROJECT)] Will be create using {$(SOFLAGS)} : $(UND)$(NAME)$(RES)\n"
+
 
 clean:
 	@rm -rf $(DIR_OBJ)
 	@printf "[$(PROJECT)] Obj removed.\n"
 
 fclean: clean
-	@rm -f $(basename $(NAME))$(LIB_SO)
-	@rm -f $(basename $(NAME))$(LIB_A)
-	@printf "[$(PROJECT)] All Archive libraries ($(basename $(NAME))$(LIB_A)) and Shared Objects ($(basename $(NAME))$(LIB_SO)) removed.\n"
+	@rm -f $(NAME)
+	@rm -f $(LINK)
+	@printf "[$(PROJECT)] Shared Objects and symlink removed.\n"
 
 re: fclean $(NAME)
 
-.PHONY: all $(NAME) al so lldb clean fclean re
+.PHONY: all al so lldb clean fclean re
