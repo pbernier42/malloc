@@ -12,8 +12,38 @@
 
 #include <malloc.h>
 
-void	*malloc(size_t size)
+void		*base_bloc;
+
+// t_bloc		*test(t_bloc *test)
+// {
+// 	return (test)
+// }
+
+void		*malloc(size_t size)
 {
+	t_bloc	bloc;
+
+	bloc = base_bloc;
+	mmap(0, size, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+	printf("..[%lu]\n", sizeof(t_bloc));
+	printf("..[%s]\n", (char*)bloc);
 	(void)size;
 	return (NULL);
 }
+
+g_bonjour
+{
+	s_ *small
+	tiny[]
+	large[]
+}
+
+
+SMALL
+| | | | | |   | | | | | | | | |
+
+TINY
+| | | | | | | | | | | | | | |
+
+LARGE
+| | | | | | | | | | | | | | |
