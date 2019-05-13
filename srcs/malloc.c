@@ -33,11 +33,15 @@ void		*malloc(size_t size)
 
 g_bonjour
 {
-	s_ *small
+	t_listes	*small
+			{
+				t_bloc	sm[10];
+				t_listes	*prev;
+				t_listes	*next;
+			}
 	tiny[]
 	large[]
 }
-
 
 SMALL
 | | | | | |   | | | | | | | | |
