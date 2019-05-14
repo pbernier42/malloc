@@ -17,14 +17,15 @@ int main(void)
 {
 	void *ptr;
 
-	ptr = malloc(1554560);
-	printf("[%d]\n", getrlimit(-1, ptr));
-	printf("[%d]\n", getpagesize());
-	printf("\n");
+	ptr = malloc(0);
+	//ptr = malloc(1554560);
+	//printf("[%d]\n", getrlimit(-1, ptr));
+	//printf("[%d]\n", getpagesize());
+	//printf("\n");
 	//printf("[%s]\n", (char *)ptr);
-	printf("[%p]\n", ptr);
+	//printf("[%p]\n", ptr);
 	//printf("[%c]\n", (char)ptr);
-	free(ptr);
+	//free(ptr);
 
 	return (0);
 }

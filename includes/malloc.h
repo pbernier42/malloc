@@ -13,36 +13,50 @@
 #ifndef MALLOC_H
 # define MALLOC_H
 
-# include <stdlib.h>
+//# include <stdlib.h>
 # include <sys/mman.h>
 # include <unistd.h>
 # include <stdbool.h>
 
 # include <stdio.h>
 
-# define N	-1
-# define M	-1
-/*
-**# define TINY	16
-**# define SMALL	512
-**# define LARGE	4000
-*/
+# define T_NB_BLOC			128
+# define T_SIZE_PAGE		getpagesize() / 2
+# define T_SIZE_BLOC		T_SIZE_PAGE / T_NB_BLOC
 
-//extern void *??
+# define S_NB_BLOC			128
+# define S_SIZE_PAGE		getpagesize() * 4
+# define S_SIZE_BLOC		S_SIZE_PAGE / S_NB_BLOC
 
-typedef struct		s_bloc
+# define TINY				T_SIZE_BLOC
+# define SMALL				S_SIZE_BLOC
+
+# define HEAD				sizeof(t_bloc)
+
+typedef struct s_type	t_type;
+typedef struct s_bloc	t_bloc;
+
+struct				s_bloc
 {
-	//void			*data;
 	size_t			size;
-	bool			free;
+	bool			empty;
 	struct	s_bloc	*prev;
 	struct	s_bloc	*next;
 	void			*data;
-	//void 			data2[TINY];
-	//void 			data3[SMALL];
-}					t_bloc;
+};
+
+struct				s_type
+{
+	t_bloc			*(tiny[T_NB_BLOC]);
+	t_bloc			*(small[T_NB_BLOC]);
+	t_bloc			*large;
+};
+
+//extern t_type			g_mem;
 
 void	*malloc(size_t size);
+void	pre_alloc();
+
 void	free(void *ptr);
 void	*realloc(void *ptr, size_t size);
 void	show_alloc_mem();
