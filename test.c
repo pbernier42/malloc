@@ -17,7 +17,7 @@ int main(void)
 {
 	void *ptr;
 
-	ptr = malloc(0);
+	ptr = malloc(1);
 	//ptr = malloc(1554560);
 	//printf("[%d]\n", getrlimit(-1, ptr));
 	//printf("[%d]\n", getpagesize());
