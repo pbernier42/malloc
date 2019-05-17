@@ -30,6 +30,7 @@
 # define T_NB_BLOC			(T_SIZE_PAGE / (float)T_SIZE_BLOC)
 
 # define S_SIZE_DATA		123
+//calcul allocation >= 100
 # define S_SIZE_PAGE		(getpagesize() * 4)
 # define S_SIZE_BLOC		(SIZE_HEAD + S_SIZE_DATA)
 # define S_SIZE_ZERO		(S_SIZE_PAGE % S_SIZE_BLOC)
@@ -61,7 +62,8 @@ struct				s_type
 //extern t_type			g_mem;
 
 void	*malloc(size_t size);
-void	pre_alloc(size_t mem);
+bool	new_page(size_t mem);
+
 
 void	free(void *ptr);
 void	*realloc(void *ptr, size_t size);
