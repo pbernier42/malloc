@@ -6,7 +6,7 @@
 /*   By: pbernier <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 14:43:20 by pbernier          #+#    #+#             */
-/*   Updated: 2019/05/06 14:43:21 by pbernier         ###   ########.fr       */
+/*   Updated: 2019/05/17 23:41:49 by rlecart          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,46 +16,80 @@ t_type		g_mem;
 
 void		*malloc(size_t size)
 {
-	if (size == 0 || size > LARGE)
+	t_bloc	**page; //J'ai preferere faire un *page qui prend soit tiny soit small soit large pour le balader partout plutot que de devoir faire des calculs du style "size <= TINY ? TINY : SMALL" a chaque fois que tu veux savoir quoi genre c'est relou
+	// Et ** de la meme maniere que GNL avec **line (&str), tqt la syntaxe c'est de l'eau : (*page)->variable; CA VAAAAAAA
+
+	if (size == 0 || size >= LARGE)
 		return (NULL);
-	if ((size <= TINY && !g_mem->tiny) ||
-		(size > TINY && size <= SMALL && !g_mem->small))
-		if (!new_page(size <= TINY ? TINY : SMALL))
-			return (NULL);
-
-
-	return (new_bloc(size));
+	page = (size > 0 && size <= TINY ? &g_mem.tiny : &g_mem.small);
+	page = (size > SMALL + 1 && size <= LARGE ? &g_mem.large : page);
+	if (!(*page) && !new_page(size, page))
+		return (NULL);
+	return (create_bloc(size, page));
 }
 
-bool	new_page(size_t mem)
-{
-	t_bloc	*page;
-	t_bloc	*prev;
-
-	page = (mem == TINY ? g_mem->tiny : g_mem->small)
-	prev = page;
-	while (page)
-		page = page->next;
-	if ((page = mmap(0, mem == TINY ? TINY : SMALL,
-		PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0) == MAP_FAILED))
-		return (0);
-	page->prev = prev;
-	page->next = NULL;
-	return (1);
-}
-
-void	new_bloc(size_t size)
+bool		new_page(size_t size, t_bloc **page)
 {
 	t_bloc	*prev;
 
-	if (size >= SMALL)
+	prev = *page;
+	while (*page)
+		if (((*page) = (*page)->next))
+			prev = prev->next;
+
+	if (((*page = mmap(0, size == TINY ? TINY : SMALL, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0)) == MAP_FAILED))
+		return (false); // Il faut gerer le cas LARGE
+
+	if (prev)
+		prev->next = *page;
+	(*page)->prev = prev ? prev : NULL;
+	(*page)->next = NULL;
+	(*page)->size = type_finder(size);
+	(*page)->empty = true;
+	return (true);
+	// Est-ce qu'il faudrait pas faire g.tiny || g.small || g.large = page pour set les variables "tiny", "small" et "large" dans la structure ?
+	// J'ai resolu ca en faisant **page
+}
+
+void	*ft_memcpya(void *dst, const void *src, size_t n)
+{
+	char	*c1;
+	char	*c2;
+
+	if (n == 0 || dst == src)
+		return (dst);
+	c1 = (char*)dst;
+	c2 = (char*)src;
+	while (--n)
+		*c1++ = *c2++;
+	*c1 = *c2;
+	return (dst);
+}
+
+t_bloc		new_bloc(size_t size, bool empty, t_bloc *prev, t_bloc *next)
+{
+	t_bloc	ret;
+
+	ret.size = size;
+	ret.empty = empty;
+	ret.prev = prev;
+	ret.next = next;
+	return (ret);
+}
+
+void		*create_bloc(size_t size, t_bloc **page) // Vu qu'on met deux headers (celui demandee et celui d'apres avec la taille qui reste), il y aura toujours un header (un bloc je veux dire, dans le sens ou il y aura le header + la size en question (le reste))
+{
+	t_bloc	cpy;
+	t_bloc	*cursor;
+
+	cursor = *page;
+	while (!cursor->empty)// && ca depasse pas la taille max de la page) cursor - page <= type_finder(size)
 	{
-		prev = g_mem->large;
-		g_mem->large->next =
-			map(0, size + SIZE_HEAD,
-				PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+		cursor += SIZE_HEAD + cursor->size;
 	}
-	return ();
+	cpy = new_bloc(size, false, size > SMALL /*&& quil y a un elem avant */? /* prev */ NULL : NULL, /* next */ NULL);
+	ft_memcpya((void*)cursor, &cpy, SIZE_HEAD);
+	return (cursor + SIZE_HEAD + 1);
 }
 
 // tmp = map(0, size, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
