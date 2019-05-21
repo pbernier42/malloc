@@ -12,13 +12,13 @@
 
 #include <malloc.h>
 
-int		type_finder(size_t size)
+size_t		finder(size_t size, bool i)
 {
 	if (size > 0 && size <= TINY)
-		return (TINY);
-	else if (size > TINY + 1 && size <= SMALL)
-		return (SMALL);
-	else
+		return (i == PAGE ? T_SIZE_PAGE : TINY);
+	else if (size > TINY && size <= SMALL)
+		return (i == PAGE ? S_SIZE_PAGE : SMALL);
+	else if (size <= LARGE)
 		return (size);
 	return (0);
 }

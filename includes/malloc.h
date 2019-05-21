@@ -39,6 +39,12 @@
 # define SMALL				S_SIZE_DATA
 # define LARGE 				UINT_MAX //4 294 967 295
 
+# define FL_PROT			PROT_READ | PROT_WRITE
+# define FL_MAP				MAP_ANON | MAP_PRIVATE
+
+# define PAGE				0
+# define TYPE				1
+
 typedef struct s_type		t_type;
 typedef struct s_bloc		t_bloc;
 
@@ -66,8 +72,11 @@ void						*create_bloc(size_t size, t_bloc **page); // anciennement new_bloc
 
 void						free(void *ptr);
 void						*realloc(void *ptr, size_t size);
-void						show_alloc_mem();
 
-int							type_finder(size_t size);
+void						show_alloc_mem();
+void						print_posi(size_t number, size_t base);
+void						print_adre(t_bloc **bloc);
+
+size_t						finder(size_t size, bool i);
 
 #endif

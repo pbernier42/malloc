@@ -16,13 +16,12 @@ t_type		g_mem;
 
 void		*malloc(size_t size)
 {
-	t_bloc	**page; //J'ai preferere faire un *page qui prend soit tiny soit small soit large pour le balader partout plutot que de devoir faire des calculs du style "size <= TINY ? TINY : SMALL" a chaque fois que tu veux savoir quoi genre c'est relou
-	// Et ** de la meme maniere que GNL avec **line (&str), tqt la syntaxe c'est de l'eau : (*page)->variable; CA VAAAAAAA
+	t_bloc	**page;
 
 	if (size == 0 || size >= LARGE)
 		return (NULL);
 	page = (size > 0 && size <= TINY ? &g_mem.tiny : &g_mem.small);
-	page = (size > SMALL + 1 && size <= LARGE ? &g_mem.large : page);
+	page = (size > SMALL && size <= LARGE ? &g_mem.large : page);
 	if (!(*page) && !new_page(size, page))
 		return (NULL);
 	return (create_bloc(size, page));
@@ -31,65 +30,78 @@ void		*malloc(size_t size)
 bool		new_page(size_t size, t_bloc **page)
 {
 	t_bloc	*prev;
+	t_bloc	*start;
+	size_t	size_page;
 
-	prev = *page;
-	while (*page)
-		if (((*page) = (*page)->next))
-			prev = prev->next;
-
-	if (((*page = mmap(0, size == TINY ? TINY : SMALL, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0)) == MAP_FAILED))
-		return (false); // Il faut gerer le cas LARGE
-
-	if (prev)
-		prev->next = *page;
-	(*page)->prev = prev ? prev : NULL;
+	size_page = finder(size, PAGE);
+	prev = NULL;
+	start = (*page);
+	while ((*page) && (prev = (*page)))
+		(*page) = (*page)->next;
+	if ((((*page) = mmap(0, size_page, FL_PROT, FL_MAP, -1, 0)) == MAP_FAILED))
+		return (false);
+	(*page)->prev = prev;
 	(*page)->next = NULL;
-	(*page)->size = type_finder(size);
+	(*page)->size = size_page - SIZE_HEAD;
 	(*page)->empty = true;
+	(*page) = start;
 	return (true);
-	// Est-ce qu'il faudrait pas faire g.tiny || g.small || g.large = page pour set les variables "tiny", "small" et "large" dans la structure ?
-	// J'ai resolu ca en faisant **page
 }
 
-void	*ft_memcpya(void *dst, const void *src, size_t n)
-{
-	char	*c1;
-	char	*c2;
+// void	*ft_memcpya(void *dst, const void *src, size_t n)
+// {
+// 	char	*c1;
+// 	char	*c2;
+//
+// 	if (n == 0 || dst == src)
+// 		return (dst);
+// 	c1 = (char*)dst;
+// 	c2 = (char*)src;
+// 	while (--n)
+// 		*c1++ = *c2++;
+// 	*c1 = *c2;
+// 	return (dst);
+// }
 
-	if (n == 0 || dst == src)
-		return (dst);
-	c1 = (char*)dst;
-	c2 = (char*)src;
-	while (--n)
-		*c1++ = *c2++;
-	*c1 = *c2;
-	return (dst);
-}
-
-t_bloc		new_bloc(size_t size, bool empty, t_bloc *prev, t_bloc *next)
-{
-	t_bloc	ret;
-
-	ret.size = size;
-	ret.empty = empty;
-	ret.prev = prev;
-	ret.next = next;
-	return (ret);
-}
+// t_bloc		new_bloc(size_t size, bool empty, t_bloc *prev, t_bloc *next)
+// {
+// 	t_bloc	ret;
+//
+// 	ret.size = size;
+// 	ret.empty = empty;
+// 	ret.prev = prev;
+// 	ret.next = next;
+// 	return (ret);
+// }
 
 void		*create_bloc(size_t size, t_bloc **page) // Vu qu'on met deux headers (celui demandee et celui d'apres avec la taille qui reste), il y aura toujours un header (un bloc je veux dire, dans le sens ou il y aura le header + la size en question (le reste))
 {
-	t_bloc	cpy;
-	t_bloc	*cursor;
+	t_bloc	*start;
+	void	*cursor;
+	t_bloc	*bigger;
+	size_t	size_page;
+	size_t	parsed;
 
-	cursor = *page;
-	while (!cursor->empty)// && ca depasse pas la taille max de la page) cursor - page <= type_finder(size)
+	start = (*page);
+	bigger = NULL;
+	size_page = finder(size, PAGE); - //ZERO
+	parsed = 0;
+	while ((*page))
 	{
-		cursor += SIZE_HEAD + cursor->size;
+		cursor = (*start);
+		while (parsed < size_page)
+		{
+			parsed += (t_bloc)cursor.size + SIZE_HEAD;
+			//CONTINUE
+		}
+		(*page) = (*page)->next;
+
 	}
-	cpy = new_bloc(size, false, size > SMALL /*&& quil y a un elem avant */? /* prev */ NULL : NULL, /* next */ NULL);
-	ft_memcpya((void*)cursor, &cpy, SIZE_HEAD);
-	return (cursor + SIZE_HEAD + 1);
+	(*page) = start;
+	// cpy = new_bloc(size, false, size > SMALL /*&& quil y a un elem avant */? /* prev */ NULL : NULL, /* next */ NULL);
+	// ft_memcpya((void*)cursor, &cpy, SIZE_HEAD);
+	return (NULL);
+	// cursor = new_bloc(size, empty, prev, next);
 }
 
 // tmp = map(0, size, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);

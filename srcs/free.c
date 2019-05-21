@@ -14,5 +14,6 @@
 
 void	free(void *ptr)
 {
+	//fucion des blocs
 	(void)ptr;
 }
