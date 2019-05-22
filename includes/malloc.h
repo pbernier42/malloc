@@ -45,6 +45,9 @@
 # define PAGE				0
 # define TYPE				1
 # define ZERO				2
+# define BLOC				3
+
+# define CURSOR				((t_bloc*)cursor)
 
 typedef struct s_type		t_type;
 typedef struct s_bloc		t_bloc;

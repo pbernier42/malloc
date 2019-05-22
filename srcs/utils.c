@@ -20,10 +20,12 @@ size_t		finder(size_t size, int i)
 	while (size >= ((size_t[4]){0, TINY, SMALL, size})[type]
 		&& size < LARGE)
 		++type;
-	return (((size_t[3]){
+	return (((size_t[4]){
 		((size_t[4]){0, T_SIZE_PAGE, S_SIZE_PAGE, size + SIZE_HEAD})[type],
 		((size_t[4]){0, TINY, SMALL, size})[type],
-		((size_t[4]){0, T_SIZE_ZERO, S_SIZE_ZERO, 0})[type]})[i]);
+		((size_t[4]){0, T_SIZE_ZERO, S_SIZE_ZERO, 0})[type],
+		((size_t[4]){0, 1, T_SIZE_BLOC + 1, S_SIZE_BLOC + 1})[type]
+		})[i]);
 }
 
 // void 		print_define()

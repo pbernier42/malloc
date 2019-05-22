@@ -17,32 +17,38 @@ t_type		g_mem;
 void		*malloc(size_t size)
 {
 	t_bloc	**page;
+	void	*ret;
 
+	ret = NULL;
 	if (size == 0 || size >= LARGE)
-		return (NULL);
+		return (ret);
+	//A VOIR
 	page = (size > 0 && size <= TINY ? &g_mem.tiny : &g_mem.small);
 	page = (size > SMALL && size <= LARGE ? &g_mem.large : page);
-	if (!(*page) && !new_page(size, page))
-		return (NULL);
-	return (create_bloc(size, page));
+
+	while (!(ret = create_bloc(size, page)))
+		if ((!(*page) || !ret) && !new_page(size, page))
+			return (NULL);
+
+	return (ret);
 }
 
 bool		new_page(size_t size, t_bloc **page)
 {
 	t_bloc	*prev;
 	t_bloc	*start;
-	size_t	size_page;
+	size_t	s_page;
 
-	size_page = finder(size, PAGE);
+	s_page = finder(size, PAGE);
 	prev = NULL;
 	start = (*page);
 	while ((*page) && (prev = (*page)))
 		(*page) = (*page)->next;
-	if ((((*page) = mmap(0, size_page, FL_PROT, FL_MAP, -1, 0)) == MAP_FAILED))
+	if ((((*page) = mmap(0, s_page, FL_PROT, FL_MAP, -1, 0)) == MAP_FAILED))
 		return (false);
 	(*page)->prev = prev;
 	(*page)->next = NULL;
-	(*page)->size = size_page - SIZE_HEAD;
+	(*page)->size = s_page - SIZE_HEAD;
 	(*page)->empty = true;
 	if (start)
 		(*page) = start;
@@ -80,30 +86,45 @@ void		*create_bloc(size_t size, t_bloc **page) // Vu qu'on met deux headers (cel
 	t_bloc	*start;
 	void	*cursor;
 	t_bloc	*better;
-	size_t	size_page;
+	size_t	s_page;
 	size_t	parsed;
+	size_t	s_min;
 
+	if (!(*page))
+		return (NULL);
 	start = (*page);
 	better = NULL;
-	size_page = finder(size, PAGE) - finder(size, ZERO);
-	while ((*page) && )
+	//finder(size, TYPE) == LARGE ? -s_HEAD
+	s_page = finder(size, PAGE) - finder(size, ZERO);
+	s_min = finder(size, BLOC);
+	//si c'est LARGE BEtter = LA FIN LISE CHAINE
+	while ((*page) && (!better || (better && better->size != size)))
 	{
-		cursor = page;
+		cursor = (*page);
 		parsed = 0;
-		while (parsed < size_page)
+		while (parsed < s_page)
 		{
-			if (((t_bloc*)cursor)->empty &&
-				(((t_bloc*)cursor)->size == ))
-
-
-			parsed += ((t_bloc*)cursor)->size + SIZE_HEAD;
-
-			//CONTINUE
+			//!(better && better->size == size) &&
+			if ((CURSOR->empty) &&
+			(CURSOR->size == size || CURSOR->size >= size + SIZE_HEAD + s_min) &&
+			(!better || (better && (better->size < CURSOR->size || CURSOR->size == size))))
+				better = CURSOR;
+			parsed += CURSOR->size + SIZE_HEAD;
+			cursor += CURSOR->size + SIZE_HEAD;
 		}
 		(*page) = (*page)->next;
 	}
 	(*page) = start;
-	return (NULL);
+	if (!better)
+		return (NULL);
+	if (better->size != size)
+	{
+		(better + SIZE_HEAD + size)->empty = true;
+		(better + SIZE_HEAD + size)->size = better->size - (SIZE_HEAD + size);
+	}
+	better->empty = false;
+	better->size = size;
+	return (((void *)better) + SIZE_HEAD);
 }
 
 // tmp = map(0, size, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
