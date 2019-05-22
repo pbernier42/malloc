@@ -15,21 +15,27 @@
 
 int main(void)
 {
-	//void *ptr;
-	t_bloc	*ptr;
-	void	*cul;
+	int i;
+	void *ptr;
+	//t_bloc	*ptr;
+	//void	*cul;
 
-	//ptr = malloc(1);
+	ptr = malloc(1);
 	//show_alloc_mem();
 
-	ptr = mmap(0, 1000, FL_PROT, FL_MAP, -1, 0);
-	cul = (void*)ptr;
-	printf("[%p]\n", ptr);
-	printf("[%p]\n", cul+1);
+	// ptr = mmap(0, 1000, FL_PROT, FL_MAP, -1, 0);
+	// cul = (void*)ptr;
+	// printf("[%p]\n", ptr);
+	// printf("[%p]\n", cul+1);
 	//printf("[%p]\n", (char*)ptr + 1);
-	printf("%lu\n", sizeof(t_bloc));
+	//printf("%lu\n", sizeof(t_bloc));
+	i = 12;
+	//print_define();
 
-	//ptr = malloc(1554560);
+	//printf("\nret : {%lu}\n\n", finder(i, PAGE));
+	//printf("\nret : {%lu}\n\n", finder(i, TYPE));
+	//printf("\nret : {%lu}\n\n", finder(i, ZERO));
+	///ptr = malloc(1554560);
 	//printf("[%d]\n", getrlimit(-1, ptr));
 	//printf("[%d]\n", getpagesize());
 	//printf("\n");

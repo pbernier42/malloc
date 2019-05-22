@@ -44,7 +44,8 @@ bool		new_page(size_t size, t_bloc **page)
 	(*page)->next = NULL;
 	(*page)->size = size_page - SIZE_HEAD;
 	(*page)->empty = true;
-	(*page) = start;
+	if (start)
+		(*page) = start;
 	return (true);
 }
 
@@ -78,49 +79,31 @@ void		*create_bloc(size_t size, t_bloc **page) // Vu qu'on met deux headers (cel
 {
 	t_bloc	*start;
 	void	*cursor;
-	t_bloc	*bigger;
+	t_bloc	*better;
 	size_t	size_page;
 	size_t	parsed;
 
 	start = (*page);
-	bigger = NULL;
-	size_page = finder(size, PAGE); - //ZERO
-	parsed = 0;
-	while ((*page))
+	better = NULL;
+	size_page = finder(size, PAGE) - finder(size, ZERO);
+	while ((*page) && )
 	{
-		cursor = (*start);
+		cursor = page;
+		parsed = 0;
 		while (parsed < size_page)
 		{
-			parsed += (t_bloc)cursor.size + SIZE_HEAD;
+			if (((t_bloc*)cursor)->empty &&
+				(((t_bloc*)cursor)->size == ))
+
+
+			parsed += ((t_bloc*)cursor)->size + SIZE_HEAD;
+
 			//CONTINUE
 		}
 		(*page) = (*page)->next;
-
 	}
 	(*page) = start;
-	// cpy = new_bloc(size, false, size > SMALL /*&& quil y a un elem avant */? /* prev */ NULL : NULL, /* next */ NULL);
-	// ft_memcpya((void*)cursor, &cpy, SIZE_HEAD);
 	return (NULL);
-	// cursor = new_bloc(size, empty, prev, next);
 }
 
 // tmp = map(0, size, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
-
-
-
-// void 		print_define()
-// {
-// 	printf("T_SIZE_HEAD	= [%d]\n", SIZE_HEAD);
-// 	printf("T_SIZE_DATA	= [%d]\n", T_SIZE_DATA);
-// 	printf("T_SIZE_BLOC	= [%d]\n", T_SIZE_BLOC);
-// 	printf("T_SIZE_PAGE	= [%d]\n", T_SIZE_PAGE);
-// 	printf("T_SIZE_ZERO	= [%d]*\n", T_SIZE_ZERO);
-// 	printf("T_NB_BLOC	= [%f] (Min 100)*\n\n", (float)T_NB_BLOC);
-//
-// 	printf("S_SIZE_HEAD	= [%d]\n", SIZE_HEAD);
-// 	printf("S_SIZE_DATA	= [%d]\n", S_SIZE_DATA);
-// 	printf("S_SIZE_BLOC	= [%d]\n", S_SIZE_BLOC);
-// 	printf("S_SIZE_PAGE	= [%d]\n", S_SIZE_PAGE);
-// 	printf("S_SIZE_ZERO	= [%d]*\n", S_SIZE_ZERO);
-// 	printf("S_NB_BLOC	= [%f] (Min 100)*\n", (float)S_NB_BLOC);
-// }

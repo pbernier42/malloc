@@ -44,6 +44,7 @@
 
 # define PAGE				0
 # define TYPE				1
+# define ZERO				2
 
 typedef struct s_type		t_type;
 typedef struct s_bloc		t_bloc;
@@ -77,6 +78,8 @@ void						show_alloc_mem();
 void						print_posi(size_t number, size_t base);
 void						print_adre(t_bloc **bloc);
 
-size_t						finder(size_t size, bool i);
+size_t						finder(size_t size, int i);
+
+//void 						print_define();
 
 #endif
