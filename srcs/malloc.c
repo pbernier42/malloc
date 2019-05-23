@@ -6,7 +6,7 @@
 /*   By: pbernier <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 14:43:20 by pbernier          #+#    #+#             */
-/*   Updated: 2019/05/23 19:45:50 by rlecart          ###   ########.fr       */
+/*   Updated: 2019/05/23 22:33:48 by rlecart          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,26 +37,36 @@ bool		new_page(size_t size, t_bloc **page, size_t type)
 	t_bloc	*start;
 	size_t	s_page;
 
-	(void)type;
 	s_page = finder(size, PAGE);
-	save = NULL;
 	start = (*page);
+	save = NULL;
 	while (type != LARGE && (*page) && (save = (*page)))
 		(*page) = (*page)->next;
-
-	if (type == LARGE)
-	{
-		save = (*page)->next;
-		save->prev = *page;
-		(*page)->next =
-	}
-
 	if ((((*page) = mmap(0, s_page, FL_PROT, FL_MAP, -1, 0)) == MAP_FAILED))
 		return (false);
-
-	**page = ((t_bloc){s_page, true, save, NULL});
-	if (((*page)->prev))
-		save->next = (*page);
+	if (type == LARGE) // Ca c'est pour chainer en boucle sur la large
+	{
+		if (!start)
+		{
+			(*page)->next = *page;
+			(*page)->prev = *page;
+		}
+		else
+		{
+			start->next->prev = *page;
+			(*page)->next = start->next;
+			(*page)->prev = start;
+			start->next = *page;
+		}
+	}
+	(*page)->size = s_page;
+	(*page)->empty = true;
+	//**page = ((t_bloc){s_page, true, type == LARGE ? (*page)->prev : save, NULL});
+	if (save) // Ca c'est pour chainer TINY et SMALL
+	{
+		save->next = *page;
+		(*page)->prev = save;
+	}
 
 
 
