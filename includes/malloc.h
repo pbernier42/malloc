@@ -37,7 +37,7 @@
 
 # define TINY				T_SIZE_DATA
 # define SMALL				S_SIZE_DATA
-# define LARGE 				UINT_MAX //4 294 967 295
+# define LARGE 				UINT_MAX// - SIZE_HEAD//4 294 967 295
 
 # define FL_PROT			PROT_READ | PROT_WRITE
 # define FL_MAP				MAP_ANON | MAP_PRIVATE
@@ -46,8 +46,10 @@
 # define TYPE				1
 # define ZERO				2
 # define BLOC				3
+# define INTE				4
 
 # define CURSOR				((t_bloc*)cursor)
+# define BETTER				((void*)better)
 
 typedef struct s_type		t_type;
 typedef struct s_bloc		t_bloc;
@@ -70,9 +72,11 @@ struct						s_type
 extern t_type				g_mem;
 
 void						*malloc(size_t size);
-bool						new_page(size_t size, t_bloc **page);
+bool						new_page(size_t size, t_bloc **page, size_t type);
 t_bloc						new_bloc(size_t size, bool empty, t_bloc *prev, t_bloc *next);
-void						*create_bloc(size_t size, t_bloc **page); // anciennement new_bloc
+void						*create_bloc(size_t size, t_bloc *page, size_t type);
+t_bloc						*find_best(size_t size, t_bloc *page, size_t s_page, size_t s_min);
+void						place_header(size_t size, t_bloc *better, size_t type);
 
 void						free(void *ptr);
 void						*realloc(void *ptr, size_t size);
