@@ -37,7 +37,7 @@
 
 # define TINY				T_SIZE_DATA
 # define SMALL				S_SIZE_DATA
-# define LARGE 				UINT_MAX// - SIZE_HEAD//4 294 967 295
+# define LARGE 				UINT_MAX - SIZE_HEAD//4 294 967 295
 
 # define FL_PROT			PROT_READ | PROT_WRITE
 # define FL_MAP				MAP_ANON | MAP_PRIVATE
@@ -46,7 +46,7 @@
 # define TYPE				1
 # define ZERO				2
 # define BLOC				3
-# define INTE				4
+# define ITER				4
 
 # define CURSOR				((t_bloc*)cursor)
 # define BETTER				((void*)better)

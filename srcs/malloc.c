@@ -13,7 +13,8 @@
 #include <malloc.h>
 
 t_type		g_mem;
-
+//opt header
+//gerer 0
 void		*malloc(size_t size)
 {
 	t_bloc	**page;
@@ -21,7 +22,7 @@ void		*malloc(size_t size)
 	void	*ret;
 
 	if (!(page = ((t_bloc**[4]){
-		NULL, &g_mem.tiny, &g_mem.small, &g_mem.large})[finder(size, INTE)]))
+		NULL, &g_mem.tiny, &g_mem.small, &g_mem.large})[finder(size, ITER)]))
 		return (NULL);
 	type = finder(size, TYPE);
 	while (!(ret = create_bloc(size, *page, type)))
@@ -35,7 +36,7 @@ bool		new_page(size_t size, t_bloc **page, size_t type)
 	t_bloc	*prev;
 	t_bloc	*start;
 	size_t	s_page;
-
+//pas revenir au debut si c'est un large
 	(void)type;
 	s_page = finder(size, PAGE);
 	prev = NULL;
@@ -49,13 +50,14 @@ bool		new_page(size_t size, t_bloc **page, size_t type)
 		return (false);
 	if (((*page)->prev = prev))
 		prev->next = (*page);
+
 	(*page)->next = NULL;
-	(*page)->size = s_page;
+	(*page)->size = s_page; //strat de l'infini en bas // si c'est un large il faut faire une boucle
 	(*page)->empty = true;
+
 	//printf("{%p}\n\n", (*page));
 	if (start)
 		(*page) = start;
-
 	return (true);
 }
 
@@ -64,13 +66,14 @@ void		*create_bloc(size_t size, t_bloc *page, size_t type)
 	t_bloc	*better;
 
 	better = NULL;
-	if (!page || (type != LARGE && !(better = find_best(size, page,
+	if (!page || (type == LARGE && !page->empty) ||
+		(type != LARGE && !(better = find_best(size, page,
 		(finder(size, PAGE) - finder(size, ZERO)), finder(size, BLOC)))))
 		return (NULL);
 	else if (type == LARGE && page->empty)
 		better = page;
 	place_header(size, better, type);
-	return (((void*)better) + SIZE_HEAD);
+	return (BETTER + SIZE_HEAD);
 }
 
 t_bloc		*find_best(size_t size, t_bloc *page, size_t s_page, size_t s_min)
@@ -102,9 +105,12 @@ t_bloc		*find_best(size_t size, t_bloc *page, size_t s_page, size_t s_min)
 
 void	place_header(size_t size, t_bloc *better, size_t type)
 {
+	t_bloc	*next;
+
 	better->empty = false;
-	if (type == LARGE || better->size != size)
+	if (type == LARGE || better->size == size)
 		return ;
-	*better = ((t_bloc){size, false, better->prev, ((void*)better) + (SIZE_HEAD + size)});
-	*better->next = ((t_bloc){better->size - SIZE_HEAD + size, true, better, NULL});
+	next = (BETTER + (SIZE_HEAD + size));
+	*next = ((t_bloc){better->size - SIZE_HEAD + size, true, NULL, NULL});
+	*better = ((t_bloc){size, false, NULL, NULL});
 }
