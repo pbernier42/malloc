@@ -6,7 +6,7 @@
 /*   By: pbernier <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 14:43:20 by pbernier          #+#    #+#             */
-/*   Updated: 2019/05/17 23:41:49 by rlecart          ###   ########.fr       */
+/*   Updated: 2019/05/23 19:45:50 by rlecart          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,12 +31,12 @@ void		*malloc(size_t size)
 	return (ret);
 }
 
-bool		new_page(size_t size, t_bloc **page, size_t type)
+bool		new_page(size_t size, t_bloc *page, size_t type)
 {
 	t_bloc	*prev;
 	t_bloc	*start;
 	size_t	s_page;
-//pas revenir au debut si c'est un large
+
 	(void)type;
 	s_page = finder(size, PAGE);
 	prev = NULL;
@@ -48,15 +48,16 @@ bool		new_page(size_t size, t_bloc **page, size_t type)
 	}
 	if ((((*page) = mmap(0, s_page, FL_PROT, FL_MAP, -1, 0)) == MAP_FAILED))
 		return (false);
-	if (((*page)->prev = prev))
-		prev->next = (*page);
+
+	**page = ((t_bloc){s_page, true, prev, NULL});
+	prev->next = (*page)->prev ? *page : NULL;
 
 	(*page)->next = NULL;
 	(*page)->size = s_page; //strat de l'infini en bas // si c'est un large il faut faire une boucle
 	(*page)->empty = true;
 
 	//printf("{%p}\n\n", (*page));
-	if (start)
+	if (start && type != LARGE)
 		(*page) = start;
 	return (true);
 }
