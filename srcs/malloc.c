@@ -31,30 +31,34 @@ void		*malloc(size_t size)
 	return (ret);
 }
 
-bool		new_page(size_t size, t_bloc *page, size_t type)
+bool		new_page(size_t size, t_bloc **page, size_t type)
 {
-	t_bloc	*prev;
+	t_bloc	*save;
 	t_bloc	*start;
 	size_t	s_page;
 
 	(void)type;
 	s_page = finder(size, PAGE);
-	prev = NULL;
+	save = NULL;
 	start = (*page);
-	while ((*page) && (prev = (*page)))
-	{
+	while (type != LARGE && (*page) && (save = (*page)))
 		(*page) = (*page)->next;
-	//	printf("[%p]\n", (*page));
+
+	if (type == LARGE)
+	{
+		save = (*page)->next;
+		save->prev = *page;
+		(*page)->next =
 	}
+
 	if ((((*page) = mmap(0, s_page, FL_PROT, FL_MAP, -1, 0)) == MAP_FAILED))
 		return (false);
 
-	**page = ((t_bloc){s_page, true, prev, NULL});
-	prev->next = (*page)->prev ? *page : NULL;
+	**page = ((t_bloc){s_page, true, save, NULL});
+	if (((*page)->prev))
+		save->next = (*page);
 
-	(*page)->next = NULL;
-	(*page)->size = s_page; //strat de l'infini en bas // si c'est un large il faut faire une boucle
-	(*page)->empty = true;
+
 
 	//printf("{%p}\n\n", (*page));
 	if (start && type != LARGE)
