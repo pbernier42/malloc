@@ -27,13 +27,22 @@ void		*malloc(size_t size)
 	size_t	type;
 	void	*ret;
 
+	//printf("[%zu]\n", size);
 	if (!(page = ((t_bloc**[4]){
 		NULL, &g_mem.tiny, &g_mem.small, &g_mem.large})[finder(size, ITER)]))
 		return (NULL);
+
+	//printf("{%zu} - [%p]\n      [%p]\n", finder(size, ITER), ((t_bloc*[4]){
+	//	NULL, g_mem.tiny, g_mem.small, g_mem.large})[finder(size, ITER)], *page);
+
 	type = finder(size, TYPE);
 	while (!(ret = create_bloc(size, *page, type)))
 		if ((!(*page) || !ret) && !new_page(size, page, type))
 			return (NULL);
+
+	//printf("      [%p]\n      [%p]\n\n", ((t_bloc*[4]){
+	//	NULL, g_mem.tiny, g_mem.small, g_mem.large})[finder(size, ITER)], *page);
+
 	return (ret);
 }
 
@@ -44,8 +53,8 @@ bool		new_page(size_t size, t_bloc **page, size_t type)
 	t_bloc	*next;
 	size_t	s_page;
 
-	next = NULL;
 	start = (*page);
+	next = NULL;
 	s_page = finder(size, PAGE);
 	while ((prev = (*page)) && type != LARGE)
 	 	(*page) = (*page)->next;

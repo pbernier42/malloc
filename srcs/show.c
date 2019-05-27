@@ -20,13 +20,20 @@ void	show_alloc_mem()
 	size_t	octets;
 
 	octets = 0;
+	// if (g_mem.tiny)
+	// 	printf("T[{%zu}]\n\n", g_mem.tiny->size);
+	// if (g_mem.small)
+	// 	printf("T[{%zu}]\n\n", g_mem.small->size);
+	// if (g_mem.large)
+	// 	printf("L[{%zu}]\n\n", g_mem.large->size);
+
 	if (g_mem.tiny)
 	{
 		start = g_mem.tiny;
 		write(1, "TINY : 0x", 9);
 		print_posi((size_t)g_mem.tiny, 16);
-		write(1, "\nTINY : 0x", 10);
-		print_posi((size_t)start, 16);
+		// write(1, "\nTINY : 0x", 10);
+		// print_posi((size_t)start, 16);
 		write(1, "\n", 1);
 		while ((g_mem.tiny))
 		{

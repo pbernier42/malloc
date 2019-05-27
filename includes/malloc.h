@@ -21,6 +21,8 @@
 
 # include <stdio.h>
 
+# define PROTEC				0
+
 # define SIZE_HEAD			((size_t)sizeof(t_bloc))
 
 # define T_SIZE_DATA		16
