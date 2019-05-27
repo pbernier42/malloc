@@ -85,7 +85,7 @@ void						show_alloc_mem();
 void						print_posi(size_t number, size_t base);
 void						print_adre(t_bloc **bloc);
 
-size_t						finder(size_t size, int i);
+size_t						finder(size_t size, size_t i);
 
 //void 						print_define();
 

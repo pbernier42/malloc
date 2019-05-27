@@ -13,8 +13,10 @@
 #include <malloc.h>
 
 t_type		g_mem;
+
 //opt header
 //gerer 0
+
 void		*malloc(size_t size)
 {
 	t_bloc	**page;
@@ -33,48 +35,78 @@ void		*malloc(size_t size)
 
 bool		new_page(size_t size, t_bloc **page, size_t type)
 {
-	t_bloc	*save;
 	t_bloc	*start;
+	t_bloc	*prev;
+	t_bloc	*next;
 	size_t	s_page;
 
-	s_page = finder(size, PAGE);
+	next = NULL;
 	start = (*page);
-	save = NULL;
-	while (type != LARGE && (*page) && (save = (*page)))
+	s_page = finder(size, PAGE);
+	while ((prev = (*page)) && type != LARGE)
+	 	(*page) = (*page)->next;
+	if (type == LARGE && (*page))
+	{
+		next = (*page)->next;
 		(*page) = (*page)->next;
+	}
 	if ((((*page) = mmap(0, s_page, FL_PROT, FL_MAP, -1, 0)) == MAP_FAILED))
 		return (false);
-	if (type == LARGE) // Ca c'est pour chainer en boucle sur la large
+	(**page) = (type == LARGE && !prev && !next) ?
+		((t_bloc){s_page - SIZE_HEAD, true, (*page), (*page)}) :
+		((t_bloc){s_page - SIZE_HEAD, true, prev, next});
+	if (type == LARGE && prev != (*page) && next != (*page))
 	{
-		if (!start)
-		{
-			(*page)->next = *page;
-			(*page)->prev = *page;
-		}
-		else
-		{
-			start->next->prev = *page;
-			(*page)->next = start->next;
-			(*page)->prev = start;
-			start->next = *page;
-		}
+		prev->next = (*page);
+		next->prev = (*page);
 	}
-	(*page)->size = s_page;
-	(*page)->empty = true;
-	//**page = ((t_bloc){s_page, true, type == LARGE ? (*page)->prev : save, NULL});
-	if (save) // Ca c'est pour chainer TINY et SMALL
-	{
-		save->next = *page;
-		(*page)->prev = save;
-	}
-
-
-
-	//printf("{%p}\n\n", (*page));
-	if (start && type != LARGE)
+	if (type == LARGE && start)
 		(*page) = start;
 	return (true);
 }
+
+// bool		new_page(size_t size, t_bloc **page, size_t type)
+// {
+// 	t_bloc	*save;
+// 	t_bloc	*start;
+// 	size_t	s_page;
+//
+// 	s_page = finder(size, PAGE);
+// 	start = (*page);
+// 	while (type != LARGE && (*page) && (save = (*page)))
+// 		(*page) = (*page)->next;
+//
+//
+// 	if ((((*page) = mmap(0, s_page, FL_PROT, FL_MAP, -1, 0)) == MAP_FAILED))
+// 		return (false);
+// 	if (type == LARGE) // Ca c'est pour chainer en boucle sur la large
+// 	{
+// 		if (!start)
+// 		{
+// 			(*page)->next = *page;
+// 			(*page)->prev = *page;
+// 		}
+// 		else
+// 		{
+// 			start->next->prev = *page;
+// 			(*page)->next = start->next;
+// 			(*page)->prev = start;
+// 			start->next = *page;
+// 		}
+// 	}
+// 	(*page)->size = s_page;
+// 	(*page)->empty = true;
+// 	//**page = ((t_bloc){s_page, true, type == LARGE ? (*page)->prev : save, NULL});
+// 	if (save) // Ca c'est pour chainer TINY et SMALL
+// 	{
+// 		save->next = *page;
+// 		(*page)->prev = save;
+// 	}
+// 	//printf("{%p}\n\n", (*page));
+// 	if (start && type != LARGE)
+// 		(*page) = start;
+// 	return (true);
+// }
 
 void		*create_bloc(size_t size, t_bloc *page, size_t type)
 {
@@ -112,7 +144,6 @@ t_bloc		*find_best(size_t size, t_bloc *page, size_t s_page, size_t s_min)
 			parsed += CURSOR->size + SIZE_HEAD;
 			cursor += CURSOR->size + SIZE_HEAD;
 		}
-		//printf("(%p)\n", page);
 		page = page->next;
 	}
 	return (better);

@@ -12,7 +12,7 @@
 
 #include <malloc.h>
 
-size_t		finder(size_t size, int i)
+size_t		finder(size_t size, size_t i)
 {
 	size_t	type;
 
