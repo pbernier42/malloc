@@ -6,7 +6,7 @@
 /*   By: pbernier <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 14:39:39 by pbernier          #+#    #+#             */
-/*   Updated: 2019/05/17 22:21:17 by rlecart          ###   ########.fr       */
+/*   Updated: 2019/05/27 20:34:19 by rlecart          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,10 @@
 # define TINY				T_SIZE_DATA
 # define SMALL				S_SIZE_DATA
 # define LARGE 				UINT_MAX - SIZE_HEAD//4 294 967 295
+
+# define T_TINY				((t_bloc*)g_mem.tiny)
+# define T_SMALL			((t_bloc*)g_mem.small)
+# define T_LARGE			((t_bloc*)g_mem.large)
 
 # define FL_PROT			PROT_READ | PROT_WRITE
 # define FL_MAP				MAP_ANON | MAP_PRIVATE
