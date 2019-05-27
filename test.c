@@ -23,9 +23,13 @@ int main(void)
 	//ptr = malloc(10);
 	//malloc(50);
 	//malloc(52);
-	malloc(56666);
-	malloc(5666);
-	malloc(56667);
+	malloc(666);
+	malloc(1);
+	malloc(100);
+	malloc(666);
+	malloc(16);
+	//malloc(555);
+	//malloc(444);
 	show_alloc_mem();
 
 	// ptr = mmap(0, 1000, FL_PROT, FL_MAP, -1, 0);

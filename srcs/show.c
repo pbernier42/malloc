@@ -25,6 +25,8 @@ void	show_alloc_mem()
 		start = g_mem.tiny;
 		write(1, "TINY : 0x", 9);
 		print_posi((size_t)g_mem.tiny, 16);
+		write(1, "\nTINY : 0x", 10);
+		print_posi((size_t)start, 16);
 		write(1, "\n", 1);
 		while ((g_mem.tiny))
 		{
@@ -36,7 +38,7 @@ void	show_alloc_mem()
 	if (g_mem.small)
 	{
 		start = g_mem.small;
-		write(1, "SMALL : 0x", 9);
+		write(1, "SMALL : 0x", 10);
 		print_posi((size_t)g_mem.small, 16);
 		write(1, "\n", 1);
 		while ((g_mem.small))
@@ -48,18 +50,17 @@ void	show_alloc_mem()
 	}
 	if (g_mem.large)
 	{
-		printf("?\n");
 		start = g_mem.large;
-		write(1, "LARGE : 0x", 9);
+		write(1, "LARGE : 0x", 10);
 		print_posi((size_t)g_mem.large, 16);
 		write(1, "\n", 1);
 		g_mem.large = g_mem.large->next;
-		//gerer cas ou il y a une seul page
 		while (g_mem.large != start)
 		{
 			octets += print_page(g_mem.large, g_mem.large->size + SIZE_HEAD);
 			g_mem.large = g_mem.large->next;
 		}
+		octets += print_page(g_mem.large, g_mem.large->size + SIZE_HEAD);
 		g_mem.large = start;
 	}
 	write(1, "Total : ", 9);
@@ -78,9 +79,6 @@ size_t	print_page(t_bloc *bloc, size_t s_page)
 	octets = 0;
 	while (parsed < s_page)
 	{
-		//printf("{%lu < %lu}\n", parsed, s_page);
-		//printf("%p - ", cursor + SIZE_HEAD);
-		//printf("%p...\n", cursor + CURSOR->size + SIZE_HEAD);
 		if (!CURSOR->empty)
 		{
 			write(1, "0x", 2);
