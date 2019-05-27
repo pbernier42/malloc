@@ -16,6 +16,8 @@ t_type		g_mem;
 
 //opt header
 //gerer 0
+//retirer ZERO
+//REvoir calcul .h
 
 void		*malloc(size_t size)
 {
@@ -40,6 +42,8 @@ bool		new_page(size_t size, t_bloc **page, size_t type)
 	t_bloc	*next;
 	size_t	s_page;
 
+	printf("[%p]\n", *page);
+	//boucle infini
 	next = NULL;
 	start = (*page);
 	s_page = finder(size, PAGE);
@@ -52,16 +56,21 @@ bool		new_page(size_t size, t_bloc **page, size_t type)
 	}
 	if ((((*page) = mmap(0, s_page, FL_PROT, FL_MAP, -1, 0)) == MAP_FAILED))
 		return (false);
+	//printf("[%p]\n", *page);
 	(**page) = (type == LARGE && !prev && !next) ?
 		((t_bloc){s_page - SIZE_HEAD, true, (*page), (*page)}) :
 		((t_bloc){s_page - SIZE_HEAD, true, prev, next});
-	if (type == LARGE && prev != (*page) && next != (*page))
+	//printf("[%p - %p]\n", prev, next);
+	if ((prev) && (next) &&type == LARGE && prev != (*page) && next != (*page))
 	{
 		prev->next = (*page);
 		next->prev = (*page);
 	}
+	//printf("[%p]\n", *page);
+	//printf("[%p]\n", *page);
 	if (type == LARGE && start)
 		(*page) = start;
+	//printf("[%p]\n", *page);
 	return (true);
 }
 
@@ -115,7 +124,7 @@ void		*create_bloc(size_t size, t_bloc *page, size_t type)
 	better = NULL;
 	if (!page || (type == LARGE && !page->empty) ||
 		(type != LARGE && !(better = find_best(size, page,
-		(finder(size, PAGE) - finder(size, ZERO)), finder(size, BLOC)))))
+		(finder(size, PAGE)), finder(size, BLOC)))))
 		return (NULL);
 	else if (type == LARGE && page->empty)
 		better = page;

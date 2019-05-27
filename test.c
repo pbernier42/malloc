@@ -16,12 +16,17 @@
 int main(void)
 {
 	int i;
-	void *ptr;
+	//void *ptr;
 	//t_bloc	*ptr;
 	//void	*cul;
 
-	ptr = malloc(1);
-	//show_alloc_mem();
+	//ptr = malloc(10);
+	//malloc(50);
+	//malloc(52);
+	malloc(56666);
+	malloc(5666);
+	malloc(56667);
+	show_alloc_mem();
 
 	// ptr = mmap(0, 1000, FL_PROT, FL_MAP, -1, 0);
 	// cul = (void*)ptr;
