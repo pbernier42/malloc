@@ -21,6 +21,8 @@
 
 # include <stdio.h>
 
+# define PROTEC				0
+
 # define SIZE_HEAD			((size_t)sizeof(t_bloc))
 
 # define T_SIZE_DATA		16
@@ -42,6 +44,9 @@
 # define T_TINY				((t_bloc*)g_mem.tiny)
 # define T_SMALL			((t_bloc*)g_mem.small)
 # define T_LARGE			((t_bloc*)g_mem.large)
+# define G_TINY				g_mem.tiny
+# define G_SMALL			g_mem.small
+# define G_LARGE			g_mem.large
 
 # define FL_PROT			PROT_READ | PROT_WRITE
 # define FL_MAP				MAP_ANON | MAP_PRIVATE
@@ -51,6 +56,8 @@
 # define ZERO				2
 # define BLOC				3
 # define ITER				4
+
+
 
 # define CURSOR				((t_bloc*)cursor)
 # define BETTER				((void*)better)
@@ -76,7 +83,7 @@ struct						s_type
 extern t_type				g_mem;
 
 void						*malloc(size_t size);
-bool						new_page(size_t size, t_bloc **page, size_t type);
+bool						new_page(size_t s_page, t_bloc **page, size_t type);
 t_bloc						new_bloc(size_t size, bool empty, t_bloc *prev, t_bloc *next);
 void						*create_bloc(size_t size, t_bloc *page, size_t type);
 t_bloc						*find_best(size_t size, t_bloc *page, size_t s_page, size_t s_min);
@@ -86,8 +93,10 @@ void						free(void *ptr);
 void						*realloc(void *ptr, size_t size);
 
 void						show_alloc_mem();
+
 void						print_posi(size_t number, size_t base);
-size_t						print_page(t_bloc *bloc, size_t s_page);
+void						print_line(char **line, size_t *len, size_t number, size_t base);
+size_t						print_bloc(t_bloc *bloc, size_t s_page, size_t octets);
 
 size_t						finder(size_t size, size_t i);
 void						error(char *str);

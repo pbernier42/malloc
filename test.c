@@ -23,14 +23,27 @@ int main(void)
 	//ptr = malloc(10);
 	//malloc(50);
 	//malloc(52);
-	malloc(666);
+
+	// malloc(170);
+	// malloc(200);
+	// malloc(4);
+	// malloc(5);
+	// malloc(400);
+	// malloc(20);
+	 // -------------malloc(UINT_MAX + 44);
+	// malloc(30);
+	malloc(40);
+	malloc(3);
+	malloc(300);
 	malloc(1);
-	malloc(100);
-	malloc(666);
-	malloc(16);
+	 malloc(200);
+	malloc(2);
+	//malloc(17);
+	show_alloc_mem();
+	//show_alloc_mem();
 	//malloc(555);
 	//malloc(444);
-	show_alloc_mem();
+
 
 	// ptr = mmap(0, 1000, FL_PROT, FL_MAP, -1, 0);
 	// cul = (void*)ptr;
