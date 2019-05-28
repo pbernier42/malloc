@@ -6,7 +6,7 @@
 /*   By: pbernier <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 14:39:39 by pbernier          #+#    #+#             */
-/*   Updated: 2019/05/27 20:34:19 by rlecart          ###   ########.fr       */
+/*   Updated: 2019/05/28 19:29:04 by rlecart          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,6 +90,7 @@ void						print_posi(size_t number, size_t base);
 size_t						print_page(t_bloc *bloc, size_t s_page);
 
 size_t						finder(size_t size, size_t i);
+void						error(char *str);
 
 //void 						print_define();
 

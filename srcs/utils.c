@@ -6,7 +6,7 @@
 /*   By: rlecart <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/17 19:57:04 by rlecart           #+#    #+#             */
-/*   Updated: 2019/05/17 23:16:13 by rlecart          ###   ########.fr       */
+/*   Updated: 2019/05/28 19:39:10 by rlecart          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,23 @@ size_t		finder(size_t size, size_t i)
 		((size_t[4]){0, 1, T_SIZE_BLOC + 1, S_SIZE_BLOC + 1})[type],
 		type
 		})[i]);
+}
+
+size_t		len(char *str)
+{
+	size_t	len;
+
+	len = 0;
+	while (str && str[len])
+		len++;
+	return (len);
+}
+
+void		error(char *str)
+{
+	//avoir un annuaire
+	//char	str[]
+	write(2, str, len(str));
 }
 
 // void 		print_define()
