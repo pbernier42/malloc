@@ -14,12 +14,15 @@
 
 t_type		g_mem;
 
-//opt header
-//gerer 0
-//retirer ZERO
-//REvoir calcul .h
-//bzer0 a voir temps
-//dump hexa
+/*
+** 		opt header
+** gerer 0
+** retirer ZERO
+** REvoir calcul .h
+** bzer0 a voir temps
+** dump hexa
+** verbos
+*/
 
 void		*malloc(size_t size)
 {
@@ -27,37 +30,26 @@ void		*malloc(size_t size)
 	size_t	type;
 	void	*ret;
 
-	//printf("[%zu]\n", size);
 	if (!(page = ((t_bloc**[4]){
-		NULL, &g_mem.tiny, &g_mem.small, &g_mem.large})[finder(size, ITER)]))
+		NULL, &G_TINY, &G_SMALL, &G_LARGE})[finder(size, ITER)]))
 		return (NULL);
-
-	//printf("{%zu} - [%p]\n      [%p]\n", finder(size, ITER), ((t_bloc*[4]){
-	//	NULL, g_mem.tiny, g_mem.small, g_mem.large})[finder(size, ITER)], *page);
-
 	type = finder(size, TYPE);
 	while (!(ret = create_bloc(size, *page, type)))
-		if ((!(*page) || !ret) && !new_page(size, page, type))
+		if ((!(*page) || !ret) && !new_page(finder(size, PAGE), page, type))
 			return (NULL);
-
-	//printf("      [%p]\n      [%p]\n\n", ((t_bloc*[4]){
-	//	NULL, g_mem.tiny, g_mem.small, g_mem.large})[finder(size, ITER)], *page);
-
 	return (ret);
 }
 
-bool		new_page(size_t size, t_bloc **page, size_t type)
+bool		new_page(size_t s_page, t_bloc **page, size_t type)
 {
 	t_bloc	*start;
 	t_bloc	*prev;
 	t_bloc	*next;
-	size_t	s_page;
 
 	start = (*page);
 	next = NULL;
-	s_page = finder(size, PAGE);
 	while ((prev = (*page)) && type != LARGE)
-	 	(*page) = (*page)->next;
+		(*page) = (*page)->next;
 	if (type == LARGE && (*page))
 	{
 		next = (*page)->next;
@@ -65,10 +57,9 @@ bool		new_page(size_t size, t_bloc **page, size_t type)
 	}
 	if ((((*page) = mmap(0, s_page, FL_PROT, FL_MAP, -1, 0)) == MAP_FAILED))
 		return (false);
-	(**page) = (type == LARGE && !prev && !next) ?
-		((t_bloc){s_page - SIZE_HEAD, true, (*page), (*page)}) :
-		((t_bloc){s_page - SIZE_HEAD, true, prev, next});
-	if ((prev) && (next) &&type == LARGE && prev != (*page) && next != (*page))
+	(**page) = (type == LARGE && !prev && !next) ? ((t_bloc){s_page - SIZE_HEAD,
+	true, (*page), (*page)}) : ((t_bloc){s_page - SIZE_HEAD, true, prev, next});
+	if ((prev) && (next) && type == LARGE && prev != (*page) && next != (*page))
 	{
 		prev->next = (*page);
 		next->prev = (*page);
@@ -83,7 +74,6 @@ void		*create_bloc(size_t size, t_bloc *page, size_t type)
 	t_bloc	*better;
 
 	better = NULL;
-
 	if (!page || (type == LARGE && !page->empty) ||
 		(type != LARGE && !(better = find_best(size, page,
 		(finder(size, PAGE)), finder(size, BLOC)))))
@@ -120,7 +110,7 @@ t_bloc		*find_best(size_t size, t_bloc *page, size_t s_page, size_t s_min)
 	return (better);
 }
 
-void	place_header(size_t size, t_bloc *better, size_t type)
+void		place_header(size_t size, t_bloc *better, size_t type)
 {
 	t_bloc	*next;
 
@@ -131,47 +121,3 @@ void	place_header(size_t size, t_bloc *better, size_t type)
 	*next = ((t_bloc){better->size - SIZE_HEAD + size, true, NULL, NULL});
 	*better = ((t_bloc){size, false, NULL, NULL});
 }
-
-
-// bool		new_page(size_t size, t_bloc **page, size_t type)
-// {
-// 	t_bloc	*save;
-// 	t_bloc	*start;
-// 	size_t	s_page;
-//
-// 	s_page = finder(size, PAGE);
-// 	start = (*page);
-// 	while (type != LARGE && (*page) && (save = (*page)))
-// 		(*page) = (*page)->next;
-//
-//
-// 	if ((((*page) = mmap(0, s_page, FL_PROT, FL_MAP, -1, 0)) == MAP_FAILED))
-// 		return (false);
-// 	if (type == LARGE) // Ca c'est pour chainer en boucle sur la large
-// 	{
-// 		if (!start)
-// 		{
-// 			(*page)->next = *page;
-// 			(*page)->prev = *page;
-// 		}
-// 		else
-// 		{
-// 			start->next->prev = *page;
-// 			(*page)->next = start->next;
-// 			(*page)->prev = start;
-// 			start->next = *page;
-// 		}
-// 	}
-// 	(*page)->size = s_page;
-// 	(*page)->empty = true;
-// 	//**page = ((t_bloc){s_page, true, type == LARGE ? (*page)->prev : save, NULL});
-// 	if (save) // Ca c'est pour chainer TINY et SMALL
-// 	{
-// 		save->next = *page;
-// 		(*page)->prev = save;
-// 	}
-// 	//printf("{%p}\n\n", (*page));
-// 	if (start && type != LARGE)
-// 		(*page) = start;
-// 	return (true);
-// }

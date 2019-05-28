@@ -14,93 +14,64 @@
 
 t_type		g_mem;
 
-void	show_alloc_mem()
+void	show_alloc_mem(void)
 {
-	t_bloc	*start;
+	t_bloc	*page;
+	size_t	i;
 	size_t	octets;
+	size_t	s_page;
 
+	i = 0;
 	octets = 0;
-	// if (g_mem.tiny)
-	// 	printf("T[{%zu}]\n\n", g_mem.tiny->size);
-	// if (g_mem.small)
-	// 	printf("T[{%zu}]\n\n", g_mem.small->size);
-	// if (g_mem.large)
-	// 	printf("L[{%zu}]\n\n", g_mem.large->size);
-
-	if (g_mem.tiny)
-	{
-		start = g_mem.tiny;
-		write(1, "TINY : 0x", 9);
-		print_posi((size_t)g_mem.tiny, 16);
-		// write(1, "\nTINY : 0x", 10);
-		// print_posi((size_t)start, 16);
-		write(1, "\n", 1);
-		while ((g_mem.tiny))
+	while (i < 3)
+		if ((page = ((t_bloc*[4]){G_TINY, G_SMALL, G_LARGE, NULL})[i++]))
 		{
-			octets += print_page(g_mem.tiny, T_SIZE_PAGE);
-			g_mem.tiny = g_mem.tiny->next;
+			s_page = finder(page->size, PAGE);
+			print_line((char*[2]){
+			((char*[3]){"TINY : 0x", "SMALL : 0x", "LARGE : 0x"})[i - 1], "\n"},
+			(size_t[2]){((size_t[4]){9, 10, 10})[i - 1], 1}, (size_t)page, 16);
+			if (page == G_LARGE)
+				page = page->next;
+			while ((page))
+			{
+				octets = print_bloc(page, s_page, octets);
+				page = (page == G_LARGE) ? NULL : page->next;
+			}
 		}
-		g_mem.tiny = start;
-	}
-	if (g_mem.small)
-	{
-		start = g_mem.small;
-		write(1, "SMALL : 0x", 10);
-		print_posi((size_t)g_mem.small, 16);
-		write(1, "\n", 1);
-		while ((g_mem.small))
-		{
-			octets += print_page(g_mem.small, S_SIZE_PAGE);
-			g_mem.small = g_mem.small->next;
-		}
-		g_mem.small = start;
-	}
-	if (g_mem.large)
-	{
-		start = g_mem.large;
-		write(1, "LARGE : 0x", 10);
-		print_posi((size_t)g_mem.large, 16);
-		write(1, "\n", 1);
-		g_mem.large = g_mem.large->next;
-		while (g_mem.large != start)
-		{
-			octets += print_page(g_mem.large, g_mem.large->size + SIZE_HEAD);
-			g_mem.large = g_mem.large->next;
-		}
-		octets += print_page(g_mem.large, g_mem.large->size + SIZE_HEAD);
-		g_mem.large = start;
-	}
-	write(1, "Total : ", 9);
-	print_posi(octets, 10);
-	write(1, " octets\n", 8);
+	print_line((char*[2]){"Total : ", " octets\n"},
+	(size_t[2]){8, 8}, octets, 10);
 }
 
-size_t	print_page(t_bloc *bloc, size_t s_page)
+size_t	print_bloc(t_bloc *bloc, size_t s_page, size_t octets)
 {
 	void	*cursor;
 	size_t	parsed;
-	size_t	octets;
 
 	cursor = bloc;
 	parsed = 0;
-	octets = 0;
 	while (parsed < s_page)
 	{
 		if (!CURSOR->empty)
 		{
-			write(1, "0x", 2);
-			print_posi((size_t)(cursor + SIZE_HEAD), 16);
-			write(1, " - 0x", 5);
-			print_posi((size_t)(cursor + CURSOR->size + SIZE_HEAD), 16);
-			write(1, " : ", 3);
+			print_line((char*[1]){"0x"}, (size_t[1]){2},
+			(size_t)(cursor + SIZE_HEAD), 16);
+			print_line((char*[2]){" - 0x"}, (size_t[1]){5},
+			(size_t)(cursor + CURSOR->size + SIZE_HEAD), 16);
+			print_line((char*[2]){" : ", " octets\n"},
+			(size_t[2]){3, 8}, CURSOR->size, 10);
 			octets += CURSOR->size;
-			print_posi(CURSOR->size, 10);
-			write(1, " octets\n", 8);
 		}
 		parsed += CURSOR->size + SIZE_HEAD;
 		cursor += CURSOR->size + SIZE_HEAD;
 	}
 	return (octets);
+}
+
+void	print_line(char **line, size_t *len, size_t number, size_t base)
+{
+	(line) && line[0] ? write(1, line[0], len[0]) : 0;
+	(base) ? print_posi(number, base) : 0;
+	(line) && line[1] ? write(1, line[1], len[1]) : 0;
 }
 
 void	print_posi(size_t number, size_t base)
