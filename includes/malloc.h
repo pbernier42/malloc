@@ -20,6 +20,7 @@
 # include <limits.h>
 
 # include <stdio.h>
+# include <math.h>
 
 # define PROTEC				0
 
@@ -44,6 +45,7 @@
 # define T_TINY				((t_bloc*)g_mem.tiny)
 # define T_SMALL			((t_bloc*)g_mem.small)
 # define T_LARGE			((t_bloc*)g_mem.large)
+
 # define G_TINY				g_mem.tiny
 # define G_SMALL			g_mem.small
 # define G_LARGE			g_mem.large
@@ -57,10 +59,9 @@
 # define BLOC				3
 # define ITER				4
 
-
-
 # define CURSOR				((t_bloc*)cursor)
 # define BETTER				((void*)better)
+# define PTR				((t_bloc*)ptr)
 
 typedef struct s_type		t_type;
 typedef struct s_bloc		t_bloc;
@@ -90,7 +91,9 @@ t_bloc						*find_best(size_t size, t_bloc *page, size_t s_page, size_t s_min);
 void						place_header(size_t size, t_bloc *better, size_t type);
 
 void						free(void *ptr);
+
 void						*realloc(void *ptr, size_t size);
+void						*move_bloc(void *ptr, size_t size);
 
 void						show_alloc_mem();
 

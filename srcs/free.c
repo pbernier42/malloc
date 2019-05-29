@@ -29,7 +29,7 @@ void	*where_exactly(void *cursor, size_t page_size, void *ptr)
 
 void	*is_here(void *ptr, t_bloc *page)
 {
-	t_bloc	*prev;
+//	t_bloc	*prev;
 	t_bloc	*islarge;
 	void	*cursor;
 	size_t	page_size;
@@ -65,7 +65,7 @@ void	*is_our(void *ptr)
 void	free(void *ptr)
 {
 	void	*cursor;
-	size_t	type;
+//	size_t	type;
 
 	//bzero(ptr, size);
 	//switch PROTEC

@@ -15,13 +15,16 @@
 t_type		g_mem;
 
 /*
-** 		opt header
-** gerer 0
 ** retirer ZERO
-** REvoir calcul .h
-** bzer0 a voir temps
-** dump hexa
+** -REvoir calcul .h
+** -dump hexa
 ** verbos
+** reaaloc
+**
+** Besoin de "NULL" creation header (NULL qui vient ecraser NULL)
+** MALLOC NULL en cas de 0 size
+** idee def :	#define S_BLOC_MIN(size) finder(size, BLOC)
+** 				#define S_PAGE(size) finder(size, PAGE)
 */
 
 void		*malloc(size_t size)
@@ -31,9 +34,9 @@ void		*malloc(size_t size)
 	void	*ret;
 
 	if (!(page = ((t_bloc**[4]){
-		NULL, &G_TINY, &G_SMALL, &G_LARGE})[finder(size, ITER)]))
+		NULL, &G_TINY, &G_SMALL, &G_LARGE})[finder(size, ITER)]) ||
+		!(type = finder(size, TYPE)))
 		return (NULL);
-	type = finder(size, TYPE);
 	while (!(ret = create_bloc(size, *page, type)))
 		if ((!(*page) || !ret) && !new_page(finder(size, PAGE), page, type))
 			return (NULL);

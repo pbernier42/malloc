@@ -16,6 +16,8 @@
 int main(void)
 {
 	int i;
+	float a;
+	float tmp;
 	//void *ptr;
 	//t_bloc	*ptr;
 	//void	*cul;
@@ -23,6 +25,18 @@ int main(void)
 	//ptr = malloc(10);
 	//malloc(50);
 	//malloc(52);
+
+	// i = 9;
+	// while (++i < 500)
+	// {
+	// 	a = (float)(T_SIZE_PAGE / ((float)i + SIZE_HEAD));
+	// 	printf("[%d] / ([%d] + [%lu])  => [%f]\n", T_SIZE_PAGE, i, SIZE_HEAD, a);
+	// 	tmp = (a * 1000000);
+	// 	if (((size_t)tmp % 1000000) == 0)
+	// 	{
+	// 		printf("[%f] - {{%zu}}\n", T_NB_BLOC, (size_t)a);
+	// 	}
+	// }
 
 	// malloc(170);
 	// malloc(200);
@@ -32,14 +46,14 @@ int main(void)
 	// malloc(20);
 	 // -------------malloc(UINT_MAX + 44);
 	// malloc(30);
-	malloc(40);
-	malloc(3);
-	malloc(300);
-	malloc(1);
-	 malloc(200);
-	malloc(2);
+	// malloc(40);
+	// malloc(3);
+	// malloc(300);
+	// malloc(1);
+	//  malloc(200);
+	// malloc(2);
 	//malloc(17);
-	show_alloc_mem();
+	// show_alloc_mem();
 	//show_alloc_mem();
 	//malloc(555);
 	//malloc(444);
