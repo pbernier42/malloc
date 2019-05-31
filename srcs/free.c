@@ -6,7 +6,7 @@
 /*   By: pbernier <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 14:43:26 by pbernier          #+#    #+#             */
-/*   Updated: 2019/05/31 18:15:14 by rlecart          ###   ########.fr       */
+/*   Updated: 2019/05/31 18:29:10 by rlecart          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,8 @@ void	*where_exactly(void *cursor, size_t page_size, void *ptr)
 		next = cursor + SIZE_HEAD + CURSOR->size;
 		if (ptr >= cursor && ptr <= cursor + SIZE_HEAD + CURSOR->size)
 		{
-			if (count + SIZE_HEAD + CURSOR->size < page_size && next && ((t_bloc*)next)->empty)
+			if (count + SIZE_HEAD + CURSOR->size < page_size
+					&& next && ((t_bloc*)next)->empty)
 				CURSOR->size += ((t_bloc*)next)->size + SIZE_HEAD;
 			CURSOR->empty = true;
 			if (prev && ((t_bloc*)prev)->empty)
@@ -37,24 +38,6 @@ void	*where_exactly(void *cursor, size_t page_size, void *ptr)
 		count += SIZE_HEAD + CURSOR->size;
 	}
 	return (NULL);
-}
-
-bool	delete_page(t_bloc *prev, t_bloc *cursor, t_bloc *next)
-{
-	if (prev)
-		((t_bloc*)prev)->next = next;
-	if (next)
-		((t_bloc*)next)->prev = prev;
-	if ((munmap(cursor, CURSOR->size + SIZE_HEAD)))
-			return (false);
-	return (true);
-}
-
-bool	do_i_have_to_delete_page(void *cursor, size_t page_size)
-{
-	if (cursor && CURSOR->empty && CURSOR->size + SIZE_HEAD >= page_size)
-		return (true);
-	return (false);
 }
 
 int		is_here(void *ptr, t_bloc *page)
@@ -77,7 +60,8 @@ int		is_here(void *ptr, t_bloc *page)
 				return (!(delete_page(prev, cursor, CURSOR->next)) ? -1 : 0);
 		}
 		prev = cursor;
-		if ((page = page->next) == islarge) //theoriquement toujours fausse (a cause du return des le delete_page
+		//theoriquement toujours fausse (a cause du return des le delete_page
+		if ((page = page->next) == islarge)
 			break ;
 	}
 	return (1);
@@ -94,7 +78,8 @@ bool	is_our(void *ptr)
 	page[1] = T_SMALL;
 	page[2] = T_LARGE;
 	page[3] = NULL;
-	while (page[i] && !(ret = is_here(ptr, page[i])))// -1 pas reussi a munmap, 1 ITSOK, 0 not here
+	// -1 pas reussi a munmap, 1 ITSOK, 0 not here
+	while (page[i] && !(ret = is_here(ptr, page[i])))
 		i++;
 	return (ret);
 }

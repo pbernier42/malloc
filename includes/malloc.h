@@ -6,7 +6,7 @@
 /*   By: pbernier <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 14:39:39 by pbernier          #+#    #+#             */
-/*   Updated: 2019/05/28 19:29:04 by rlecart          ###   ########.fr       */
+/*   Updated: 2019/05/31 18:29:06 by rlecart          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,8 @@ t_bloc						*find_best(size_t size, t_bloc *page, size_t s_page, size_t s_min);
 void						place_header(size_t size, t_bloc *better, size_t type);
 
 void						free(void *ptr);
+bool						delete_page(t_bloc *prev, t_bloc *cursor, t_bloc *next);
+bool						do_i_have_to_delete_page(void *cursor, size_t page_size);
 
 void						*realloc(void *ptr, size_t size);
 bool						move_bloc(void *ptr, size_t size, size_t type);

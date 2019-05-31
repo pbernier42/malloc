@@ -6,7 +6,7 @@
 /*   By: rlecart <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/17 19:57:04 by rlecart           #+#    #+#             */
-/*   Updated: 2019/05/28 19:39:10 by rlecart          ###   ########.fr       */
+/*   Updated: 2019/05/31 18:29:08 by rlecart          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,24 @@ void		error(char *str)
 	//avoir un annuaire
 	//char	str[]
 	write(2, str, len(str));
+}
+
+bool	delete_page(t_bloc *prev, t_bloc *cursor, t_bloc *next)
+{
+	if (prev)
+		((t_bloc*)prev)->next = next;
+	if (next)
+		((t_bloc*)next)->prev = prev;
+	if ((munmap(cursor, CURSOR->size + SIZE_HEAD)))
+		return (false);
+	return (true);
+}
+
+bool	do_i_have_to_delete_page(void *cursor, size_t page_size)
+{
+	if (cursor && CURSOR->empty && CURSOR->size + SIZE_HEAD >= page_size)
+		return (true);
+	return (false);
 }
 
 // void 		print_define()
