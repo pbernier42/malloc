@@ -6,7 +6,7 @@
 /*   By: pbernier <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 14:43:26 by pbernier          #+#    #+#             */
-/*   Updated: 2019/05/31 18:29:10 by rlecart          ###   ########.fr       */
+/*   Updated: 2019/05/31 18:49:33 by rlecart          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,11 +84,11 @@ bool	is_our(void *ptr)
 	return (ret);
 }
 
-//bzero(ptr, size);
-//switch PROTEC
-//retrouver un pointeur corrompu (si prev existe alors cursor = prev + SIZE_HEAD + prev->size)
-//si prev n'existe pas alors c'est le premier octet de la page
-//
+/*bzero(ptr, size);
+**switch PROTEC
+**retrouver un pointeur corrompu (si prev existe alors cursor = prev + SIZE_HEAD + prev->size)
+**si prev n'existe pas alors c'est le premier octet de la page
+*/
 void	free(void *ptr)
 {
 	int		ret;
