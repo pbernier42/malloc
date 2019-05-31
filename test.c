@@ -31,8 +31,20 @@ int			main(void)
 
 void		my_test()
 {
-	void	*ptr = NULL;
+	void 	*ptr;
 
+	//(SMALL : Plus grand qu'avant)
+	printf("(SMALL : Plus grand qu'avant)\n");
+	//malloc(TINY + 9);
+	//malloc(TINY + 9);
+	ptr = malloc(TINY + 10);
+	printf("size : [%lu] empty : [%s]\nptr = [%p]\n", TB_PTR->size, TB_PTR->empty == true ? "VIDE" : "PLEIN", TB_PTR);
+	ptr = realloc(ptr, TB_PTR->size + 10);
+	printf("size : [%lu] empty : [%s]\nptr = [%p]\n", TB_PTR->size, TB_PTR->empty == true ? "VIDE" : "PLEIN", TB_PTR);
+	show_alloc_mem();
+	printf("\n");
+	print_all();
+	(void)ptr;
 }
 
 void		test_realloc()
@@ -40,7 +52,7 @@ void		test_realloc()
 	void	*ptr = NULL;
 
 
-	//Size ne change pas
+	//(Size ne change pas)
 	printf("(Size ne change pas)\n");
 	ptr = malloc(TINY);
 	printf("size : [%lu] empty : [%s]\nptr = [%p]\n", TB_PTR->size, TB_PTR->empty == true ? "VIDE" : "PLEIN", TB_PTR);
@@ -49,7 +61,7 @@ void		test_realloc()
 	show_alloc_mem();
 	printf("\n");
 
-	//Size fait changer de type
+	//(Size fait changer de type)
 	printf("(Size fait changer de type)\n");
 	malloc(SMALL);
 	malloc(LARGE);
@@ -70,6 +82,23 @@ void		test_realloc()
 	show_alloc_mem();
 	printf("\n");
 
+
+	//(SMALL : Plus grand qu'avant)
+	printf("(SMALL : Plus grand qu'avant)\n");
+	malloc(TINY + 9);
+	malloc(TINY + 9);
+	ptr = malloc(TINY + 10);
+	printf("size : [%lu] empty : [%s]\nptr = [%p]\n", TB_PTR->size, TB_PTR->empty == true ? "VIDE" : "PLEIN", TB_PTR);
+	ptr = realloc(ptr, TB_PTR->size + 10);
+	printf("size : [%lu] empty : [%s]\nptr = [%p]\n", TB_PTR->size, TB_PTR->empty == true ? "VIDE" : "PLEIN", TB_PTR);
+	show_alloc_mem();
+	printf("\n");
+
+	//(SMALL : Plus grand qu'avant) (next occupé)
+	//(SMALL : Plus grand qu'avant) (tout au bout)
+	//(LARGE : Plus petit qu'avant)
+	//(SMALL : Plus petit qu'avant)
+	//(SMALL : Plus petit qu'avant) (Pas de place)
 
 }
 

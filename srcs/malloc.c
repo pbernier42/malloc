@@ -15,11 +15,8 @@
 t_type		g_mem;
 
 /*
-** retirer ZERO
-** -REvoir calcul .h
-** -dump hexa
 ** verbos
-** reaaloc
+** -dump hexa
 **
 ** Besoin de "NULL" creation header (NULL qui vient ecraser NULL)
 */

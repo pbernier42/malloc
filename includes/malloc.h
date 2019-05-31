@@ -25,14 +25,21 @@
 # define PROTEC				0
 
 # define SIZE_HEAD			((size_t)sizeof(t_bloc))
+/*
+** DATA = 0032 0096 0224 0480 0992 2016 4064 8160
+**
+** ALLO = 0128 0064 0032 0016 0008 0004 0002 0001 *2
+** ALLO = 0256 0128 0064 0032 0016 0008 0004 0002 *4
+** ALLO = 0512 0256 0128 0064 0032 0016 0008 0004 *8
+*/
 
-# define T_SIZE_DATA		16
+# define T_SIZE_DATA		32
 # define T_SIZE_PAGE		(getpagesize() * 2)
 # define T_SIZE_BLOC		(SIZE_HEAD + T_SIZE_DATA)
 # define T_SIZE_ZERO		(T_SIZE_PAGE % T_SIZE_BLOC)
 # define T_NB_BLOC			(T_SIZE_PAGE / (float)T_SIZE_BLOC)
 
-# define S_SIZE_DATA		123 //calcul allocation >= 100
+# define S_SIZE_DATA		96
 # define S_SIZE_PAGE		(getpagesize() * 4)
 # define S_SIZE_BLOC		(SIZE_HEAD + S_SIZE_DATA)
 # define S_SIZE_ZERO		(S_SIZE_PAGE % S_SIZE_BLOC)
@@ -40,7 +47,8 @@
 
 # define TINY				T_SIZE_DATA
 # define SMALL				S_SIZE_DATA
-# define LARGE 				UINT_MAX - SIZE_HEAD//4 294 967 295
+# define LARGE 				UINT_MAX - SIZE_HEAD
+//4 294 967 295
 
 # define T_TINY				((t_bloc*)g_mem.tiny)
 # define T_SMALL			((t_bloc*)g_mem.small)
