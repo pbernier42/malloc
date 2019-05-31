@@ -26,7 +26,7 @@ void	show_alloc_mem(void)
 	while (i < 3)
 		if ((page = ((t_bloc*[4]){G_TINY, G_SMALL, G_LARGE, NULL})[i++]))
 		{
-			s_page = finder(page->size, PAGE);
+			s_page = S_PAGE(page->size);
 			print_line((char*[2]){
 			((char*[3]){"TINY : 0x", "SMALL : 0x", "LARGE : 0x"})[i - 1], "\n"},
 			(size_t[2]){((size_t[4]){9, 10, 10})[i - 1], 1}, (size_t)page, 16);

@@ -22,9 +22,6 @@ t_type		g_mem;
 ** reaaloc
 **
 ** Besoin de "NULL" creation header (NULL qui vient ecraser NULL)
-** MALLOC NULL en cas de 0 size
-** idee def :	#define S_BLOC_MIN(size) finder(size, BLOC)
-** 				#define S_PAGE(size) finder(size, PAGE)
 */
 
 void		*malloc(size_t size)
@@ -34,11 +31,11 @@ void		*malloc(size_t size)
 	void	*ret;
 
 	if (!(page = ((t_bloc**[4]){
-		NULL, &G_TINY, &G_SMALL, &G_LARGE})[finder(size, ITER)]) ||
-		!(type = finder(size, TYPE)))
+		NULL, &G_TINY, &G_SMALL, &G_LARGE})[ITERATOR(size)]) ||
+		!(type = TYPE(size)))
 		return (NULL);
 	while (!(ret = create_bloc(size, *page, type)))
-		if ((!(*page) || !ret) && !new_page(finder(size, PAGE), page, type))
+		if ((!(*page) || !ret) && !new_page(S_PAGE(size), page, type))
 			return (NULL);
 	return (ret);
 }
@@ -79,7 +76,7 @@ void		*create_bloc(size_t size, t_bloc *page, size_t type)
 	better = NULL;
 	if (!page || (type == LARGE && !page->empty) ||
 		(type != LARGE && !(better = find_best(size, page,
-		(finder(size, PAGE)), finder(size, BLOC)))))
+		S_PAGE(size), S_BLOC_MIN(size)))))
 		return (NULL);
 	else if (type == LARGE && page->empty)
 		better = page;

@@ -34,7 +34,7 @@ void	*is_here(void *ptr, t_bloc *page)
 	void	*cursor;
 	size_t	page_size;
 
-	page_size = finder(page->size, PAGE);
+	page_size = S_PAGE(page->size);
 	islarge = page;
 	while (page && (cursor = page))
 	{

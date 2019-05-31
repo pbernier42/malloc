@@ -12,52 +12,52 @@
 
 #include <malloc.h>
 
-void	*realloc(void *ptr, size_t size)
+void		*realloc(void *ptr, size_t size)
 {
 	size_t	type;
-	void	*cursor;
-	size_t	s_page;
+
 	//Verifier pointeur
 
-	///#place au debut header
 	ptr -= SIZE_HEAD;
-	///#pas de changement a faire
 	if (PTR->size == size)
-		return (ptr);
-	///#si la size = 0 malloc s'en occupe
-	type = finder(size, TYPE);
-	///#si ca le fait changer de type ou
-	///#(LARGE) si size > a avant, free et malloc
-	///#(TINY/SMALL) pas le place de couper
-	if (!ptr ||
-		type != finder(PTR->size, TYPE) ||
-		(type == LARGE && PTR->size < size) ||
-		!(type != LARGE && (PTR->size - size) > (SIZE_HEAD + finder(PTR->size, BLOC))))
-		return (move_bloc(ptr, size));
-	///#(LARGE) si size < a avant, free ce qu'on veut plus
+		return (ptr + SIZE_HEAD);
+	type = TYPE(size);
+	if (!move_bloc(ptr, size, type))
+		return (reset(ptr + SIZE_HEAD, size));
 	if (type == LARGE && PTR->size > size)
-		if (munmap(ptr + SIZE_HEAD + size, PTR->size - size) == -1);
+		if (munmap(ptr + SIZE_HEAD + size, PTR->size - size) == -1)
 			return (NULL);//verbos
-	///#(TINY/SMALL) si size < a avant et que le reste utilisable (réduire taille)
-	///#(LARGE) changement dela valeur de size
-	if (PTR->size > size)
-		place_header(size, ptr, type);
-	///#(TINY/SMALL) si size > a avant et que le suivant peut l'aceillier
-	else if (type != LARGE && PTR->size < size)
-	{
-		s_page = inder(PTR->size, PAGE);
-		cursor = (type == TINY) ? G_TINY : G_SMALL;
-		while (!(ptr > cursor && ptr < (cursor + page))
-			CURSOR = CURSOR->next;
-		if (((ptr + SIZE_HEAD + PTR->SIZE) == cursor + s_page)) // ##
-			return (move_bloc(ptr, size));
-			
-	}
-	return (ptr);
+	place_header(size, ptr, type);
+	return (ptr + SIZE_HEAD);
 }
 
-void	*move_bloc(void *ptr, size_t size)
+bool		move_bloc(void *ptr, size_t size, size_t type)
 {
-	free(ptr);
+	size_t	s_min;
+	size_t	s_page;
+	void	*cursor;
+
+	s_min = S_BLOC_MIN(PTR->size);
+	if (!ptr ||
+		type != TYPE(PTR->size) ||
+		(type == LARGE && PTR->size < size) ||
+		!(type != LARGE && PTR->size > size && (PTR->size - size) > (SIZE_HEAD + s_min)))
+		return (false);
+	s_page = S_PAGE(PTR->size);
+	cursor = (type == TINY) ? G_TINY : G_SMALL;
+	while (!(ptr > cursor && ptr < (cursor + s_page)))
+		cursor = CURSOR->next;
+	if (((ptr + SIZE_HEAD + PTR->size) == cursor + s_page) ||
+		!(((t_bloc*)(ptr + SIZE_HEAD + PTR->size))->empty) ||
+		!(PTR->size + ((t_bloc*)(ptr + SIZE_HEAD + PTR->size))->size > size + s_min))
+		return (false);
+	return (true);
+}
+
+void	*reset(void *ptr, size_t size)
+{
+	printf("\033[31m[WARNING]\033[0m no free\n");
+	//free(ptr);
+	(void)ptr;
 	return (malloc(size));
 }

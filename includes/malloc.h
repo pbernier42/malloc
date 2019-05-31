@@ -53,11 +53,11 @@
 # define FL_PROT			PROT_READ | PROT_WRITE
 # define FL_MAP				MAP_ANON | MAP_PRIVATE
 
-# define PAGE				0
-# define TYPE				1
-# define ZERO				2
-# define BLOC				3
-# define ITER				4
+# define S_PAGE(size)		finder(size, 0)
+# define TYPE(size)			finder(size, 1)
+# define S_ZERO(size)		finder(size, 2)
+# define S_BLOC_MIN(size)	finder(size, 3)
+# define ITERATOR(size)		finder(size, 4)
 
 # define CURSOR				((t_bloc*)cursor)
 # define BETTER				((void*)better)
@@ -93,7 +93,8 @@ void						place_header(size_t size, t_bloc *better, size_t type);
 void						free(void *ptr);
 
 void						*realloc(void *ptr, size_t size);
-void						*move_bloc(void *ptr, size_t size);
+bool						move_bloc(void *ptr, size_t size, size_t type);
+void						*reset(void *ptr, size_t size);
 
 void						show_alloc_mem();
 

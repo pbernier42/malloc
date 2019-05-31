@@ -17,7 +17,7 @@ size_t		finder(size_t size, size_t i)
 	size_t	type;
 
 	type = 0;
-	while (size > ((size_t[4]){0, TINY, SMALL, size})[type] && size < LARGE)
+	while (size > ((size_t[4]){0, TINY, SMALL, size})[type] && size <= LARGE)
 		++type;
 	return (((size_t[5]){
 		((size_t[4]){0, T_SIZE_PAGE, S_SIZE_PAGE, size + SIZE_HEAD})[type],
