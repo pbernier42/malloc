@@ -20,18 +20,26 @@
 # include <limits.h>
 
 # include <stdio.h>
+# include <math.h>
 
 # define PROTEC				0
 
 # define SIZE_HEAD			((size_t)sizeof(t_bloc))
+/*
+** DATA = 0032 0096 0224 0480 0992 2016 4064 8160
+**
+** ALLO = 0128 0064 0032 0016 0008 0004 0002 0001 *2
+** ALLO = 0256 0128 0064 0032 0016 0008 0004 0002 *4
+** ALLO = 0512 0256 0128 0064 0032 0016 0008 0004 *8
+*/
 
-# define T_SIZE_DATA		16
+# define T_SIZE_DATA		32
 # define T_SIZE_PAGE		(getpagesize() * 2)
 # define T_SIZE_BLOC		(SIZE_HEAD + T_SIZE_DATA)
 # define T_SIZE_ZERO		(T_SIZE_PAGE % T_SIZE_BLOC)
 # define T_NB_BLOC			(T_SIZE_PAGE / (float)T_SIZE_BLOC)
 
-# define S_SIZE_DATA		123 //calcul allocation >= 100
+# define S_SIZE_DATA		96
 # define S_SIZE_PAGE		(getpagesize() * 4)
 # define S_SIZE_BLOC		(SIZE_HEAD + S_SIZE_DATA)
 # define S_SIZE_ZERO		(S_SIZE_PAGE % S_SIZE_BLOC)
@@ -39,11 +47,13 @@
 
 # define TINY				T_SIZE_DATA
 # define SMALL				S_SIZE_DATA
-# define LARGE 				UINT_MAX - SIZE_HEAD//4 294 967 295
+# define LARGE 				UINT_MAX - SIZE_HEAD
+//4 294 967 295
 
 # define T_TINY				((t_bloc*)g_mem.tiny)
 # define T_SMALL			((t_bloc*)g_mem.small)
 # define T_LARGE			((t_bloc*)g_mem.large)
+
 # define G_TINY				g_mem.tiny
 # define G_SMALL			g_mem.small
 # define G_LARGE			g_mem.large
@@ -51,16 +61,15 @@
 # define FL_PROT			PROT_READ | PROT_WRITE
 # define FL_MAP				MAP_ANON | MAP_PRIVATE
 
-# define PAGE				0
-# define TYPE				1
-# define ZERO				2
-# define BLOC				3
-# define ITER				4
-
-
+# define S_PAGE(size)		finder(size, 0)
+# define TYPE(size)			finder(size, 1)
+# define S_ZERO(size)		finder(size, 2)
+# define S_BLOC_MIN(size)	finder(size, 3)
+# define ITERATOR(size)		finder(size, 4)
 
 # define CURSOR				((t_bloc*)cursor)
 # define BETTER				((void*)better)
+# define PTR				((t_bloc*)ptr)
 
 typedef struct s_type		t_type;
 typedef struct s_bloc		t_bloc;
@@ -90,7 +99,10 @@ t_bloc						*find_best(size_t size, t_bloc *page, size_t s_page, size_t s_min);
 void						place_header(size_t size, t_bloc *better, size_t type);
 
 void						free(void *ptr);
+
 void						*realloc(void *ptr, size_t size);
+bool						move_bloc(void *ptr, size_t size, size_t type);
+void						*reset(void *ptr, size_t size);
 
 void						show_alloc_mem();
 

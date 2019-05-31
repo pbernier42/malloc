@@ -13,58 +13,124 @@
 #include <stdio.h>
 #include <malloc.h>
 
-int main(void)
+#define TB_PTR			((t_bloc*)(ptr - SIZE_HEAD))
+//#define GRIS			printf("\033[38;5;8m")
+//#define RESET			printf("\033[0m")
+
+void		test_realloc();
+void		my_test();
+void		print_all();
+
+int			main(void)
 {
-	int i;
-	//void *ptr;
-	//t_bloc	*ptr;
-	//void	*cul;
-
-	//ptr = malloc(10);
-	//malloc(50);
-	//malloc(52);
-
-	// malloc(170);
-	// malloc(200);
-	// malloc(4);
-	// malloc(5);
-	// malloc(400);
-	// malloc(20);
-	 // -------------malloc(UINT_MAX + 44);
-	// malloc(30);
-	malloc(40);
-	malloc(3);
-	malloc(300);
-	malloc(1);
-	 malloc(200);
-	malloc(2);
-	//malloc(17);
-	show_alloc_mem();
-	//show_alloc_mem();
-	//malloc(555);
-	//malloc(444);
-
-
-	// ptr = mmap(0, 1000, FL_PROT, FL_MAP, -1, 0);
-	// cul = (void*)ptr;
-	// printf("[%p]\n", ptr);
-	// printf("[%p]\n", cul+1);
-	//printf("[%p]\n", (char*)ptr + 1);
-	//printf("%lu\n", sizeof(t_bloc));
-	i = 12;
-	//print_define();
-
-	//printf("\nret : {%lu}\n\n", finder(i, PAGE));
-	//printf("\nret : {%lu}\n\n", finder(i, TYPE));
-	//printf("\nret : {%lu}\n\n", finder(i, ZERO));
-	///ptr = malloc(1554560);
-	//printf("[%d]\n", getrlimit(-1, ptr));
-	//printf("[%d]\n", getpagesize());
-	//printf("\n");
-	//printf("[%s]\n", (char *)ptr);
-	//printf("[%p]\n", ptr);
-	//printf("[%c]\n", (char)ptr);
-	//free(ptr);
-
+	//test_realloc();
+	my_test();
+	//print_all();
 	return (0);
+}
+
+void		my_test()
+{
+	void 	*ptr;
+
+	//(SMALL : Plus grand qu'avant)
+	printf("(SMALL : Plus grand qu'avant)\n");
+	//malloc(TINY + 9);
+	//malloc(TINY + 9);
+	ptr = malloc(TINY + 10);
+	printf("size : [%lu] empty : [%s]\nptr = [%p]\n", TB_PTR->size, TB_PTR->empty == true ? "VIDE" : "PLEIN", TB_PTR);
+	ptr = realloc(ptr, TB_PTR->size + 10);
+	printf("size : [%lu] empty : [%s]\nptr = [%p]\n", TB_PTR->size, TB_PTR->empty == true ? "VIDE" : "PLEIN", TB_PTR);
+	show_alloc_mem();
+	printf("\n");
+	print_all();
+	(void)ptr;
+}
+
+void		test_realloc()
+{
+	void	*ptr = NULL;
+
+
+	//(Size ne change pas)
+	printf("(Size ne change pas)\n");
+	ptr = malloc(TINY);
+	printf("size : [%lu] empty : [%s]\nptr = [%p]\n", TB_PTR->size, TB_PTR->empty == true ? "VIDE" : "PLEIN", TB_PTR);
+	ptr = realloc(ptr, TINY);
+	printf("size : [%lu] empty : [%s]\nptr = [%p]\n", TB_PTR->size, TB_PTR->empty == true ? "VIDE" : "PLEIN", TB_PTR);
+	show_alloc_mem();
+	printf("\n");
+
+	//(Size fait changer de type)
+	printf("(Size fait changer de type)\n");
+	malloc(SMALL);
+	malloc(LARGE);
+	ptr = malloc(SMALL);
+	printf("size : [%lu] empty : [%s]\nptr = [%p]\n", TB_PTR->size, TB_PTR->empty == true ? "VIDE" : "PLEIN", TB_PTR);
+	ptr = realloc(ptr, TINY);
+	printf("size : [%lu] empty : [%s]\nptr = [%p]\n", TB_PTR->size, TB_PTR->empty == true ? "VIDE" : "PLEIN", TB_PTR);
+	show_alloc_mem();
+	printf("\n");
+
+	//(LARGE : Plus grand qu'avant)
+	printf("(LARGE : Plus grand qu'avant)\n");
+	ptr = malloc(SMALL + 50);
+	printf("size : [%lu] empty : [%s]\nptr = [%p]\n", TB_PTR->size, TB_PTR->empty == true ? "VIDE" : "PLEIN", TB_PTR);
+	//Plus le chiffre "50" est grand plus il creer des pages large vide
+	ptr = realloc(ptr, TB_PTR->size + 50);
+	printf("size : [%lu] empty : [%s]\nptr = [%p]\n", TB_PTR->size, TB_PTR->empty == true ? "VIDE" : "PLEIN", TB_PTR);
+	show_alloc_mem();
+	printf("\n");
+
+
+	//(SMALL : Plus grand qu'avant)
+	printf("(SMALL : Plus grand qu'avant)\n");
+	malloc(TINY + 9);
+	malloc(TINY + 9);
+	ptr = malloc(TINY + 10);
+	printf("size : [%lu] empty : [%s]\nptr = [%p]\n", TB_PTR->size, TB_PTR->empty == true ? "VIDE" : "PLEIN", TB_PTR);
+	ptr = realloc(ptr, TB_PTR->size + 10);
+	printf("size : [%lu] empty : [%s]\nptr = [%p]\n", TB_PTR->size, TB_PTR->empty == true ? "VIDE" : "PLEIN", TB_PTR);
+	show_alloc_mem();
+	printf("\n");
+
+	//(SMALL : Plus grand qu'avant) (next occupé)
+	//(SMALL : Plus grand qu'avant) (tout au bout)
+	//(LARGE : Plus petit qu'avant)
+	//(SMALL : Plus petit qu'avant)
+	//(SMALL : Plus petit qu'avant) (Pas de place)
+
+}
+
+void		print_all()
+{
+	t_bloc	*page;
+	size_t	i;
+	size_t	s_page;
+	void	*cursor;
+	size_t	parsed;
+
+	i = 0;
+	while (i < 3)
+		if ((page = ((t_bloc*[4]){G_TINY, G_SMALL, G_LARGE, NULL})[i++]))
+		{
+			s_page = S_PAGE(page->size);
+			printf("[%s]	: [%p]\n", ((char*[3]){"TINY", "SMALL", "LARGE"})[i - 1], page);
+			if (page == G_LARGE)
+				page = page->next;
+			while ((page))
+			{
+				cursor = page;
+				parsed = 0;
+				while (parsed < s_page)
+				{
+					printf("startH	: [%p]\nstartD	: [%p]\nsize	: [%zu]\nempty	: [%s]\nprev	: [%p]\nnext	: [%p]\nend	: [%p]\n\n",
+					cursor, (cursor + SIZE_HEAD), CURSOR->size, CURSOR->empty == true ? "VIDE" : "PLEIN", CURSOR->prev, CURSOR->next, (cursor + CURSOR->size + SIZE_HEAD));
+					parsed += CURSOR->size + SIZE_HEAD;
+					cursor += CURSOR->size + SIZE_HEAD;
+				}
+				page = (page == G_LARGE) ? NULL : page->next;
+			}
+			printf("\n");
+		}
 }

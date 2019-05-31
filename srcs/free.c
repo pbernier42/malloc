@@ -6,7 +6,7 @@
 /*   By: pbernier <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 14:43:26 by pbernier          #+#    #+#             */
-/*   Updated: 2019/05/28 21:08:51 by rlecart          ###   ########.fr       */
+/*   Updated: 2019/05/31 18:15:14 by rlecart          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ void	*where_exactly(void *cursor, size_t page_size, void *ptr)
 	return (NULL);
 }
 
-bool	delete_page(t_bloc *prev, t_bloc *cursor, t_bloc *next, size_t page_size)
+bool	delete_page(t_bloc *prev, t_bloc *cursor, t_bloc *next)
 {
 	if (prev)
 		((t_bloc*)prev)->next = next;
@@ -50,7 +50,7 @@ bool	delete_page(t_bloc *prev, t_bloc *cursor, t_bloc *next, size_t page_size)
 	return (true);
 }
 
-bool	do_i_have_to_delete_page(void *cursor, size_t page_size, t_bloc *page, t_bloc *start)
+bool	do_i_have_to_delete_page(void *cursor, size_t page_size)
 {
 	if (cursor && CURSOR->empty && CURSOR->size + SIZE_HEAD >= page_size)
 		return (true);
@@ -60,12 +60,11 @@ bool	do_i_have_to_delete_page(void *cursor, size_t page_size, t_bloc *page, t_bl
 int		is_here(void *ptr, t_bloc *page)
 {
 	t_bloc	*prev;
-	t_bloc	*next;
 	t_bloc	*islarge;
 	void	*cursor;
 	size_t	page_size;
 
-	page_size = finder(page->size, PAGE);
+	page_size = S_PAGE(page->size);
 	islarge = page;
 	prev = NULL;
 	while (page && (cursor = page))
@@ -74,8 +73,8 @@ int		is_here(void *ptr, t_bloc *page)
 		{
 			if (!(cursor = where_exactly(cursor, page_size, ptr)))
 				return (2);
-			if (do_i_have_to_delete_page(cursor, page_size, page, islarge))
-				return (!(delete_page(prev, cursor, CURSOR->next, page_size)) ? -1 : 0);
+			if (do_i_have_to_delete_page(cursor, page_size))
+				return (!(delete_page(prev, cursor, CURSOR->next)) ? -1 : 0);
 		}
 		prev = cursor;
 		if ((page = page->next) == islarge) //theoriquement toujours fausse (a cause du return des le delete_page

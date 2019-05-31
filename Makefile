@@ -22,7 +22,8 @@ SRC_INCLUDE		=	malloc.h
 SRC_FIlE		=	malloc.c \
 					free.c \
 					realloc.c \
-					show.c
+					show.c \
+					utils.c
 
 FLAGS			=	$(WFLAGS)
 INC				=	$(addprefix $(DIR_INC),$(SRC_INCLUDE))
