@@ -74,6 +74,12 @@
 # define BETTER				((void*)better)
 # define PTR				((t_bloc*)ptr)
 
+# define UNKNOWN_ERROR		0
+# define MUNMAP_FAIL		-1
+# define PTR_INVALID		2
+# define PTR_CORRUT			3
+
+
 typedef struct s_type		t_type;
 typedef struct s_bloc		t_bloc;
 
@@ -103,7 +109,7 @@ void						*create_bloc(size_t size, t_bloc *page,
 t_bloc						*find_best(size_t size, t_bloc *page, size_t s_page,
 								size_t s_min);
 void						place_header(size_t size, t_bloc *better,
-								size_t type);
+								size_t type, bool realloc);
 
 void						free(void *ptr);
 bool						delete_page(t_bloc *prev, t_bloc *cursor,
@@ -117,13 +123,12 @@ void						*reset(void *ptr, size_t size);
 
 void						show_alloc_mem();
 
-void						print_posi(size_t number, size_t base);
-void						print_line(char **line, size_t *len, size_t number,
+void						p_posi(size_t number, size_t base);
+void						p_line(char **line, size_t *len, size_t number,
 								size_t base);
-size_t						print_bloc(t_bloc *bloc, size_t s_page,
-								size_t octets);
+size_t						p_bloc(t_bloc *bloc, size_t s_page, size_t octets);
 
 size_t						finder(size_t size, size_t i);
-void						error(char *str);
+void						*error(int error);
 
 #endif

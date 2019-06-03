@@ -24,9 +24,9 @@ void		*realloc(void *ptr, size_t size)
 	if (!move_bloc(ptr, size, type))
 		return (reset(ptr + SIZE_HEAD, size));
 	if (type == LARGE && PTR->size > size)
-		if (munmap(ptr + SIZE_HEAD + size, PTR->size - size) == -1)
-			return (NULL);//verbos
-	place_header(size, ptr, type);
+		if (munmap(ptr + SIZE_HEAD + size, PTR->size - size) == MUNMAP_FAIL)
+			return (error(MUNMAP_FAIL));
+	place_header(size, ptr, type, true);
 	return (ptr + SIZE_HEAD);
 }
 
@@ -36,16 +36,14 @@ bool		move_bloc(void *ptr, size_t size, size_t type)
 	size_t	s_page;
 	void	*cursor;
 
-	printf("...................[%zu] [%zu]\n", PTR->size, size);
 	s_min = S_BLOC_MIN(PTR->size);
 	if (!ptr || type != TYPE(PTR->size) || (type == LARGE && PTR->size < size)
-		||
-		!(type != LARGE && PTR->size > size && (PTR->size - size) > (SIZE_HEAD + s_min)))
+		|| (type != LARGE && PTR->size > size && PTR->size <
+		(SIZE_HEAD + s_min + size)))
 		return (false);
-
 	s_page = S_PAGE(PTR->size);
 	cursor = (type == TINY) ? G_TINY : G_SMALL;
-	while (!(ptr > cursor && ptr < (cursor + s_page)))
+	while (!(ptr >= cursor && ptr < (cursor + s_page)))
 		cursor = CURSOR->next;
 	if (((ptr + SIZE_HEAD + PTR->size) == cursor + s_page) ||
 		!(((t_bloc*)(ptr + SIZE_HEAD + PTR->size))->empty) ||
@@ -57,8 +55,7 @@ bool		move_bloc(void *ptr, size_t size, size_t type)
 
 void		*reset(void *ptr, size_t size)
 {
-	printf("\033[31m[WARNING]\033[0m no free\n");
-	//free(ptr);
-	(void)ptr;
+	printf("\033[31m[WARNING]\033[0m free\n");
+	free(ptr);
 	return (malloc(size));
 }

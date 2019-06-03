@@ -27,19 +27,21 @@ size_t		finder(size_t size, size_t i)
 		type})[i]);
 }
 
-size_t		len(char *str)
+void		*error(int error)
 {
-	size_t	len;
-
-	len = 0;
-	while (str && str[len])
-		len++;
-	return (len);
-}
-
-void		error(char *str)
-{
-	write(2, str, len(str));
+	if (error == MUNMAP_FAIL)
+		error = 1;
+	else if (!(error >= UNKNOWN_ERROR && error <= PTR_CORRUT))
+		error = UNKNOWN_ERROR;
+	write(2, ((char*[4]){
+		"UNKNOWN ERROR\n",
+		"PAS REUSSI A MUNMAP\n",
+		"PTR PAS A NOUS\n",
+		"PTR A NOUS MAIS PROBABLEMENT CORROMPU\n"})[error],
+		((size_t[4]){14, 20, 15, 38})[error]);
+	return (NULL);
+	//On peut choisir le return selon l'erreur
+	//return (((void[4]){NULL, NULL, NULL, NULL})[error]);
 }
 
 bool		delete_page(t_bloc *prev, t_bloc *cursor, t_bloc *next)
@@ -50,6 +52,7 @@ bool		delete_page(t_bloc *prev, t_bloc *cursor, t_bloc *next)
 		((t_bloc*)next)->prev = prev;
 	if ((munmap(cursor, CURSOR->size + SIZE_HEAD)))
 		return (false);
+	//Attention au fail de MUNMAP
 	return (true);
 }
 

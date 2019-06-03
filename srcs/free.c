@@ -79,8 +79,15 @@ bool	is_our(void *ptr)
 	page[2] = T_LARGE;
 	page[3] = NULL;
 	// -1 pas reussi a munmap, 1 ITSOK, 0 not here
+
+	//si c'est -1 ou 1 Ca doit stop non ?
+	//si c'est 0 ca devrait continuer non ?
 	while (page[i] && !(ret = is_here(ptr, page[i])))
 		i++;
+
+	// ret = 0;
+	// while ((page = ((t_bloc*[4]){T_TINY, T_SMALL, T_LARGE, NULL})[i++]) && (ret))
+	// 	ret = is_here(ptr, page);
 	return (ret);
 }
 
@@ -92,13 +99,7 @@ bool	is_our(void *ptr)
 void	free(void *ptr)
 {
 	int		ret;
+
 	if (ptr && (ret = is_our(ptr)))
-	{
-		if (ret == -1)
-			error("PAS REUSSI A MUNMAP");
-		else if (ret == 1)
-			error("PTR PAS A NOUS");
-		else if (ret == 2)
-			error("PTR A NOUS MAIS PROBABLEMENT CORROMPU");
-	}
+		error(ret);
 }

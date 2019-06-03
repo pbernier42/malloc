@@ -77,7 +77,7 @@ void		*create_bloc(size_t size, t_bloc *page, size_t type)
 		return (NULL);
 	else if (type == LARGE && page->empty)
 		better = page;
-	place_header(size, better, type);
+	place_header(size, better, type, false);
 	return (BETTER + SIZE_HEAD);
 }
 
@@ -107,14 +107,15 @@ t_bloc		*find_best(size_t size, t_bloc *page, size_t s_page, size_t s_min)
 	return (better);
 }
 
-void		place_header(size_t size, t_bloc *better, size_t type)
+void		place_header(size_t size, t_bloc *better, size_t type, bool realloc)
 {
-	t_bloc	*next;
-
 	better->empty = false;
 	if (type == LARGE || better->size == size)
 		return ;
-	next = (BETTER + (SIZE_HEAD + size));
-	*next = ((t_bloc){better->size - SIZE_HEAD + size, true, NULL, NULL});
-	*better = ((t_bloc){size, false, NULL, NULL});
+	((t_bloc*)(BETTER + (SIZE_HEAD + size)))->size = (realloc) ?
+	((t_bloc*)(BETTER + (SIZE_HEAD + better->size)))->size -
+	(better->size - size) : (better->size - SIZE_HEAD + size);
+	((t_bloc*)(BETTER + (SIZE_HEAD + size)))->empty = true;
+	better->size = size;
+	better->empty = false;
 }
