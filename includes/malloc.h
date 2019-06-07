@@ -21,7 +21,8 @@
 # include <stdio.h>
 # include <math.h>
 
-# define PROTEC				0
+# define PROTEC				false
+//# define HISTORY			true
 
 # define SIZE_HEAD			((size_t)sizeof(t_bloc))
 
@@ -79,9 +80,31 @@
 # define PTR_INVALID		2
 # define PTR_CORRUT			3
 
+// # define G_HISTO			g_mem.histo
+// # define HISTO				LARGE
+// # define H_SIZE_HIST		((size_t)sizeof(t_hist))
+// # define H_NB_BLOC			100
+// # define H_SIZE_DATA		(H_SIZE_HIST * H_NB_BLOC)
+
+
+/*
+**	Page Histo
+**	size_t
+**	prev*
+**	next*
+**
+**	t_hist ...
+*/
 
 typedef struct s_type		t_type;
 typedef struct s_bloc		t_bloc;
+typedef struct s_hist		t_hist;
+
+// struct						s_hist
+// {
+// 	char					*ptr[2];
+// 	size_t					size[2];
+// };
 
 struct						s_bloc
 {
@@ -96,6 +119,7 @@ struct						s_type
 	t_bloc					*tiny;
 	t_bloc					*small;
 	t_bloc					*large;
+	t_bloc					*histo;
 };
 
 extern t_type				g_mem;
@@ -122,11 +146,15 @@ bool						move_bloc(void *ptr, size_t size, size_t type);
 void						*reset(void *ptr, size_t size);
 
 void						show_alloc_mem();
-
 void						p_posi(size_t number, size_t base);
 void						p_line(char **line, size_t *len, size_t number,
 								size_t base);
 size_t						p_bloc(t_bloc *bloc, size_t s_page, size_t octets);
+
+//void						show_histo_mem();
+//bool						add_histo(t_hist bloc);
+
+void						show_dump_mem(void *ptr);
 
 size_t						finder(size_t size, size_t i);
 void						*error(int error);

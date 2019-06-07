@@ -23,8 +23,9 @@ void		print_all();
 
 int			main(void)
 {
+	show_dump_mem(malloc(64));
 	//test_realloc();
-	my_test();
+	//my_test();
 	//print_all();
 	return (0);
 }
@@ -122,6 +123,7 @@ void		print_all()
 				cursor = page;
 				parsed = 0;
 				s_page = S_PAGE(page->size);
+				printf("Nnnnlerdrytyrf\n");
 				while (parsed < s_page)
 				{
 					printf("startH	: [%p]\nstartD	: [%p]\nsize	: [%zu]\nempty	: [%s]\nprev	: [%p]\nnext	: [%p]\nend	: [%p]\n\n",

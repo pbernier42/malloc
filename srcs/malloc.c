@@ -14,13 +14,6 @@
 
 t_type		g_mem;
 
-/*
-** verbos
-** -dump hexa
-**
-** Besoin de "NULL" creation header (NULL qui vient ecraser NULL)
-*/
-
 void		*malloc(size_t size)
 {
 	t_bloc	**page;

@@ -56,7 +56,7 @@ size_t	p_bloc(t_bloc *bloc, size_t s_page, size_t octets)
 		{
 			p_line((char*[1]){"0x"}, (size_t[1]){2},
 			(size_t)(cursor + SIZE_HEAD), 16);
-			p_line((char*[2]){" - 0x"}, (size_t[1]){5},
+			p_line((char*[1]){" - 0x"}, (size_t[1]){5},
 			(size_t)(cursor + CURSOR->size + SIZE_HEAD), 16);
 			p_line((char*[2]){" : ", " octets\n"},
 			(size_t[2]){3, 8}, CURSOR->size, 10);
