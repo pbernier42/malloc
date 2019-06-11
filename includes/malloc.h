@@ -102,7 +102,7 @@ typedef struct s_hist		t_hist;
 
 // struct						s_hist
 // {
-// 	char					*ptr[2];
+// 	void					*ptr[2];
 // 	size_t					size[2];
 // };
 
