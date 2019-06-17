@@ -80,6 +80,15 @@
 # define PTR_INVALID		2
 # define PTR_CORRUT			3
 
+# define RESET				"\033[0m"
+# define GREY				"\033[38;5;8m"
+
+# define PART				8
+# define LINE				i[0]
+# define I					i[0]
+# define COL				i[1]
+# define OCT				*((unsigned char*)ptr)
+
 // # define G_HISTO			g_mem.histo
 // # define HISTO				LARGE
 // # define H_SIZE_HIST		((size_t)sizeof(t_hist))
@@ -155,6 +164,12 @@ size_t						p_bloc(t_bloc *bloc, size_t s_page, size_t octets);
 //bool						add_histo(t_hist bloc);
 
 void						show_dump_mem(void *ptr);
+void						p_dump(void *ptr, t_bloc *header, size_t size,
+								bool data);
+void						p_head(size_t printed, size_t number, size_t base);
+void						p_oct(void *ptr, size_t i);
+void						p_raw(char raw[PART * 2], size_t size,
+								t_bloc *header, void *ptr);
 
 size_t						finder(size_t size, size_t i);
 void						*error(int error);
