@@ -31,7 +31,9 @@ int			main(void)
 	tmp[2] = 'c';
 
 	//tmp[-9] = 'g';
-	show_dump_mem(tmp);
+	//show_dump_mem(tmp);
+	show_histo_mem();
+
 	//print_all();
 	//test_realloc();
 	//my_test();

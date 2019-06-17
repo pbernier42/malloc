@@ -22,7 +22,6 @@
 # include <math.h>
 
 # define PROTEC				false
-//# define HISTORY			true
 
 # define SIZE_HEAD			((size_t)sizeof(t_bloc))
 
@@ -89,31 +88,37 @@
 # define COL				i[1]
 # define OCT				*((unsigned char*)ptr)
 
-// # define G_HISTO			g_mem.histo
-// # define HISTO				LARGE
-// # define H_SIZE_HIST		((size_t)sizeof(t_hist))
-// # define H_NB_BLOC			100
-// # define H_SIZE_DATA		(H_SIZE_HIST * H_NB_BLOC)
-
-
-/*
-**	Page Histo
-**	size_t
-**	prev*
-**	next*
-**
-**	t_hist ...
-*/
-
 typedef struct s_type		t_type;
 typedef struct s_bloc		t_bloc;
 typedef struct s_hist		t_hist;
 
-// struct						s_hist
-// {
-// 	void					*ptr[2];
-// 	size_t					size[2];
-// };
+
+# define G_HISTO			g_mem.histo
+# define LAST				g_mem.hist_last
+# define H_SIZE_HIST		((size_t)sizeof(t_hist))
+# define H_NB_BLOC			100
+# define H_SIZE_PAGE		(H_SIZE_HIST * H_NB_BLOC)
+# define HISTORY			true
+
+void		show_histo_mem();
+bool		add_histo(t_hist bloc);
+void		p_histo(t_hist bloc);
+
+typedef struct s_hist		t_hist;
+
+enum						e_fonction
+{
+   FT_MALLOC, FT_REALLOC, FT_FREE
+};
+
+struct						s_hist
+{
+	bool					full;
+	enum e_fonction			fonction;
+	void					*ptr[2];
+	size_t					size[2];
+};
+
 
 struct						s_bloc
 {
@@ -128,7 +133,8 @@ struct						s_type
 	t_bloc					*tiny;
 	t_bloc					*small;
 	t_bloc					*large;
-	t_bloc					*histo;
+	size_t					hist_last;
+	t_hist					histo[H_NB_BLOC];
 };
 
 extern t_type				g_mem;
@@ -159,9 +165,6 @@ void						p_posi(size_t number, size_t base);
 void						p_line(char **line, size_t *len, size_t number,
 								size_t base);
 size_t						p_bloc(t_bloc *bloc, size_t s_page, size_t octets);
-
-//void						show_histo_mem();
-//bool						add_histo(t_hist bloc);
 
 void						show_dump_mem(void *ptr);
 void						p_dump(void *ptr, t_bloc *header, size_t size,

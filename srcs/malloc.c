@@ -71,6 +71,9 @@ void		*create_bloc(size_t size, t_bloc *page, size_t type)
 	else if (type == LARGE && page->empty)
 		better = page;
 	place_header(size, better, type, false);
+
+	add_histo((t_hist){true, FT_MALLOC, {better, NULL}, {size, 0}});
+
 	return (BETTER + SIZE_HEAD);
 }
 
