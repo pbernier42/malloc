@@ -23,12 +23,16 @@ void		print_all();
 
 int			main(void)
 {
-	size_t *tmp;
+	char *tmp;
 
-	tmp = malloc(65);
-	tmp[1] = 128;
-	tmp[2] = 4564699516;
+	tmp = malloc(97);
+	tmp[0] = 'a';
+	tmp[1] = 'b';
+	tmp[2] = 'c';
+
+	//tmp[-9] = 'g';
 	show_dump_mem(tmp);
+	//print_all();
 	//test_realloc();
 	//my_test();
 	//print_all();
