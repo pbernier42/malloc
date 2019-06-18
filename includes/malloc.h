@@ -96,13 +96,14 @@ typedef struct s_hist		t_hist;
 # define G_HISTO			g_mem.histo
 # define LAST				g_mem.hist_last
 # define H_SIZE_HIST		((size_t)sizeof(t_hist))
-# define H_NB_BLOC			100
+# define H_NB_BLOC			15
 # define H_SIZE_PAGE		(H_SIZE_HIST * H_NB_BLOC)
 # define HISTORY			true
 
 void		show_histo_mem();
 bool		add_histo(t_hist bloc);
 void		p_histo(t_hist bloc);
+void		p_adress(void *ptr, size_t size, bool second);
 
 typedef struct s_hist		t_hist;
 

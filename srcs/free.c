@@ -80,8 +80,6 @@ bool	is_our(void *ptr)
 	page[3] = NULL;
 	// -1 pas reussi a munmap, 1 ITSOK, 0 not here
 
-	//si c'est -1 ou 1 Ca doit stop non ?
-	//si c'est 0 ca devrait continuer non ?
 	while (page[i] && !(ret = is_here(ptr, page[i])))
 		i++;
 
@@ -91,11 +89,12 @@ bool	is_our(void *ptr)
 	return (ret);
 }
 
-/*bzero(ptr, size);
+/*
 **switch PROTEC
 **retrouver un pointeur corrompu (si prev existe alors cursor = prev + SIZE_HEAD + prev->size)
 **si prev n'existe pas alors c'est le premier octet de la page
 */
+
 void	free(void *ptr)
 {
 	int		ret;

@@ -29,6 +29,8 @@ int			main(void)
 	tmp[0] = 'a';
 	tmp[1] = 'b';
 	tmp[2] = 'c';
+	malloc(2);
+
 
 	//tmp[-9] = 'g';
 	//show_dump_mem(tmp);
