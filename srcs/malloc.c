@@ -16,9 +16,9 @@ t_type		g_mem;
 
 void		*malloc(size_t size)
 {
-	t_bloc	**page;
-	size_t	type;
-	void	*ret;
+	t_bloc		**page;
+	enum e_type	type;
+	void		*ret;
 
 	if (!(page = ((t_bloc**[4]){
 		NULL, &G_TINY, &G_SMALL, &G_LARGE})[ITERATOR(size)]) ||
@@ -30,7 +30,7 @@ void		*malloc(size_t size)
 	return (ret);
 }
 
-bool		new_page(size_t s_page, t_bloc **page, size_t type)
+bool		new_page(size_t s_page, t_bloc **page, enum e_type type)
 {
 	t_bloc	*start;
 	t_bloc	*prev;
@@ -59,7 +59,7 @@ bool		new_page(size_t s_page, t_bloc **page, size_t type)
 	return (true);
 }
 
-void		*create_bloc(size_t size, t_bloc *page, size_t type)
+void		*create_bloc(size_t size, t_bloc *page, enum e_type type)
 {
 	t_bloc	*better;
 
@@ -70,9 +70,7 @@ void		*create_bloc(size_t size, t_bloc *page, size_t type)
 		return (NULL);
 	else if (type == LARGE && page->empty)
 		better = page;
-	place_header(size, better, type, false);
-
-	//add_histo((t_hist){true, FT_MALLOC, {better, NULL}, {size, 0}});
+	place_header(size, better, type, FT_MALLOC);
 
 	return (BETTER + SIZE_HEAD);
 }
@@ -103,12 +101,13 @@ t_bloc		*find_best(size_t size, t_bloc *page, size_t s_page, size_t s_min)
 	return (better);
 }
 
-void		place_header(size_t size, t_bloc *better, size_t type, bool realloc)
+void		place_header(size_t size, t_bloc *better, enum e_type type,
+				enum e_fonction fonction)
 {
 	better->empty = false;
 	if (type == LARGE || better->size == size)
 		return ;
-	((t_bloc*)(BETTER + (SIZE_HEAD + size)))->size = (realloc) ?
+	((t_bloc*)(BETTER + (SIZE_HEAD + size)))->size = (fonction == FT_REALLOC) ?
 	((t_bloc*)(BETTER + (SIZE_HEAD + better->size)))->size -
 	(better->size - size) : (better->size - SIZE_HEAD + size);
 	((t_bloc*)(BETTER + (SIZE_HEAD + size)))->empty = true;

@@ -14,7 +14,7 @@
 
 size_t		finder(size_t size, size_t i)
 {
-	size_t	type;
+	enum e_type	type;
 
 	type = 0;
 	while (size > ((size_t[4]){0, TINY, SMALL, size})[type] && size <= LARGE)

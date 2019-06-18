@@ -14,7 +14,7 @@
 
 void		*realloc(void *ptr, size_t size)
 {
-	size_t	type;
+	enum e_type	type;
 
 	//Verifier pointeur
 	ptr -= SIZE_HEAD;
@@ -26,11 +26,11 @@ void		*realloc(void *ptr, size_t size)
 	if (type == LARGE && PTR->size > size)
 		if (munmap(ptr + SIZE_HEAD + size, PTR->size - size) == MUNMAP_FAIL)
 			return (error(MUNMAP_FAIL));
-	place_header(size, ptr, type, true);
+	place_header(size, ptr, type, FT_REALLOC);
 	return (ptr + SIZE_HEAD);
 }
 
-bool		move_bloc(void *ptr, size_t size, size_t type)
+bool		move_bloc(void *ptr, size_t size, enum e_type type)
 {
 	size_t	s_min;
 	size_t	s_page;

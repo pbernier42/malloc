@@ -19,19 +19,11 @@
 # include <limits.h>
 
 # include <stdio.h>
-# include <math.h>
 
-# define PROTEC				false
+# define PROTECED			true
+# define HISTORY			true
 
 # define SIZE_HEAD			((size_t)sizeof(t_bloc))
-
-/*
-** DATA = 0032 0096 0224 0480 0992 2016 4064 8160
-**
-** ALLO = 0128 0064 0032 0016 0008 0004 0002 0001 *2
-** ALLO = 0256 0128 0064 0032 0016 0008 0004 0002 *4
-** ALLO = 0512 0256 0128 0064 0032 0016 0008 0004 *8
-*/
 
 # define T_SIZE_DATA		32
 # define T_SIZE_PAGE		(getpagesize() * 2)
@@ -45,21 +37,18 @@
 # define S_SIZE_ZERO		(S_SIZE_PAGE % S_SIZE_BLOC)
 # define S_NB_BLOC			(S_SIZE_PAGE / (float)S_SIZE_BLOC)
 
-# define TINY				T_SIZE_DATA
-# define SMALL				S_SIZE_DATA
-# define LARGE 				UINT_MAX - SIZE_HEAD
-
-/*
-** 4 294 967 295
-*/
-
 # define T_TINY				((t_bloc*)g_mem.tiny)
 # define T_SMALL			((t_bloc*)g_mem.small)
 # define T_LARGE			((t_bloc*)g_mem.large)
 
+# define H_SIZE_HIST		((size_t)sizeof(t_hist))
+# define H_NB_BLOC			15
+# define H_SIZE_PAGE		(H_SIZE_HIST * H_NB_BLOC)
+
 # define G_TINY				g_mem.tiny
 # define G_SMALL			g_mem.small
 # define G_LARGE			g_mem.large
+# define G_HISTO			g_mem.histo
 
 # define FL_PROT			PROT_READ | PROT_WRITE
 # define FL_MAP				MAP_ANON | MAP_PRIVATE
@@ -87,25 +76,14 @@
 # define I					i[0]
 # define COL				i[1]
 # define OCT				*((unsigned char*)ptr)
+# define LAST				g_mem.hist_last
 
 typedef struct s_type		t_type;
 typedef struct s_bloc		t_bloc;
 typedef struct s_hist		t_hist;
-
-
-# define G_HISTO			g_mem.histo
-# define LAST				g_mem.hist_last
-# define H_SIZE_HIST		((size_t)sizeof(t_hist))
-# define H_NB_BLOC			15
-# define H_SIZE_PAGE		(H_SIZE_HIST * H_NB_BLOC)
-# define HISTORY			true
-
-void		show_histo_mem();
-bool		add_histo(t_hist bloc);
-void		p_histo(t_hist bloc);
-void		p_adress(void *ptr, size_t size, bool second);
-
 typedef struct s_hist		t_hist;
+
+extern t_type				g_mem;
 
 enum						e_fonction
 {
@@ -120,13 +98,19 @@ struct						s_hist
 	size_t					size[2];
 };
 
-
 struct						s_bloc
 {
 	size_t					size;
 	bool					empty;
 	struct s_bloc			*prev;
 	struct s_bloc			*next;
+};
+
+enum						e_type
+{
+   TINY = T_SIZE_DATA,
+   SMALL = S_SIZE_DATA,
+   LARGE = (UINT_MAX - SIZE_HEAD)
 };
 
 struct						s_type
@@ -138,18 +122,15 @@ struct						s_type
 	t_hist					histo[H_NB_BLOC];
 };
 
-extern t_type				g_mem;
-
 void						*malloc(size_t size);
-bool						new_page(size_t s_page, t_bloc **page, size_t type);
-t_bloc						new_bloc(size_t size, bool empty, t_bloc *prev,
-								t_bloc *next);
+bool						new_page(size_t s_page, t_bloc **page,
+								enum e_type type);
 void						*create_bloc(size_t size, t_bloc *page,
-								size_t type);
+								enum e_type type);
 t_bloc						*find_best(size_t size, t_bloc *page, size_t s_page,
 								size_t s_min);
 void						place_header(size_t size, t_bloc *better,
-								size_t type, bool realloc);
+								enum e_type type, enum e_fonction fonction);
 
 void						free(void *ptr);
 bool						delete_page(t_bloc *prev, t_bloc *cursor,
@@ -158,7 +139,7 @@ bool						do_i_have_to_delete_page(void *cursor,
 								size_t page_size);
 
 void						*realloc(void *ptr, size_t size);
-bool						move_bloc(void *ptr, size_t size, size_t type);
+bool						move_bloc(void *ptr, size_t size, enum e_type type);
 void						*reset(void *ptr, size_t size);
 
 void						show_alloc_mem();
@@ -174,6 +155,11 @@ void						p_head(size_t printed, size_t number, size_t base);
 void						p_oct(void *ptr, size_t i);
 void						p_raw(char raw[PART * 2], size_t size,
 								t_bloc *header, void *ptr);
+
+void						show_histo_mem();
+bool						add_histo(t_hist bloc);
+void						p_histo(t_hist bloc);
+void						p_adress(void *ptr, size_t size, bool second);
 
 size_t						finder(size_t size, size_t i);
 void						*error(int error);
