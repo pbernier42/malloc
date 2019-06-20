@@ -23,23 +23,40 @@ void		print_all();
 
 int			main(void)
 {
-	char *tmp;
+	t_bloc *tmp = NULL;
+	int  i = 0;
 
-	tmp = malloc(97);
-	tmp[0] = 'a';
-	tmp[1] = 'b';
-	tmp[2] = 'c';
-	malloc(2);
 
+
+	while (i++ < 255)
+	{
+		if (i < 128)
+			malloc(32);
+		else
+		{
+			//show_alloc_mem();
+			malloc(31);
+			break;
+		}
+		//printf("%d\n", i);
+	}
+	//tmp = malloc(32);
+	//tmp--;
+	//printf("[%zu]\n", tmp->size);
+	//tmp->size = 8000;
+	//free2(tmp);
 
 	//tmp[-9] = 'g';
 	//show_dump_mem(tmp);
-	show_histo_mem();
+	//show_alloc_mem();
+	//show_histo_mem();
 
 	//print_all();
 	//test_realloc();
 	//my_test();
 	//print_all();
+	(void)i;
+	(void)tmp;
 	return (0);
 }
 

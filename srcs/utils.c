@@ -29,9 +29,12 @@ size_t		finder(size_t size, size_t i)
 
 void		*error(int error)
 {
+	printf("%d\n", error);
+
+
 	if (error == MUNMAP_FAIL)
 		error = 1;
-	else if (!(error >= UNKNOWN_ERROR && error <= PTR_CORRUT))
+	else if (!(error >= UNKNOWN_ERROR && error <= PTR_CORRUPT))
 		error = UNKNOWN_ERROR;
 	write(2, ((char*[4]){
 		"UNKNOWN ERROR\n",

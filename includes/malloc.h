@@ -20,7 +20,7 @@
 
 # include <stdio.h>
 
-# define PROTECED			true
+# define PROTECTED			true
 # define HISTORY			true
 
 # define SIZE_HEAD			((size_t)sizeof(t_bloc))
@@ -66,7 +66,26 @@
 # define UNKNOWN_ERROR		0
 # define MUNMAP_FAIL		-1
 # define PTR_INVALID		2
-# define PTR_CORRUT			3
+# define PTR_CORRUPT		3
+
+enum						e_corrupt
+{
+	CORRUPT_START = 3,
+	PAGE_SIZE_TINY,
+	PAGE_SIZE_SMALL,
+	PAGE_SIZE_LARGE,
+	BLOC_SIZE_TINY,
+	BLOC_SIZE_SMALL,
+	BLOC_SIZE_LARGE,
+};
+
+// struct						s_bloc
+// {
+// 	size_t					size;
+// 	bool					empty;
+// 	struct s_bloc			*prev;
+// 	struct s_bloc			*next;
+// };
 
 # define RESET				"\033[0m"
 # define GREY				"\033[38;5;8m"
@@ -87,7 +106,7 @@ extern t_type				g_mem;
 
 enum						e_fonction
 {
-   FT_MALLOC, FT_REALLOC, FT_FREE
+   FT_NULL, FT_MALLOC, FT_REALLOC, FT_FREE
 };
 
 struct						s_hist
@@ -121,6 +140,8 @@ struct						s_type
 	size_t					hist_last;
 	t_hist					histo[H_NB_BLOC];
 };
+
+void	free2(void *ptr);
 
 void						*malloc(size_t size);
 bool						new_page(size_t s_page, t_bloc **page,
