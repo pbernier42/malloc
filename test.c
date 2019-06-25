@@ -26,20 +26,18 @@ int			main(void)
 	t_bloc *tmp = NULL;
 	int  i = 0;
 
+	// enum e_error u;
+	//
+	// u = ERROR_START;
+	// while (u <= ERROR_END)
+	// {
+	// 	//printf("{%d}\n", u);
+	// 	error(u++);
+	// }
+	tmp = malloc(22);
+	free2(tmp);
 
 
-	while (i++ < 255)
-	{
-		if (i < 128)
-			malloc(32);
-		else
-		{
-			//show_alloc_mem();
-			malloc(31);
-			break;
-		}
-		//printf("%d\n", i);
-	}
 	//tmp = malloc(32);
 	//tmp--;
 	//printf("[%zu]\n", tmp->size);

@@ -33,49 +33,78 @@ void		*malloc(size_t size)
 bool		new_page(size_t s_page, t_bloc **page, enum e_type type)
 {
 	t_bloc	*start;
-	t_bloc	*prev;
-	t_bloc	*next;
+	t_bloc	*new;
 
 	start = *page;
-	next = NULL;
-	prev = NULL;
-	printf("START = [%p]\n", *page);
-
-	while ((*page) && (prev = (*page)) && type != LARGE)
-		page = &(*page)->next;
-
-	if (type == LARGE && (*page))
-	{
-		next = (*page)->next;
+	while (type != LARGE && (*page) && (*page)->next)
 		(*page) = (*page)->next;
-	}
-
-	if (start)
-		printf("[%p]---\n", start->next);
-
-	if ((((*page) = mmap(0, s_page, FL_PROT, FL_MAP, -1, 0)) == MAP_FAILED))
+	if (((new = mmap(0, s_page, FL_PROT, FL_MAP, -1, 0)) == MAP_FAILED))
 		return (false);
-
-	printf("THENN = [%p]\n", *page);
-
-
-	(**page) = (type == LARGE && !prev && !next) ?
-	((t_bloc){s_page - SIZE_HEAD, true, (*page), (*page)}) :
-	((t_bloc){s_page - SIZE_HEAD, true, prev, next});
-
-	printf("[%p][%p]\n", prev, (*page)->prev);
-	printf("[%p][%p]\n\n", next, (*page)->next);
-
-
-	if ((prev) && (next) && type == LARGE && prev != (*page) && next != (*page))
+	if (type == LARGE && !(*page))
+		*new = ((t_bloc){s_page - SIZE_HEAD, true, new, new});
+	else if (type == LARGE && (*page))
 	{
-		prev->next = (*page);
-		next->prev = (*page);
+		*new = ((t_bloc){s_page - SIZE_HEAD, true, (*page), (*page)->next});
+		(*page)->next->prev = new;
 	}
-	if (type != LARGE && start)
-		(*page) = start;
+	else if (type != LARGE)
+		*new = ((t_bloc){s_page - SIZE_HEAD, true, (*page), NULL});
+	if ((*page))
+	{
+		(*page)->next = new;
+		(*page) = (type != LARGE) ? start : (*page)->next;
+	}
+	else
+		(*page) = new;
 	return (true);
 }
+
+// bool		new_page(size_t s_page, t_bloc **page, enum e_type type)
+// {
+// 	t_bloc	*start;
+// 	t_bloc	*prev;
+// 	t_bloc	*next;
+//
+// 	start = *page;
+// 	next = NULL;
+// 	prev = NULL;
+// 	printf("START = [%p]\n", *page);
+//
+// 	while ((*page) && (prev = (*page)) && type != LARGE)
+// 		page = &(*page)->next;
+//
+// 	if (type == LARGE && (*page))
+// 	{
+// 		next = (*page)->next;
+// 		(*page) = (*page)->next;
+// 	}
+//
+// 	if (start)
+// 		printf("[%p]---\n", start->next);
+//
+// 	if ((((*page) = mmap(0, s_page, FL_PROT, FL_MAP, -1, 0)) == MAP_FAILED))
+// 		return (false);
+//
+// 	printf("THENN = [%p]\n", *page);
+//
+//
+// 	(**page) = (type == LARGE && !prev && !next) ?
+// 	((t_bloc){s_page - SIZE_HEAD, true, (*page), (*page)}) :
+// 	((t_bloc){s_page - SIZE_HEAD, true, prev, next});
+//
+// 	printf("[%p][%p]\n", prev, (*page)->prev);
+// 	printf("[%p][%p]\n\n", next, (*page)->next);
+//
+//
+// 	if ((prev) && (next) && type == LARGE && prev != (*page) && next != (*page))
+// 	{
+// 		prev->next = (*page);
+// 		next->prev = (*page);
+// 	}
+// 	if (type != LARGE && start)
+// 		(*page) = start;
+// 	return (true);
+// }
 
 void		*create_bloc(size_t size, t_bloc *page, enum e_type type)
 {
@@ -86,7 +115,6 @@ void		*create_bloc(size_t size, t_bloc *page, enum e_type type)
 		(type != LARGE && !(better = find_best(size, page,
 		S_PAGE(size), S_BLOC_MIN(size)))))
 		return (NULL);
-
 	else if (type == LARGE && page->empty)
 		better = page;
 	place_header(size, better, type, FT_MALLOC);
@@ -110,7 +138,7 @@ t_bloc		*find_best(size_t size, t_bloc *page, size_t s_page, size_t s_min)
 				CURSOR->size >= size + SIZE_HEAD + s_min) && (!better ||
 				(better && (better->size < CURSOR->size ||
 				CURSOR->size == size))))
-					better = CURSOR;
+				better = CURSOR;
 			parsed += CURSOR->size + SIZE_HEAD;
 			cursor += CURSOR->size + SIZE_HEAD;
 		}
@@ -122,11 +150,9 @@ t_bloc		*find_best(size_t size, t_bloc *page, size_t s_page, size_t s_min)
 void		place_header(size_t size, t_bloc *better, enum e_type type,
 				enum e_fonction fonction)
 {
-
 	better->empty = false;
 	if (type == LARGE || better->size == size)
 		return ;
-
 	((t_bloc*)(BETTER + (SIZE_HEAD + size)))->size = (fonction == FT_REALLOC) ?
 	((t_bloc*)(BETTER + (SIZE_HEAD + better->size)))->size -
 	(better->size - size) : (better->size - SIZE_HEAD - size);

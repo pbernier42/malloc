@@ -29,22 +29,35 @@ size_t		finder(size_t size, size_t i)
 
 void		*error(int error)
 {
-	printf("%d\n", error);
-
-
 	if (error == MUNMAP_FAIL)
 		error = 1;
-	else if (!(error >= UNKNOWN_ERROR && error <= PTR_CORRUPT))
+	else if (!(error >= ERROR_START && error <= ERROR_END))
 		error = UNKNOWN_ERROR;
-	write(2, ((char*[4]){
+
+	printf("{%d} \n", error);
+	//tous reverif
+	write(2, ((char*[16]){
 		"UNKNOWN ERROR\n",
 		"PAS REUSSI A MUNMAP\n",
 		"PTR PAS A NOUS\n",
-		"PTR A NOUS MAIS PROBABLEMENT CORROMPU\n"})[error],
-		((size_t[4]){14, 20, 15, 38})[error]);
+		"PTR A NOUS MAIS PROBABLEMENT CORROMPU\n",
+		"TINY PAGES'S SIZE INVALID\n",
+		"SMALL PAGES'S SIZE INVALID\n",
+		"LARGE PAGES'S SIZE INVALID\n",
+		"TINY BLOC'S SIZE INVALID\n",
+		"SMALL BLOC'S SIZE INVALID\n",
+		"LARGE BLOC'S SIZE INVALID\n",
+		"TINY LIST LINK INVALID\n",
+		"SMALL LIST LINK INVALID\n",
+		"LARGE LIST LINK INVALID\n",
+		"LARGE EMPTY INVALID\n",
+		"BLOC NOT FOUND IN HIS PAGE\n"
+		})[error],
+		((size_t[16]){
+			14, 20, 15, 38, 26, 27, 27,
+			25, 26, 26, 23,	24, 24,
+			20, 27})[error]);
 	return (NULL);
-	//On peut choisir le return selon l'erreur
-	//return (((void[4]){NULL, NULL, NULL, NULL})[error]);
 }
 
 bool		delete_page(t_bloc *prev, t_bloc *cursor, t_bloc *next)
@@ -55,7 +68,6 @@ bool		delete_page(t_bloc *prev, t_bloc *cursor, t_bloc *next)
 		((t_bloc*)next)->prev = prev;
 	if ((munmap(cursor, CURSOR->size + SIZE_HEAD)))
 		return (false);
-	//Attention au fail de MUNMAP
 	return (true);
 }
 
@@ -65,21 +77,3 @@ bool		do_i_have_to_delete_page(void *cursor, size_t page_size)
 		return (true);
 	return (false);
 }
-
-/* void 		print_define()
-** {
-** 	printf("T_SIZE_HEAD	= [%lu]\n", SIZE_HEAD);
-** 	printf("T_SIZE_DATA	= [%d]\n", T_SIZE_DATA);
-** 	printf("T_SIZE_BLOC	= [%lu]\n", T_SIZE_BLOC);
-** 	printf("T_SIZE_PAGE	= [%d]\n", T_SIZE_PAGE);
-** 	printf("T_SIZE_ZERO	= [%lu]*\n", T_SIZE_ZERO);
-** 	printf("T_NB_BLOC	= [%f] (Min 100)*\n\n", (float)T_NB_BLOC);
-**
-** 	printf("S_SIZE_HEAD	= [%lu]\n", SIZE_HEAD);
-** 	printf("S_SIZE_DATA	= [%d]\n", S_SIZE_DATA);
-** 	printf("S_SIZE_BLOC	= [%lu]\n", S_SIZE_BLOC);
-** 	printf("S_SIZE_PAGE	= [%d]\n", S_SIZE_PAGE);
-** 	printf("S_SIZE_ZERO	= [%lu]*\n", S_SIZE_ZERO);
-** 	printf("S_NB_BLOC	= [%f] (Min 100)*\n", (float)S_NB_BLOC);
-** }
-*/

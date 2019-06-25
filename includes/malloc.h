@@ -42,7 +42,7 @@
 # define T_LARGE			((t_bloc*)g_mem.large)
 
 # define H_SIZE_HIST		((size_t)sizeof(t_hist))
-# define H_NB_BLOC			15
+# define H_NB_BLOC			100
 # define H_SIZE_PAGE		(H_SIZE_HIST * H_NB_BLOC)
 
 # define G_TINY				g_mem.tiny
@@ -63,13 +63,15 @@
 # define BETTER				((void*)better)
 # define PTR				((t_bloc*)ptr)
 
-# define UNKNOWN_ERROR		0
 # define MUNMAP_FAIL		-1
-# define PTR_INVALID		2
-# define PTR_CORRUPT		3
 
-enum						e_corrupt
+enum						e_error
 {
+	ERROR_START,
+	UNKNOWN_ERROR = 0,
+	munmap_fail	= 1,
+	PTR_INVALID = 2,
+	// PTR_CORRUPT = 3,
 	CORRUPT_START = 3,
 	PAGE_SIZE_TINY,
 	PAGE_SIZE_SMALL,
@@ -77,6 +79,12 @@ enum						e_corrupt
 	BLOC_SIZE_TINY,
 	BLOC_SIZE_SMALL,
 	BLOC_SIZE_LARGE,
+	PAGE_PTR_TINY,
+	PAGE_PTR_SMALL,
+	BLOC_PTR_LARGE,
+	EMPTY_LARGE,
+	BLOC_NOT_FOUND,
+	ERROR_END
 };
 
 // struct						s_bloc
@@ -106,7 +114,10 @@ extern t_type				g_mem;
 
 enum						e_fonction
 {
-   FT_NULL, FT_MALLOC, FT_REALLOC, FT_FREE
+   FT_NULL,
+   FT_MALLOC,
+   FT_REALLOC,
+   FT_FREE
 };
 
 struct						s_hist
@@ -139,6 +150,7 @@ struct						s_type
 	t_bloc					*large;
 	size_t					hist_last;
 	t_hist					histo[H_NB_BLOC];
+	//enum e_fonction 		fonction; 
 };
 
 void	free2(void *ptr);
