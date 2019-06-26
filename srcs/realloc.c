@@ -56,6 +56,6 @@ bool		move_bloc(void *ptr, size_t size, enum e_type type)
 void		*reset(void *ptr, size_t size)
 {
 	printf("\033[31m[WARNING]\033[0m free\n");
-	free(ptr);
+	free2(ptr);
 	return (malloc(size));
 }

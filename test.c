@@ -24,6 +24,9 @@ void		print_all();
 int			main(void)
 {
 	t_bloc *tmp = NULL;
+	t_bloc *tmp2 = NULL;
+	t_bloc *tmp3 = NULL;
+
 	int  i = 0;
 
 	// enum e_error u;
@@ -34,9 +37,19 @@ int			main(void)
 	// 	//printf("{%d}\n", u);
 	// 	error(u++);
 	// }
-	tmp = malloc(22);
-	free2(tmp);
+	malloc(10);
+	malloc(11);
+	malloc(12);
+	tmp = malloc(13);
+	tmp2 = malloc(14);
+	tmp3 = malloc(30);
 
+	show_alloc_mem();
+	free2(tmp);
+	free2(tmp2);
+
+	show_dump_mem(tmp3);
+	show_alloc_mem();
 
 	//tmp = malloc(32);
 	//tmp--;

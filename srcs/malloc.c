@@ -59,53 +59,6 @@ bool		new_page(size_t s_page, t_bloc **page, enum e_type type)
 	return (true);
 }
 
-// bool		new_page(size_t s_page, t_bloc **page, enum e_type type)
-// {
-// 	t_bloc	*start;
-// 	t_bloc	*prev;
-// 	t_bloc	*next;
-//
-// 	start = *page;
-// 	next = NULL;
-// 	prev = NULL;
-// 	printf("START = [%p]\n", *page);
-//
-// 	while ((*page) && (prev = (*page)) && type != LARGE)
-// 		page = &(*page)->next;
-//
-// 	if (type == LARGE && (*page))
-// 	{
-// 		next = (*page)->next;
-// 		(*page) = (*page)->next;
-// 	}
-//
-// 	if (start)
-// 		printf("[%p]---\n", start->next);
-//
-// 	if ((((*page) = mmap(0, s_page, FL_PROT, FL_MAP, -1, 0)) == MAP_FAILED))
-// 		return (false);
-//
-// 	printf("THENN = [%p]\n", *page);
-//
-//
-// 	(**page) = (type == LARGE && !prev && !next) ?
-// 	((t_bloc){s_page - SIZE_HEAD, true, (*page), (*page)}) :
-// 	((t_bloc){s_page - SIZE_HEAD, true, prev, next});
-//
-// 	printf("[%p][%p]\n", prev, (*page)->prev);
-// 	printf("[%p][%p]\n\n", next, (*page)->next);
-//
-//
-// 	if ((prev) && (next) && type == LARGE && prev != (*page) && next != (*page))
-// 	{
-// 		prev->next = (*page);
-// 		next->prev = (*page);
-// 	}
-// 	if (type != LARGE && start)
-// 		(*page) = start;
-// 	return (true);
-// }
-
 void		*create_bloc(size_t size, t_bloc *page, enum e_type type)
 {
 	t_bloc	*better;

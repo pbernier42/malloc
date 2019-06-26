@@ -13,19 +13,22 @@
 #include <malloc.h>
 
 bool			delete_bloc(t_bloc *page, t_bloc *bloc);
-bool			delete_page2(t_bloc *page, enum e_type type);
+bool			delete_page2(t_bloc *page, size_t p_size, enum e_type type);
 void			**check_ptr(void *ptr);
 void			**check_list(void *ptr, t_bloc *page, enum e_type type);
 bool			check_corrupt(t_bloc *ptr, bool page, enum e_type type);
 void			*check_page(void *ptr, t_bloc *page, size_t p_size, enum e_type type);
 
 #define	LIST		((t_bloc*[3]){G_TINY, G_SMALL, G_LARGE})
+#define G_LIST		((t_bloc**[3]){&G_TINY, &G_SMALL, &G_LARGE})
 #define PAGE_START	p_limit[0]
 #define PAGE_END	p_limit[1]
 #define BLOC_START	b_limit[0]
 #define BLOC_END	b_limit[1]
-
-
+#define NEXT_BLOC	((t_bloc*)(cursor + SIZE_HEAD + CURSOR->size))
+#define CURS_START	p_limit[0]
+#define PAGE_SIZE	size[0]
+#define NEW_SIZE	size[1]
 
 void		free2(void *ptr)
 {
@@ -36,47 +39,74 @@ void		free2(void *ptr)
 		return ;
 	if (!(delete_bloc(start[0], start[1])))
 		return ;
-	ptr = NULL;
 }
 
 bool		delete_bloc(t_bloc *page, t_bloc *bloc)
 {
-	enum e_type type;
-	size_t	p_size;
+	void 		*cursor;
+	enum e_type	type;
+	size_t		size[2];
+	size_t		p_limit[2];
 
+	cursor = page;
 	type = TYPE(bloc->size);
-	p_size = S_PAGE(bloc->size);
-
-	printf("[%d] [%zu] [%zu]\n", bloc->empty, bloc->size, p_size);
-	(void)page;
-
-	//FREE ICI
-	bloc->empty = 1;
-	//free le bloc
-	//parse la page pour fusiner le free
-	//a voir
-	(void)type;
-
-
-	if (type == LARGE
-	|| (type != LARGE && page->empty && (page->size == (p_size - SIZE_HEAD))))
-		printf("DELL\n");
-	// 	return (delete_page2(bloc, type));
+	bloc->empty = true;
+	PAGE_SIZE = S_PAGE(bloc->size);
+	PAGE_END = (size_t)page + PAGE_SIZE;
+	while ((CURS_START = (size_t)cursor) < PAGE_END)
+	{
+		if (CURSOR->empty && (CURS_START + SIZE_HEAD + CURSOR->size) < PAGE_END
+			&& NEXT_BLOC->empty)
+		{
+			NEW_SIZE = CURSOR->size + SIZE_HEAD + NEXT_BLOC->size;
+			NEXT_BLOC->size = 0;
+			CURSOR->size = NEW_SIZE;
+			//a virer
+		}
+		else
+			cursor += CURSOR->size + SIZE_HEAD;
+	}
+	if (type == LARGE || (type != LARGE && page->empty
+		&& (page->size == (PAGE_SIZE - SIZE_HEAD))))
+		return (delete_page2(page, PAGE_SIZE, type));
 	return (true);
 }
 
-bool		delete_page2(t_bloc *page, enum e_type type)
+bool		delete_page2(t_bloc *page, size_t p_size, enum e_type type)
 {
-	if (type != LARGE
-	|| (type == LARGE && page->prev != page && page->next != page))
+	bool	null;
+	size_t	i;
+	i = ITERATOR(type) - 1;
+
+
+	null = false;
+
+	if (type != LARGE && page == LIST[i])
+	{
+		if (page->next)
+		{
+			//teste de 2 page deu page tiny ou small et supp la premier
+			*(G_LIST[i]) = page->next;
+			(*(G_LIST[i]))->prev = NULL;
+		}
+		else
+			null = true;
+	}
+	else if (type != LARGE ||
+			(type == LARGE && page->prev != page && page->next != page))
 	{
 		if (page->prev)
 			page->prev->next = page->next;
 		if (page->next)
 			page->next->prev = page->prev;
 	}
-	if ((munmap(page, page->size + SIZE_HEAD)))
-		return (false);
+	else if (type == LARGE && page->prev == page && page->next == page)
+		null = true;
+
+	if (munmap(page, p_size) == -1)
+		return (error(munmap_fail));
+	if (null)
+		*(G_LIST[i]) = NULL;
 	return (true);
 }
 
@@ -123,6 +153,7 @@ void		**check_list(void *ptr, t_bloc *page, enum e_type type)
 		}
 		if (PAGE_START <= (size_t)ptr && PAGE_END >= (size_t)ptr)
 		{
+			//printf("p[%p]\np[%p]\na[%p]\na[%p]\n\n", G_TINY, page, &G_TINY, &page);
 			if (!PROTECTED)
 				return (((void*[2]){page, ptr}));
 			return (!(bloc = check_page(ptr, page, p_size, type)) ?
@@ -174,6 +205,8 @@ bool		check_corrupt(t_bloc *ptr, bool page, enum e_type type)
 	//((size_t)(LIST[i - 1]) + S_PAGE(type) + SIZE_HEAD) - ((size_t)(ptr) + SIZE_HEAD), (size_t)(ptr));
 	//if (!page && (ptr->size > (((size_t)(LIST[i]) + type) - ((size_t)(ptr) + SIZE_HEAD))))
 	//si la taille restante est plus grande que ce qu'il reste vraiment
+
+	//verifier compartatif ptr
 	if (page && type != LARGE && (ptr != LIST[i - 1] && !LIST[i - 1]->next))
 		return (error(corrupt + i + 6));
 	if (type == LARGE && (!ptr->prev || !ptr->next))
