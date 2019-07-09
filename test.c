@@ -23,51 +23,25 @@ void		print_all();
 
 int			main(void)
 {
-	t_bloc *tmp = NULL;
-	t_bloc *tmp2 = NULL;
-	t_bloc *tmp3 = NULL;
+	void *tmp = NULL;
 
-	int  i = 0;
 
-	// enum e_error u;
-	//
-	// u = ERROR_START;
-	// while (u <= ERROR_END)
-	// {
-	// 	//printf("{%d}\n", u);
-	// 	error(u++);
-	// }
-	malloc(10);
-	malloc(11);
-	malloc(12);
-	tmp = malloc(13);
-	tmp2 = malloc(14);
-	tmp3 = malloc(30);
+	tmp = malloc(11);
+	//tmp = malloc(SMALL + 50);
+	realloc(tmp, 10);
+	// free2(tmp);
+	// tmp = malloc(6545612);
+	// realloc(tmp, SMALL);
+	// malloc(SMALL + 50);
+	// malloc(2);
+	// malloc(SMALL + 50);
+	// free2(tmp);
+	// malloc(SMALL - 3);
 
+
+
+	show_histo_mem();
 	show_alloc_mem();
-	free2(tmp);
-	free2(tmp2);
-
-	show_dump_mem(tmp3);
-	show_alloc_mem();
-
-	//tmp = malloc(32);
-	//tmp--;
-	//printf("[%zu]\n", tmp->size);
-	//tmp->size = 8000;
-	//free2(tmp);
-
-	//tmp[-9] = 'g';
-	//show_dump_mem(tmp);
-	//show_alloc_mem();
-	//show_histo_mem();
-
-	//print_all();
-	//test_realloc();
-	//my_test();
-	//print_all();
-	(void)i;
-	(void)tmp;
 	return (0);
 }
 

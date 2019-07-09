@@ -59,21 +59,3 @@ void		*error(int error)
 			20, 27})[error]);
 	return (NULL);
 }
-
-bool		delete_page(t_bloc *prev, t_bloc *cursor, t_bloc *next)
-{
-	if (prev)
-		((t_bloc*)prev)->next = next;
-	if (next)
-		((t_bloc*)next)->prev = prev;
-	if ((munmap(cursor, CURSOR->size + SIZE_HEAD)))
-		return (false);
-	return (true);
-}
-
-bool		do_i_have_to_delete_page(void *cursor, size_t page_size)
-{
-	if (cursor && CURSOR->empty && CURSOR->size + SIZE_HEAD >= page_size)
-		return (true);
-	return (false);
-}

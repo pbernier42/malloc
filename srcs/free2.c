@@ -14,7 +14,7 @@
 
 bool			delete_bloc(t_bloc *page, t_bloc *bloc);
 bool			delete_page2(t_bloc *page, size_t p_size, enum e_type type);
-void			**check_ptr(void *ptr);
+
 void			**check_list(void *ptr, t_bloc *page, enum e_type type);
 bool			check_corrupt(t_bloc *ptr, bool page, enum e_type type);
 void			*check_page(void *ptr, t_bloc *page, size_t p_size, enum e_type type);
@@ -27,48 +27,52 @@ void			*check_page(void *ptr, t_bloc *page, size_t p_size, enum e_type type);
 #define BLOC_END	b_limit[1]
 #define NEXT_BLOC	((t_bloc*)(cursor + SIZE_HEAD + CURSOR->size))
 #define CURS_START	p_limit[0]
-#define PAGE_SIZE	size[0]
-#define NEW_SIZE	size[1]
 
 void		free2(void *ptr)
 {
+	void			*prev;
+	size_t			s_prev = 0;
 	void			**start;
 
+	if (!g_mem.fonction)
+		g_mem.fonction = FT_FREE;
 	start = NULL;
 	if (!ptr || !(start = check_ptr(ptr)))
 		return ;
+	if (HISTORY && g_mem.fonction == FT_FREE)
+	{
+		prev = start[1] + SIZE_HEAD;
+		s_prev = ((t_bloc*)start[1])->size;
+	}
 	if (!(delete_bloc(start[0], start[1])))
 		return ;
+	if (HISTORY && g_mem.fonction == FT_FREE)
+		add_histo((t_hist){true, FT_FREE, {prev, NULL}, {s_prev, 0}});
 }
 
 bool		delete_bloc(t_bloc *page, t_bloc *bloc)
 {
 	void 		*cursor;
 	enum e_type	type;
-	size_t		size[2];
+	size_t		p_size;
 	size_t		p_limit[2];
 
 	cursor = page;
 	type = TYPE(bloc->size);
 	bloc->empty = true;
-	PAGE_SIZE = S_PAGE(bloc->size);
-	PAGE_END = (size_t)page + PAGE_SIZE;
+	p_size = S_PAGE(bloc->size);
+	PAGE_END = (size_t)page + p_size;
 	while ((CURS_START = (size_t)cursor) < PAGE_END)
 	{
 		if (CURSOR->empty && (CURS_START + SIZE_HEAD + CURSOR->size) < PAGE_END
 			&& NEXT_BLOC->empty)
-		{
-			NEW_SIZE = CURSOR->size + SIZE_HEAD + NEXT_BLOC->size;
-			NEXT_BLOC->size = 0;
-			CURSOR->size = NEW_SIZE;
-			//a virer
-		}
+			CURSOR->size = CURSOR->size + SIZE_HEAD + NEXT_BLOC->size;
 		else
 			cursor += CURSOR->size + SIZE_HEAD;
 	}
 	if (type == LARGE || (type != LARGE && page->empty
-		&& (page->size == (PAGE_SIZE - SIZE_HEAD))))
-		return (delete_page2(page, PAGE_SIZE, type));
+		&& (page->size == (p_size - SIZE_HEAD))))
+		return (delete_page2(page, p_size, type));
 	return (true);
 }
 
@@ -153,7 +157,6 @@ void		**check_list(void *ptr, t_bloc *page, enum e_type type)
 		}
 		if (PAGE_START <= (size_t)ptr && PAGE_END >= (size_t)ptr)
 		{
-			//printf("p[%p]\np[%p]\na[%p]\na[%p]\n\n", G_TINY, page, &G_TINY, &page);
 			if (!PROTECTED)
 				return (((void*[2]){page, ptr}));
 			return (!(bloc = check_page(ptr, page, p_size, type)) ?

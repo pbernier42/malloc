@@ -14,19 +14,30 @@
 
 void		*realloc(void *ptr, size_t size)
 {
+	void	**start;
+	size_t	s_prev;
 	enum e_type	type;
 
-	//Verifier pointeur
-	ptr -= SIZE_HEAD;
+
+	if (HISTORY && !g_mem.fonction)
+		g_mem.fonction = FT_REALLOC;
+	if (!(start = check_ptr(ptr)))
+		return (ptr);
+	ptr = start[1];
 	if (PTR->size == size)
 		return (ptr + SIZE_HEAD);
 	type = TYPE(size);
 	if (!move_bloc(ptr, size, type))
-		return (reset(ptr + SIZE_HEAD, size));
+		return (reset(ptr + SIZE_HEAD, PTR->size, size));
 	if (type == LARGE && PTR->size > size)
 		if (munmap(ptr + SIZE_HEAD + size, PTR->size - size) == MUNMAP_FAIL)
 			return (error(MUNMAP_FAIL));
+	if (HISTORY && g_mem.fonction == FT_REALLOC)
+		s_prev = PTR->size;
 	place_header(size, ptr, type, FT_REALLOC);
+	if (HISTORY && g_mem.fonction == FT_REALLOC)
+		add_histo((t_hist){true, FT_REALLOC, {ptr + SIZE_HEAD, NULL},
+			{s_prev, size}});
 	return (ptr + SIZE_HEAD);
 }
 
@@ -53,9 +64,18 @@ bool		move_bloc(void *ptr, size_t size, enum e_type type)
 	return (true);
 }
 
-void		*reset(void *ptr, size_t size)
+void		*reset(void *ptr, size_t s_prev, size_t size)
 {
+	void 	*prev;
+	void	*ret;
+
 	printf("\033[31m[WARNING]\033[0m free\n");
+	if (HISTORY && g_mem.fonction == FT_REALLOC)
+		prev = ptr;
 	free2(ptr);
-	return (malloc(size));
+	ret = malloc(size);
+	if (HISTORY && g_mem.fonction == FT_REALLOC)
+		add_histo((t_hist){true, FT_REALLOC, {prev, ret != prev ? ret : NULL},
+			{s_prev, ret ? ((t_bloc*)(ret - SIZE_HEAD))->size : 0}});
+	return (ret);
 }

@@ -32,8 +32,8 @@ void		p_histo(t_hist bloc)
 	write(1, ((char*[3]){
 		"[Malloc]\n",
 		"[Realloc]\n",
-		"[Free]\n"})[bloc.fonction],
-		((size_t[3]){9, 10, 7})[bloc.fonction]);
+		"[Free]\n"})[bloc.fonction - 1],
+		((size_t[3]){9, 10, 7})[bloc.fonction - 1]);
 	p_adress(bloc.ptr[0], bloc.size[0], false);
 	if (bloc.fonction == FT_REALLOC)
 		p_adress(bloc.ptr[1], bloc.size[1], true);
@@ -42,9 +42,14 @@ void		p_histo(t_hist bloc)
 
 void		p_adress(void *ptr, size_t size, bool second)
 {
-	!second ? write(1, "0x", 2) : write(1, " >\t0x", 5);
-	p_posi((size_t)ptr, 16);
-	write(1, " - ", 3);
+	(second) ? write(1, "\t>\t", 3) : write(1, "0x", 2);
+	if (ptr)
+	{
+		if (second)
+			write(1, "0x", 2);
+		p_posi((size_t)ptr, 16);
+		write(1, " - ", 3);
+	}
 	p_posi(size, 10);
 }
 
@@ -52,5 +57,6 @@ bool		add_histo(t_hist bloc)
 {
 	G_HISTO[LAST] = bloc;
 	LAST += (LAST != (H_NB_BLOC - 1)) ? 1 : -(H_NB_BLOC - 1);
+	g_mem.fonction = FT_NULL;
 	return (true);
 }

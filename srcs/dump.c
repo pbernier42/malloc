@@ -20,6 +20,9 @@ t_type		g_mem;
 
 void		show_dump_mem(void *ptr)
 {
+	//////;knhiuboubuob FT ??
+	if (!(start = check_ptr(ptr)))
+		return ;
 	p_dump(ptr - SIZE_HEAD, ((t_bloc*)(ptr - SIZE_HEAD)), 0, false);
 	p_dump(ptr, NULL, ((t_bloc*)(ptr - SIZE_HEAD))->size, true);
 }

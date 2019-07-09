@@ -150,10 +150,9 @@ struct						s_type
 	t_bloc					*large;
 	size_t					hist_last;
 	t_hist					histo[H_NB_BLOC];
-	//enum e_fonction 		fonction; 
+	enum e_fonction 		fonction;
 };
 
-void	free2(void *ptr);
 
 void						*malloc(size_t size);
 bool						new_page(size_t s_page, t_bloc **page,
@@ -165,15 +164,12 @@ t_bloc						*find_best(size_t size, t_bloc *page, size_t s_page,
 void						place_header(size_t size, t_bloc *better,
 								enum e_type type, enum e_fonction fonction);
 
-void						free(void *ptr);
-bool						delete_page(t_bloc *prev, t_bloc *cursor,
-								t_bloc *next);
-bool						do_i_have_to_delete_page(void *cursor,
-								size_t page_size);
+void						free2(void *ptr);
+void						**check_ptr(void *ptr);
 
 void						*realloc(void *ptr, size_t size);
 bool						move_bloc(void *ptr, size_t size, enum e_type type);
-void						*reset(void *ptr, size_t size);
+void						*reset(void *ptr, size_t s_prev, size_t size);
 
 void						show_alloc_mem();
 void						p_posi(size_t number, size_t base);

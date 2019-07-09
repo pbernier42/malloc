@@ -20,6 +20,8 @@ void		*malloc(size_t size)
 	enum e_type	type;
 	void		*ret;
 
+	if (HISTORY && !g_mem.fonction)
+		g_mem.fonction = FT_MALLOC;
 	if (!(page = ((t_bloc**[4]){
 		NULL, &G_TINY, &G_SMALL, &G_LARGE})[ITERATOR(size)]) ||
 		!(type = TYPE(size)))
@@ -27,6 +29,8 @@ void		*malloc(size_t size)
 	while (!(ret = create_bloc(size, *page, type)))
 		if ((!(*page) || !ret) && !new_page(S_PAGE(size), page, type))
 			return (NULL);
+	if (HISTORY && g_mem.fonction == FT_MALLOC)
+		add_histo((t_hist){true, FT_MALLOC, {ret, NULL}, {size, 0}});
 	return (ret);
 }
 

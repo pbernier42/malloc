@@ -23,7 +23,6 @@ void	show_alloc_mem(void)
 
 	i = 0;
 	octets = 0;
-	//fonction verif
 	while (i < 3)
 	{
 		if ((page = ((t_bloc*[4]){G_TINY, G_SMALL, G_LARGE, NULL})[i++]))
