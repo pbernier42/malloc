@@ -15,20 +15,26 @@
 void		*realloc(void *ptr, size_t size)
 {
 	void	**start;
+	void	*page;
 	size_t	s_prev;
 	enum e_type	type;
 
-
-	if (HISTORY && !g_mem.fonction)
+	if (!ptr)
+		return (malloc(size));
+	if (!size)
+		return (NULL);
+	if (HISTORY)
 		g_mem.fonction = FT_REALLOC;
 	if (!(start = check_ptr(ptr)))
 		return (ptr);
+	page = start[0];
 	ptr = start[1];
+	type = TYPE(size);
 	if (PTR->size == size)
 		return (ptr + SIZE_HEAD);
-	type = TYPE(size);
+		
 	if (!move_bloc(ptr, size, type))
-		return (reset(ptr + SIZE_HEAD, PTR->size, size));
+		return (reset(page, ptr + SIZE_HEAD, PTR->size, size));
 	if (type == LARGE && PTR->size > size)
 		if (munmap(ptr + SIZE_HEAD + size, PTR->size - size) == MUNMAP_FAIL)
 			return (error(MUNMAP_FAIL));
@@ -64,17 +70,17 @@ bool		move_bloc(void *ptr, size_t size, enum e_type type)
 	return (true);
 }
 
-void		*reset(void *ptr, size_t s_prev, size_t size)
+void		*reset(t_bloc *page, void *ptr, size_t s_prev, size_t size)
 {
 	void 	*prev;
 	void	*ret;
 
 	printf("\033[31m[WARNING]\033[0m free\n");
-	if (HISTORY && g_mem.fonction == FT_REALLOC)
+	if (HISTORY)
 		prev = ptr;
-	free2(ptr);
+	delete_bloc(page, ptr);
 	ret = malloc(size);
-	if (HISTORY && g_mem.fonction == FT_REALLOC)
+	if (HISTORY)
 		add_histo((t_hist){true, FT_REALLOC, {prev, ret != prev ? ret : NULL},
 			{s_prev, ret ? ((t_bloc*)(ret - SIZE_HEAD))->size : 0}});
 	return (ret);

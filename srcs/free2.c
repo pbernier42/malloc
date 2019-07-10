@@ -12,7 +12,7 @@
 
 #include <malloc.h>
 
-bool			delete_bloc(t_bloc *page, t_bloc *bloc);
+// FT_ OU !!! remise a 0 de ft
 bool			delete_page2(t_bloc *page, size_t p_size, enum e_type type);
 
 void			**check_list(void *ptr, t_bloc *page, enum e_type type);
@@ -34,19 +34,18 @@ void		free2(void *ptr)
 	size_t			s_prev = 0;
 	void			**start;
 
-	if (!g_mem.fonction)
-		g_mem.fonction = FT_FREE;
 	start = NULL;
-	if (!ptr || !(start = check_ptr(ptr)))
+	if (!ptr || !(start = check_ptr(ptr)) ||
+		(start && ((t_bloc*)start[1])->empty))
 		return ;
-	if (HISTORY && g_mem.fonction == FT_FREE)
+	if (HISTORY)
 	{
 		prev = start[1] + SIZE_HEAD;
 		s_prev = ((t_bloc*)start[1])->size;
 	}
 	if (!(delete_bloc(start[0], start[1])))
 		return ;
-	if (HISTORY && g_mem.fonction == FT_FREE)
+	if (HISTORY)
 		add_histo((t_hist){true, FT_FREE, {prev, NULL}, {s_prev, 0}});
 }
 
@@ -80,11 +79,9 @@ bool		delete_page2(t_bloc *page, size_t p_size, enum e_type type)
 {
 	bool	null;
 	size_t	i;
-	i = ITERATOR(type) - 1;
-
 
 	null = false;
-
+	i = ITERATOR(type) - 1;
 	if (type != LARGE && page == LIST[i])
 	{
 		if (page->next)
@@ -181,12 +178,16 @@ void		*check_page(void *ptr, t_bloc *page, size_t p_size, enum e_type type)
 	while ((size_t)cursor < ((size_t)page + p_size))
 	{
 		if (page != LIST[i - 1])
-			check_corrupt(page, false, type);
+			check_corrupt(CURSOR, false, type);
 		BLOC_START = (size_t)cursor;
 		BLOC_END = (size_t)cursor + CURSOR->size + SIZE_HEAD;
 		if (BLOC_START <= (size_t)ptr && BLOC_END >= (size_t)ptr)
-			return(cursor);
-	 	cursor += CURSOR->size + SIZE_HEAD;
+		{
+			if (!(type != LARGE && CURSOR->empty) || g_mem.fonction != FT_REALLOC)
+				return (cursor);
+			error(EMPTY_TINY + (i - 1));
+		}
+		cursor += CURSOR->size + SIZE_HEAD;
 	}
 	return (error(BLOC_NOT_FOUND));
 }

@@ -14,16 +14,16 @@
 
 size_t		finder(size_t size, size_t i)
 {
-	enum e_type	type;
+	size_t	type;
 
 	type = 0;
 	while (size > ((size_t[4]){0, TINY, SMALL, size})[type] && size <= LARGE)
 		++type;
 	return (((size_t[5]){
-		((size_t[4]){0, T_SIZE_PAGE, S_SIZE_PAGE, size + SIZE_HEAD})[type],
-		((size_t[4]){0, TINY, SMALL, LARGE})[type],
-		((size_t[4]){0, T_SIZE_ZERO, S_SIZE_ZERO, 0})[type],
-		((size_t[4]){0, 1, T_SIZE_BLOC + 1, S_SIZE_BLOC + 1})[type],
+		(((size_t[4]){0, T_SIZE_PAGE, S_SIZE_PAGE, size + SIZE_HEAD})[type]),
+		(((size_t[4]){0, TINY, SMALL, LARGE})[type]),
+		(((size_t[4]){0, T_SIZE_ZERO, S_SIZE_ZERO, 0})[type]),
+		(((size_t[4]){0, 1, T_SIZE_BLOC + 1, S_SIZE_BLOC + 1})[type]),
 		type})[i]);
 }
 
@@ -31,15 +31,13 @@ void		*error(int error)
 {
 	if (error == MUNMAP_FAIL)
 		error = 1;
-	else if (!(error >= ERROR_START && error <= ERROR_END))
+	else if (!(error >= ERROR_START && error < ERROR_END))
 		error = UNKNOWN_ERROR;
-
-	printf("{%d} \n", error);
 	//tous reverif
-	write(2, ((char*[16]){
+	write(2, ((char*[18]){
 		"UNKNOWN ERROR\n",
 		"PAS REUSSI A MUNMAP\n",
-		"PTR PAS A NOUS\n",
+		"NO VALIDE PTR FOUND IN OUR PAGES\n",
 		"PTR A NOUS MAIS PROBABLEMENT CORROMPU\n",
 		"TINY PAGES'S SIZE INVALID\n",
 		"SMALL PAGES'S SIZE INVALID\n",
@@ -51,11 +49,13 @@ void		*error(int error)
 		"SMALL LIST LINK INVALID\n",
 		"LARGE LIST LINK INVALID\n",
 		"LARGE EMPTY INVALID\n",
+		"TINY EMPTY INVALID\n"
+		"SMALL EMPTY INVALID\n"
 		"BLOC NOT FOUND IN HIS PAGE\n"
 		})[error],
-		((size_t[16]){
-			14, 20, 15, 38, 26, 27, 27,
+		((size_t[18]){
+			14, 20, 33, 38, 26, 27, 27,
 			25, 26, 26, 23,	24, 24,
-			20, 27})[error]);
+			20, 19, 20, 27})[error]);
 	return (NULL);
 }

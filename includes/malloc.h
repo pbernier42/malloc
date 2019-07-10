@@ -83,6 +83,10 @@ enum						e_error
 	PAGE_PTR_SMALL,
 	BLOC_PTR_LARGE,
 	EMPTY_LARGE,
+
+	EMPTY_TINY,
+	EMPTY_SMALL,
+
 	BLOC_NOT_FOUND,
 	ERROR_END
 };
@@ -117,7 +121,8 @@ enum						e_fonction
    FT_NULL,
    FT_MALLOC,
    FT_REALLOC,
-   FT_FREE
+   FT_FREE,
+   FT_DUMP,
 };
 
 struct						s_hist
@@ -153,6 +158,7 @@ struct						s_type
 	enum e_fonction 		fonction;
 };
 
+size_t		finder2(size_t size, size_t i);
 
 void						*malloc(size_t size);
 bool						new_page(size_t s_page, t_bloc **page,
@@ -165,11 +171,13 @@ void						place_header(size_t size, t_bloc *better,
 								enum e_type type, enum e_fonction fonction);
 
 void						free2(void *ptr);
+bool						delete_bloc(t_bloc *page, t_bloc *bloc);
 void						**check_ptr(void *ptr);
 
 void						*realloc(void *ptr, size_t size);
 bool						move_bloc(void *ptr, size_t size, enum e_type type);
-void						*reset(void *ptr, size_t s_prev, size_t size);
+void						*reset(t_bloc *page, void *ptr, size_t s_prev,
+								size_t size);
 
 void						show_alloc_mem();
 void						p_posi(size_t number, size_t base);

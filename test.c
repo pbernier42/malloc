@@ -26,8 +26,12 @@ int			main(void)
 	void *tmp = NULL;
 
 
+	malloc(10);
 	tmp = malloc(11);
 	//tmp = malloc(SMALL + 50);
+	free2(tmp);
+	free2(tmp);
+	free2(tmp);
 	realloc(tmp, 10);
 	// free2(tmp);
 	// tmp = malloc(6545612);
