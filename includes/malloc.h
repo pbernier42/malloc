@@ -20,8 +20,8 @@
 
 # include <stdio.h>
 
-# define PROTECTED			true
 # define HISTORY			true
+# define PRINT_ERROR		true
 
 # define SIZE_HEAD			((size_t)sizeof(t_bloc))
 
@@ -67,37 +67,26 @@
 
 enum						e_error
 {
-	ERROR_START,
-	UNKNOWN_ERROR = 0,
+	error_start,
+	unknown_error = 0,
 	munmap_fail	= 1,
-	PTR_INVALID = 2,
-	// PTR_CORRUPT = 3,
-	CORRUPT_START = 3,
-	PAGE_SIZE_TINY,
-	PAGE_SIZE_SMALL,
-	PAGE_SIZE_LARGE,
-	BLOC_SIZE_TINY,
-	BLOC_SIZE_SMALL,
-	BLOC_SIZE_LARGE,
-	PAGE_PTR_TINY,
-	PAGE_PTR_SMALL,
-	BLOC_PTR_LARGE,
-	EMPTY_LARGE,
-
-	EMPTY_TINY,
-	EMPTY_SMALL,
-
-	BLOC_NOT_FOUND,
-	ERROR_END
+	ptr_invalid = 2,
+	corrupt_start = 3,
+	page_size_tiny,
+	page_size_small,
+	page_size_large,
+	bloc_size_tiny,
+	bloc_size_small,
+	bloc_size_large,
+	page_ptr_tiny,
+	page_ptr_small,
+	bloc_ptr_large,
+	empty_large,
+	empty_tiny,
+	empty_small,
+	bloc_not_found,
+	error_end
 };
-
-// struct						s_bloc
-// {
-// 	size_t					size;
-// 	bool					empty;
-// 	struct s_bloc			*prev;
-// 	struct s_bloc			*next;
-// };
 
 # define RESET				"\033[0m"
 # define GREY				"\033[38;5;8m"
@@ -118,11 +107,11 @@ extern t_type				g_mem;
 
 enum						e_fonction
 {
-   FT_NULL,
-   FT_MALLOC,
-   FT_REALLOC,
-   FT_FREE,
-   FT_DUMP,
+   ft_null,
+   ft_malloc,
+   ft_realloc,
+   ft_free,
+   ft_dump,
 };
 
 struct						s_hist
@@ -143,9 +132,9 @@ struct						s_bloc
 
 enum						e_type
 {
-   TINY = T_SIZE_DATA,
-   SMALL = S_SIZE_DATA,
-   LARGE = (UINT_MAX - SIZE_HEAD)
+   tiny = T_SIZE_DATA,
+   small = S_SIZE_DATA,
+   large = (UINT_MAX - SIZE_HEAD)
 };
 
 struct						s_type
@@ -157,8 +146,6 @@ struct						s_type
 	t_hist					histo[H_NB_BLOC];
 	enum e_fonction 		fonction;
 };
-
-size_t		finder2(size_t size, size_t i);
 
 void						*malloc(size_t size);
 bool						new_page(size_t s_page, t_bloc **page,
@@ -172,7 +159,7 @@ void						place_header(size_t size, t_bloc *better,
 
 void						free2(void *ptr);
 bool						delete_bloc(t_bloc *page, t_bloc *bloc);
-void						**check_ptr(void *ptr);
+void						**check_ptr(void *ptr, enum e_fonction fonction);
 
 void						*realloc(void *ptr, size_t size);
 bool						move_bloc(void *ptr, size_t size, enum e_type type);

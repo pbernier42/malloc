@@ -35,7 +35,7 @@ void		p_histo(t_hist bloc)
 		"[Free]\n"})[bloc.fonction - 1],
 		((size_t[3]){9, 10, 7})[bloc.fonction - 1]);
 	p_adress(bloc.ptr[0], bloc.size[0], false);
-	if (bloc.fonction == FT_REALLOC)
+	if (bloc.fonction == ft_realloc)
 		p_adress(bloc.ptr[1], bloc.size[1], true);
 	write(1, "\n", 1);
 }
@@ -55,8 +55,10 @@ void		p_adress(void *ptr, size_t size, bool second)
 
 bool		add_histo(t_hist bloc)
 {
+	g_mem.fonction = ft_null;
+	if (!HISTORY)
+		return (true);
 	G_HISTO[LAST] = bloc;
 	LAST += (LAST != (H_NB_BLOC - 1)) ? 1 : -(H_NB_BLOC - 1);
-	g_mem.fonction = FT_NULL;
 	return (true);
 }

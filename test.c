@@ -19,28 +19,29 @@
 
 void		test_realloc();
 void		my_test();
-void		print_all();
 
 int			main(void)
 {
 	void *tmp = NULL;
 
 
-	malloc(10);
-	tmp = malloc(11);
-	//tmp = malloc(SMALL + 50);
-	free2(tmp);
-	free2(tmp);
-	free2(tmp);
-	realloc(tmp, 10);
+	// malloc(10);
+	// tmp = malloc(11);
+	// //tmp = malloc(small + 50);
 	// free2(tmp);
-	// tmp = malloc(6545612);
-	// realloc(tmp, SMALL);
-	// malloc(SMALL + 50);
-	// malloc(2);
-	// malloc(SMALL + 50);
 	// free2(tmp);
-	// malloc(SMALL - 3);
+	// free2(tmp);
+	// realloc(tmp, 10);
+
+	//FAUX
+	free2(tmp);
+	tmp = malloc(6545612);
+	realloc(tmp, small);
+	malloc(small + 50);
+	malloc(2);
+	malloc(small + 50);
+	free2(tmp);
+	malloc(small - 3);
 
 
 
@@ -53,16 +54,15 @@ void		my_test()
 {
 	void 	*ptr;
 
-	//(LARGE : Plus grand qu'avant)
-	printf("(LARGE : Plus grand qu'avant)\n");
-	ptr = malloc(SMALL + 50);
+	//(large : Plus grand qu'avant)
+	printf("(large : Plus grand qu'avant)\n");
+	ptr = malloc(small + 50);
 	printf("size : [%lu] empty : [%s]\nptr = [%p]\n", TB_PTR->size, TB_PTR->empty == true ? "VIDE" : "PLEIN", TB_PTR);
 	ptr = realloc(ptr, 500);
 	printf("size : [%lu] empty : [%s]\nptr = [%p]\n", TB_PTR->size, TB_PTR->empty == true ? "VIDE" : "PLEIN", TB_PTR);
 	printf("\n");
 	show_alloc_mem();
 	printf("\n");
-	print_all();
 	(void)ptr;
 }
 
@@ -73,27 +73,27 @@ void		test_realloc()
 
 	//(Size ne change pas)
 	printf("(Size ne change pas)\n");
-	ptr = malloc(TINY);
+	ptr = malloc(tiny);
 	printf("size : [%lu] empty : [%s]\nptr = [%p]\n", TB_PTR->size, TB_PTR->empty == true ? "VIDE" : "PLEIN", TB_PTR);
-	ptr = realloc(ptr, TINY);
+	ptr = realloc(ptr, tiny);
 	printf("size : [%lu] empty : [%s]\nptr = [%p]\n", TB_PTR->size, TB_PTR->empty == true ? "VIDE" : "PLEIN", TB_PTR);
 	show_alloc_mem();
 	printf("\n");
 
 	//(Size fait changer de type)
 	printf("(Size fait changer de type)\n");
-	malloc(SMALL);
-	malloc(SMALL + 10);
-	ptr = malloc(SMALL);
+	malloc(small);
+	malloc(small + 10);
+	ptr = malloc(small);
 	printf("size : [%lu] empty : [%s]\nptr = [%p]\n", TB_PTR->size, TB_PTR->empty == true ? "VIDE" : "PLEIN", TB_PTR);
-	ptr = realloc(ptr, TINY);
+	ptr = realloc(ptr, tiny);
 	printf("size : [%lu] empty : [%s]\nptr = [%p]\n", TB_PTR->size, TB_PTR->empty == true ? "VIDE" : "PLEIN", TB_PTR);
 	show_alloc_mem();
 	printf("\n");
 
-	//(LARGE : Plus grand qu'avant)
-	printf("(LARGE : Plus grand qu'avant)\n");
-	ptr = malloc(SMALL + 50);
+	//(large : Plus grand qu'avant)
+	printf("(large : Plus grand qu'avant)\n");
+	ptr = malloc(small + 50);
 	printf("size : [%lu] empty : [%s]\nptr = [%p]\n", TB_PTR->size, TB_PTR->empty == true ? "VIDE" : "PLEIN", TB_PTR);
 	//Plus le chiffre "50" est grand plus il creer des pages large vide
 	ptr = realloc(ptr, TB_PTR->size + 50);
@@ -102,56 +102,21 @@ void		test_realloc()
 	printf("\n");
 
 
-	//(SMALL : Plus grand qu'avant)
-	printf("(SMALL : Plus grand qu'avant)\n");
-	malloc(TINY + 9);
-	malloc(TINY + 9);
-	ptr = malloc(TINY + 10);
+	//(small : Plus grand qu'avant)
+	printf("(small : Plus grand qu'avant)\n");
+	malloc(tiny + 9);
+	malloc(tiny + 9);
+	ptr = malloc(tiny + 10);
 	printf("size : [%lu] empty : [%s]\nptr = [%p]\n", TB_PTR->size, TB_PTR->empty == true ? "VIDE" : "PLEIN", TB_PTR);
 	ptr = realloc(ptr, TB_PTR->size + 10);
 	printf("size : [%lu] empty : [%s]\nptr = [%p]\n", TB_PTR->size, TB_PTR->empty == true ? "VIDE" : "PLEIN", TB_PTR);
 	show_alloc_mem();
 	printf("\n");
-	print_all();
 
-	//(SMALL : Plus grand qu'avant) (next occupé)
-	//(SMALL : Plus grand qu'avant) (tout au bout)
-	//(LARGE : Plus petit qu'avant)
-	//(SMALL : Plus petit qu'avant)
-	//(SMALL : Plus petit qu'avant) (Pas de place)
+	//(small : Plus grand qu'avant) (next occupé)
+	//(small : Plus grand qu'avant) (tout au bout)
+	//(large : Plus petit qu'avant)
+	//(small : Plus petit qu'avant)
+	//(small : Plus petit qu'avant) (Pas de place)
 
-}
-
-void		print_all()
-{
-	t_bloc	*page;
-	size_t	i;
-	size_t	s_page;
-	void	*cursor;
-	size_t	parsed;
-
-	i = 0;
-	while (i < 3)
-		if ((page = ((t_bloc*[4]){G_TINY, G_SMALL, G_LARGE, NULL})[i++]))
-		{
-			printf("[%s]	: [%p]\n", ((char*[3]){"TINY", "SMALL", "LARGE"})[i - 1], page);
-			if (page == G_LARGE)
-				page = page->next;
-			while ((page))
-			{
-				cursor = page;
-				parsed = 0;
-				s_page = S_PAGE(page->size);
-				printf("Nnnnlerdrytyrf\n");
-				while (parsed < s_page)
-				{
-					printf("startH	: [%p]\nstartD	: [%p]\nsize	: [%zu]\nempty	: [%s]\nprev	: [%p]\nnext	: [%p]\nend	: [%p]\n\n",
-					cursor, (cursor + SIZE_HEAD), CURSOR->size, CURSOR->empty == true ? "VIDE" : "PLEIN", CURSOR->prev, CURSOR->next, (cursor + CURSOR->size + SIZE_HEAD));
-					parsed += CURSOR->size + SIZE_HEAD;
-					cursor += CURSOR->size + SIZE_HEAD;
-				}
-				page = (page == G_LARGE) ? NULL : page->next;
-			}
-			printf("\n");
-		}
 }

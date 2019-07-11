@@ -27,8 +27,8 @@ void		*malloc(size_t size)
 	while (!(ret = create_bloc(size, *page, type)))
 		if ((!(*page) || !ret) && !new_page(S_PAGE(size), page, type))
 			return (NULL);
-	if (HISTORY)
-		add_histo((t_hist){true, FT_MALLOC, {ret, NULL}, {size, 0}});
+	if (g_mem.fonction != ft_realloc)
+		add_histo((t_hist){true, ft_malloc, {ret, NULL}, {size, 0}});
 	return (ret);
 }
 
@@ -38,23 +38,23 @@ bool		new_page(size_t s_page, t_bloc **page, enum e_type type)
 	t_bloc	*new;
 
 	start = *page;
-	while (type != LARGE && (*page) && (*page)->next)
+	while (type != large && (*page) && (*page)->next)
 		(*page) = (*page)->next;
 	if (((new = mmap(0, s_page, FL_PROT, FL_MAP, -1, 0)) == MAP_FAILED))
 		return (false);
-	if (type == LARGE && !(*page))
+	if (type == large && !(*page))
 		*new = ((t_bloc){s_page - SIZE_HEAD, true, new, new});
-	else if (type == LARGE && (*page))
+	else if (type == large && (*page))
 	{
 		*new = ((t_bloc){s_page - SIZE_HEAD, true, (*page), (*page)->next});
 		(*page)->next->prev = new;
 	}
-	else if (type != LARGE)
+	else if (type != large)
 		*new = ((t_bloc){s_page - SIZE_HEAD, true, (*page), NULL});
 	if ((*page))
 	{
 		(*page)->next = new;
-		(*page) = (type != LARGE) ? start : (*page)->next;
+		(*page) = (type != large) ? start : (*page)->next;
 	}
 	else
 		(*page) = new;
@@ -66,13 +66,13 @@ void		*create_bloc(size_t size, t_bloc *page, enum e_type type)
 	t_bloc	*better;
 
 	better = NULL;
-	if (!page || (type == LARGE && !page->empty) ||
-		(type != LARGE && !(better = find_best(size, page,
+	if (!page || (type == large && !page->empty) ||
+		(type != large && !(better = find_best(size, page,
 		S_PAGE(size), S_BLOC_MIN(size)))))
 		return (NULL);
-	else if (type == LARGE && page->empty)
+	else if (type == large && page->empty)
 		better = page;
-	place_header(size, better, type, FT_MALLOC);
+	place_header(size, better, type, ft_malloc);
 	return (BETTER + SIZE_HEAD);
 }
 
@@ -106,9 +106,9 @@ void		place_header(size_t size, t_bloc *better, enum e_type type,
 				enum e_fonction fonction)
 {
 	better->empty = false;
-	if (type == LARGE || better->size == size)
+	if (type == large || better->size == size)
 		return ;
-	((t_bloc*)(BETTER + (SIZE_HEAD + size)))->size = (fonction == FT_REALLOC) ?
+	((t_bloc*)(BETTER + (SIZE_HEAD + size)))->size = (fonction == ft_realloc) ?
 	((t_bloc*)(BETTER + (SIZE_HEAD + better->size)))->size -
 	(better->size - size) : (better->size - SIZE_HEAD - size);
 	((t_bloc*)(BETTER + (SIZE_HEAD + size)))->empty = true;

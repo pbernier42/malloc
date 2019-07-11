@@ -19,31 +19,25 @@ void		*realloc(void *ptr, size_t size)
 	size_t	s_prev;
 	enum e_type	type;
 
-	if (!ptr)
+	if (!ptr || !size)
 		return (malloc(size));
-	if (!size)
-		return (NULL);
-	if (HISTORY)
-		g_mem.fonction = FT_REALLOC;
-	if (!(start = check_ptr(ptr)))
+	if (!(start = check_ptr(ptr, ft_realloc)))
 		return (ptr);
 	page = start[0];
 	ptr = start[1];
 	type = TYPE(size);
-	if (PTR->size == size)
+	if (PTR->size == size && !(g_mem.fonction = ft_null))
 		return (ptr + SIZE_HEAD);
-		
 	if (!move_bloc(ptr, size, type))
 		return (reset(page, ptr + SIZE_HEAD, PTR->size, size));
-	if (type == LARGE && PTR->size > size)
+	if (type == large && PTR->size > size)
 		if (munmap(ptr + SIZE_HEAD + size, PTR->size - size) == MUNMAP_FAIL)
 			return (error(MUNMAP_FAIL));
-	if (HISTORY && g_mem.fonction == FT_REALLOC)
+	if (HISTORY)
 		s_prev = PTR->size;
-	place_header(size, ptr, type, FT_REALLOC);
-	if (HISTORY && g_mem.fonction == FT_REALLOC)
-		add_histo((t_hist){true, FT_REALLOC, {ptr + SIZE_HEAD, NULL},
-			{s_prev, size}});
+	place_header(size, ptr, type, ft_realloc);
+	add_histo((t_hist){true, ft_realloc, {ptr + SIZE_HEAD, NULL},
+		{s_prev, size}});
 	return (ptr + SIZE_HEAD);
 }
 
@@ -54,12 +48,12 @@ bool		move_bloc(void *ptr, size_t size, enum e_type type)
 	void	*cursor;
 
 	s_min = S_BLOC_MIN(PTR->size);
-	if (!ptr || type != TYPE(PTR->size) || (type == LARGE && PTR->size < size)
-		|| (type != LARGE && PTR->size > size && PTR->size <
+	if (!ptr || type != TYPE(PTR->size) || (type == large && PTR->size < size)
+		|| (type != large && PTR->size > size && PTR->size <
 		(SIZE_HEAD + s_min + size)))
 		return (false);
 	s_page = S_PAGE(PTR->size);
-	cursor = (type == TINY) ? G_TINY : G_SMALL;
+	cursor = (type == tiny) ? G_TINY : G_SMALL;
 	while (!(ptr >= cursor && ptr < (cursor + s_page)))
 		cursor = CURSOR->next;
 	if (((ptr + SIZE_HEAD + PTR->size) == cursor + s_page) ||
@@ -80,8 +74,7 @@ void		*reset(t_bloc *page, void *ptr, size_t s_prev, size_t size)
 		prev = ptr;
 	delete_bloc(page, ptr);
 	ret = malloc(size);
-	if (HISTORY)
-		add_histo((t_hist){true, FT_REALLOC, {prev, ret != prev ? ret : NULL},
+	add_histo((t_hist){true, ft_realloc, {prev, ret != prev ? ret : NULL},
 			{s_prev, ret ? ((t_bloc*)(ret - SIZE_HEAD))->size : 0}});
 	return (ret);
 }

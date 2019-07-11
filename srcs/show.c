@@ -24,7 +24,6 @@ void	show_alloc_mem(void)
 	i = 0;
 	octets = 0;
 	while (i < 3)
-	{
 		if ((page = ((t_bloc*[4]){G_TINY, G_SMALL, G_LARGE, NULL})[i++]))
 		{
 			if (page != G_LARGE)
@@ -41,8 +40,6 @@ void	show_alloc_mem(void)
 				page = (page == G_LARGE) ? NULL : page->next;
 			}
 		}
-
-	}
 	p_line((char*[2]){"Total : ", " octets\n"}, (size_t[2]){8, 8}, octets, 10);
 }
 

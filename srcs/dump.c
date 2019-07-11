@@ -18,14 +18,11 @@ void		show_dump_mem(void *ptr)
 {
 	void 	**start;
 
-
-	g_mem.fonction = FT_DUMP;
-	start = check_ptr(ptr);
-	g_mem.fonction = FT_NULL;
-	if (!start)
+	if (!(start = check_ptr(ptr, ft_dump)))
 		return ;
 	p_dump(ptr - SIZE_HEAD, ((t_bloc*)(ptr - SIZE_HEAD)), 0, false);
 	p_dump(ptr, NULL, ((t_bloc*)(ptr - SIZE_HEAD))->size, true);
+	g_mem.fonction = ft_null;
 }
 
 void		p_dump(void *ptr, t_bloc *header, size_t size, bool data)
