@@ -21,7 +21,7 @@ size_t		finder(size_t size, size_t i)
 		++type;
 	return (((size_t[5]){
 		(((size_t[4]){0, T_SIZE_PAGE, S_SIZE_PAGE, size + SIZE_HEAD})[type]),
-		(((size_t[4]){0, tiny, tiny, tiny})[type]),
+		(((size_t[4]){0, tiny, small, large})[type]),
 		(((size_t[4]){0, T_SIZE_ZERO, S_SIZE_ZERO, 0})[type]),
 		(((size_t[4]){0, 1, T_SIZE_BLOC + 1, S_SIZE_BLOC + 1})[type]),
 		type})[i]);

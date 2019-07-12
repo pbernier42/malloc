@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   free2.c                                            :+:      :+:    :+:   */
+/*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pbernier <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -27,7 +27,7 @@ void			*check_page(void *ptr, t_bloc *page, size_t p_size, enum e_type type);
 #define NEXT_BLOC	((t_bloc*)(cursor + SIZE_HEAD + CURSOR->size))
 #define CURS_START	p_limit[0]
 
-void		free2(void *ptr)
+void		free(void *ptr)
 {
 	void			*prev;
 	size_t			s_prev = 0;
@@ -128,6 +128,7 @@ void		**check_ptr(void *ptr, enum e_fonction fonction)
 	g_mem.fonction = fonction;
 	while (i < 3)
 	{
+
 		list = LIST[i];
 		type = ((enum e_type[3]){tiny, small, large})[i];
 		if ((start = check_list(ptr, list, type)))
@@ -160,7 +161,11 @@ void		**check_list(void *ptr, t_bloc *page, enum e_type type)
 		if (PAGE_START <= (size_t)ptr && PAGE_END >= (size_t)ptr)
 			return (!(bloc = check_page(ptr, page, p_size, type)) ?
 				NULL : ((void*[2]){page, bloc}));
-		page = page->next;
+		if (type == large && page->next == g_mem.large)
+			return (NULL);
+			//
+		else
+			page = page->next;
 	}
 	return (NULL);
 }

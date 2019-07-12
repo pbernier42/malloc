@@ -36,7 +36,7 @@ void	show_alloc_mem(void)
 			while ((page))
 			{
 				octets = p_bloc(page,
-				(page == G_LARGE) ? S_PAGE(page->size) : s_page, octets);
+				(page->size > small) ? S_PAGE(page->size) : s_page, octets);
 				page = (page == G_LARGE) ? NULL : page->next;
 			}
 		}

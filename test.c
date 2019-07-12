@@ -22,26 +22,134 @@ void		my_test();
 
 int			main(void)
 {
-	void *tmp = NULL;
+	t_bloc *tmp[5];
+	size_t i;
+
+	i = 0;
+	tmp[0] = NULL;
+	tmp[1] = NULL;
+	tmp[2] = NULL;
+	tmp[3] = NULL;
+	tmp[4] = NULL;
+
+	write(2, ".", 1);
+	tmp[3] = realloc(tmp[1], small + 2);
+	write(2, ".", 1);
+	tmp[1] = realloc(tmp[2], tiny);
+	write(2, ".", 1);
+	tmp[2] = malloc(small);
+	write(2, ".", 1);
+	free(tmp[0]);
+	write(2, ".", 1);
+	tmp[1] = malloc(small - 10);
+	write(2, ".", 1);
+	tmp[1] = malloc(tiny);
+	write(2, ".", 1);
+	free(tmp[3]);
+	write(2, ".", 1);
+	tmp[2] = realloc(tmp[3], small);
+	write(2, ".", 1);
+	tmp[1] = malloc(tiny - 10);
+	write(2, ".", 1);
+	free(tmp[1]);
+	write(2, ".", 1);
+	free(tmp[2]);
+	write(2, ".", 1);
+	tmp[2] = malloc(large + 45);
+	write(2, ".", 1);
+	tmp[1] = malloc(tiny);
+	write(2, ".", 1);
+	free(tmp[0]);
+	write(2, ".", 1);
+	tmp[2] = realloc(tmp[3], small);
+	write(2, ".", 1);
+	tmp[0] = realloc(tmp[1], tiny);
+	write(2, ".", 1);
+	tmp[3] = malloc(500);
+	write(2, ".", 1);
+	tmp[0] = malloc(0);
+	write(2, "2", 1);
+	tmp[1] = malloc(small - 10);
+	write(2, ".", 1);
+	tmp[1] = malloc(tiny);
+	write(2, ".", 1);
+	free(tmp[0]);
+	write(2, ".", 1);
+	tmp[2] = realloc(tmp[3], small);
+	write(2, ".", 1);
+	tmp[0] = realloc(tmp[1], tiny);
+	write(2, ".", 1);
+	tmp[3] = malloc(500);
+	write(2, ".", 1);
+	free(tmp[1]);
+	write(2, ".", 1);
+	tmp[0] = malloc(10);
+	write(2, "5", 1);
+	tmp[1] = realloc(tmp[2], small);
+	write(2, "6", 1);
+	tmp[0] = realloc(tmp[1], small);
+	write(2, "7", 1);
+	printf ("\n%p\n", tmp[2]--);
+	printf ("%zu\n", tmp[2]->size);
+	printf ("%d\n", tmp[2]->empty);
+	printf ("%p\n", tmp[2]->prev);
+	printf ("%p\n", tmp[2]->next);
+	tmp[2]++;
+	free(tmp[2]);
+	write(2, "8", 1);
+	printf ("\n%p\n", tmp[2]--);
+	printf ("%zu\n", tmp[2]->size);
+	printf ("%d\n", tmp[2]->empty);
+	printf ("%p\n", tmp[2]->prev);
+	printf ("%p\n", tmp[2]->next);
+	tmp[2]++;
+
+	tmp[0] = realloc(tmp[2], small - 2);
+	
+	write(2, "9", 1);
+	tmp[0] = realloc(tmp[1], small);
+	write(2, "a", 1);
+	free(tmp[2]);
+	write(2, "b", 1);
+	tmp[0] = realloc(tmp[2], small - 2);
+	write(2, "c", 1);
+	tmp[2] = malloc(small + 10);
+	write(2, "d", 1);
+	tmp[2] = malloc(tiny + 10);
+	write(2, "e", 1);
+	free(tmp[0]);
+	write(2, ".", 1);
+	tmp[2] = realloc(tmp[0], large);
+	write(2, ".", 1);
+	tmp[2] = malloc(small + 10);
+	write(2, ".", 1);
+	tmp[2] = malloc(tiny + 10);
+	write(2, ".", 1);
+	free(tmp[0]);
+	write(2, ".", 1);
+	tmp[2] = realloc(tmp[0], large);
+	write(2, ".", 1);
+	tmp[0] = malloc(large);
+	write(2, "", 1);
+	free(tmp[3]);
+	write(2, ".", 1);
+	tmp[1] = malloc(small - 10);
+	write(2, ".", 1);
+	free(tmp[2]);
+	write(2, ".", 1);
+	tmp[3] = malloc(tiny);
+	write(2, ".", 1);
+	free(tmp[1]);
+	write(2, ".", 1);
+	tmp[2] = realloc(tmp[3], small);
+	write(2, "END\n", 4);
+	printf("END\n");
 
 
-	// malloc(10);
-	// tmp = malloc(11);
-	// //tmp = malloc(small + 50);
-	// free2(tmp);
-	// free2(tmp);
-	// free2(tmp);
-	// realloc(tmp, 10);
 
-	//FAUX
-	free2(tmp);
-	tmp = malloc(6545612);
-	realloc(tmp, small);
-	malloc(small + 50);
-	malloc(2);
-	malloc(small + 50);
-	free2(tmp);
-	malloc(small - 3);
+
+
+
 
 
 

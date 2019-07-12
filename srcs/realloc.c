@@ -21,6 +21,10 @@ void		*realloc(void *ptr, size_t size)
 
 	if (!ptr || !size)
 		return (malloc(size));
+
+	if (size == small - 2)
+		g_mem.i = true;
+
 	if (!(start = check_ptr(ptr, ft_realloc)))
 		return (ptr);
 	page = start[0];

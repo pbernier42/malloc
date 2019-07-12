@@ -145,6 +145,8 @@ struct						s_type
 	size_t					hist_last;
 	t_hist					histo[H_NB_BLOC];
 	enum e_fonction 		fonction;
+
+	bool					i;
 };
 
 void						*malloc(size_t size);
@@ -157,7 +159,7 @@ t_bloc						*find_best(size_t size, t_bloc *page, size_t s_page,
 void						place_header(size_t size, t_bloc *better,
 								enum e_type type, enum e_fonction fonction);
 
-void						free2(void *ptr);
+void						free(void *ptr);
 bool						delete_bloc(t_bloc *page, t_bloc *bloc);
 void						**check_ptr(void *ptr, enum e_fonction fonction);
 
