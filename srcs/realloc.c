@@ -73,7 +73,6 @@ void		*reset(t_bloc *page, void *ptr, size_t s_prev, size_t size)
 	void 	*prev;
 	void	*ret;
 
-	printf("\033[31m[WARNING]\033[0m free\n");
 	if (HISTORY)
 		prev = ptr;
 	delete_bloc(page, ptr);

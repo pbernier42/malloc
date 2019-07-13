@@ -35,7 +35,6 @@ void		*error(int error)
 		error = 1;
 	else if (!(error >= error_start && error < error_end))
 		error = unknown_error;
-
 	write(1, GREY, 9);
 	write(2, ((char*[5]){"[???] - ", "[Malloc] - ", "[Realloc] - ",
 		"[Free] - ", "[Dump] - "})[g_mem.fonction],

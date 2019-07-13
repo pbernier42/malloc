@@ -83,6 +83,7 @@ t_bloc		*find_best(size_t size, t_bloc *page, size_t s_page, size_t s_min)
 	size_t	parsed;
 
 	better = NULL;
+
 	while (page && (!better || (better && better->size != size)))
 	{
 		cursor = page;

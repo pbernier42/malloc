@@ -27,17 +27,17 @@ void	show_alloc_mem(void)
 		if ((page = ((t_bloc*[4]){G_TINY, G_SMALL, G_LARGE, NULL})[i++]))
 		{
 			if (page != G_LARGE)
-				s_page = S_PAGE(page->size);
-			p_line((char*[2]){
-			((char*[3]){"TINY : 0x", "SMALL : 0x", "LARGE : 0x"})[i - 1], "\n"},
-			(size_t[2]){((size_t[4]){9, 10, 10})[i - 1], 1}, (size_t)page, 16);
-			if (page == G_LARGE)
+				s_page = (page == G_TINY) ? T_SIZE_PAGE : S_SIZE_PAGE;
+			else
 				page = page->next;
 			while ((page))
 			{
+				p_line((char*[2]){((char*[3]){"TINY : 0x", "SMALL : 0x", "LARGE : 0x"})[i - 1], "\n"},
+				(size_t[2]){((size_t[4]){9, 10, 10})[i - 1], 1}, (size_t)page, 16);
 				octets = p_bloc(page,
-				(page->size > small) ? S_PAGE(page->size) : s_page, octets);
+				(i == 3) ? S_PAGE(page->size) : s_page, octets);
 				page = (page == G_LARGE) ? NULL : page->next;
+
 			}
 		}
 	p_line((char*[2]){"Total : ", " octets\n"}, (size_t[2]){8, 8}, octets, 10);

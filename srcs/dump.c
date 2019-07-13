@@ -16,12 +16,13 @@ t_type		g_mem;
 
 void		show_dump_mem(void *ptr)
 {
-	void 	**start;
+	void	**start;
 
 	if (!(start = check_ptr(ptr, ft_dump)))
 		return ;
-	p_dump(ptr - SIZE_HEAD, ((t_bloc*)(ptr - SIZE_HEAD)), 0, false);
-	p_dump(ptr, NULL, ((t_bloc*)(ptr - SIZE_HEAD))->size, true);
+	ptr = start[1];
+	p_dump(ptr, ((t_bloc*)(ptr)), 0, false);
+	p_dump(ptr + SIZE_HEAD, NULL, ((t_bloc*)(ptr))->size, true);
 	g_mem.fonction = ft_null;
 }
 
@@ -32,13 +33,14 @@ void		p_dump(void *ptr, t_bloc *header, size_t size, bool data)
 
 	I = 0;
 	while (((!data) && I < 4)
-	|| (data && (LINE * (PART * 2) < size)))
+		|| (data && (LINE * (PART * 2) < size)))
 	{
 		COL = 0;
 		write(1, "0x", 2);
 		p_posi((size_t)ptr, 16);
 		while ((!data && COL < (size_t[4]){8, 8, 8, 8}[I])
-		|| (data && (COL < (PART * 2) && (((LINE) * (PART * 2)) + COL) < size)))
+			|| (data && (COL < (PART * 2)
+				&& (((LINE) * (PART * 2)) + COL) < size)))
 		{
 			p_oct(ptr, COL++);
 			if ((data))
@@ -48,8 +50,7 @@ void		p_dump(void *ptr, t_bloc *header, size_t size, bool data)
 		!data ? p_raw(NULL, COL, header, ptr) : p_raw(raw, COL, NULL, ptr);
 		++I;
 	}
-	if (!data)
-		write(1, "\n", 1);
+	write(1, "\n", 1);
 }
 
 void		p_oct(void *ptr, size_t i)
@@ -102,7 +103,7 @@ void		p_head(size_t printed, size_t number, size_t base)
 {
 	if (printed != 0 && (!number || printed == 1))
 		(printed == 1 && !number) ? write(1, "false", 5) :
-		write(1, ((char*[3]){"true", "NULL"})[printed - 1], 4);
+			write(1, ((char*[3]){"true", "NULL"})[printed - 1], 4);
 	else
 		p_posi(number, base);
 }

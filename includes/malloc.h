@@ -98,6 +98,15 @@ enum						e_error
 # define OCT				*((unsigned char*)ptr)
 # define LAST				g_mem.hist_last
 
+#define	LIST				((t_bloc*[3]){G_TINY, G_SMALL, G_LARGE})
+#define G_LIST				((t_bloc**[3]){&G_TINY, &G_SMALL, &G_LARGE})
+#define PAGE_START			p_limit[0]
+#define PAGE_END			p_limit[1]
+#define BLOC_START			b_limit[0]
+#define BLOC_END			b_limit[1]
+#define NEXT_BLOC			((t_bloc*)(cursor + SIZE_HEAD + CURSOR->size))
+#define CURS_START			p_limit[0]
+
 typedef struct s_type		t_type;
 typedef struct s_bloc		t_bloc;
 typedef struct s_hist		t_hist;
@@ -161,7 +170,8 @@ void						place_header(size_t size, t_bloc *better,
 
 void						free(void *ptr);
 bool						delete_bloc(t_bloc *page, t_bloc *bloc);
-void						**check_ptr(void *ptr, enum e_fonction fonction);
+bool						delete_page(t_bloc *page, size_t p_size,
+								enum e_type type);
 
 void						*realloc(void *ptr, size_t size);
 bool						move_bloc(void *ptr, size_t size, enum e_type type);
@@ -189,5 +199,12 @@ void						p_adress(void *ptr, size_t size, bool second);
 
 size_t						finder(size_t size, size_t i);
 void						*error(int error);
+void						**check_ptr(void *ptr, enum e_fonction fonction);
+void						**check_list(void *ptr, t_bloc *page,
+								enum e_type type);
+bool						check_corrupt(t_bloc *ptr, bool page,
+								enum e_type type);
+void						*check_page(void *ptr, t_bloc *page, size_t p_size,
+								enum e_type type);
 
 #endif

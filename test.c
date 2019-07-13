@@ -20,17 +20,46 @@
 void		test_realloc();
 void		my_test();
 
+#define GG	5000
+
 int			main(void)
 {
-	t_bloc *tmp[5];
-	size_t i;
 
-	i = 0;
-	tmp[0] = NULL;
-	tmp[1] = NULL;
-	tmp[2] = NULL;
-	tmp[3] = NULL;
-	tmp[4] = NULL;
+	t_bloc *tmp[GG];
+	size_t i[2];
+
+	i[0] = 0;
+	i[1] = 0;
+	while (i[0] <= (5000))
+		tmp[i[0]++] = malloc(tiny);
+
+	while (i[1] <= (4500))
+	{
+		if (i[1] >= 500 && i[1] <= 4000)
+			free(tmp[i[1]]);
+		i[1]++;
+	}
+
+
+
+
+	show_alloc_mem();
+	return(0);
+
+	--tmp[60];
+
+	t_bloc *t = tmp[60];
+	printf("%zu - %d - %p - %p\n", t->size, t->empty, t->prev, t->next);
+
+	//show_dump_mem(tmp[50]);
+	show_dump_mem(tmp[60]);
+	//show_dump_mem(tmp[61]);
+
+
+
+
+	return (0);
+
 
 	write(2, ".", 1);
 	tmp[3] = realloc(tmp[1], small + 2);
@@ -89,23 +118,9 @@ int			main(void)
 	write(2, "6", 1);
 	tmp[0] = realloc(tmp[1], small);
 	write(2, "7", 1);
-	printf ("\n%p\n", tmp[2]--);
-	printf ("%zu\n", tmp[2]->size);
-	printf ("%d\n", tmp[2]->empty);
-	printf ("%p\n", tmp[2]->prev);
-	printf ("%p\n", tmp[2]->next);
-	tmp[2]++;
 	free(tmp[2]);
 	write(2, "8", 1);
-	printf ("\n%p\n", tmp[2]--);
-	printf ("%zu\n", tmp[2]->size);
-	printf ("%d\n", tmp[2]->empty);
-	printf ("%p\n", tmp[2]->prev);
-	printf ("%p\n", tmp[2]->next);
-	tmp[2]++;
-
 	tmp[0] = realloc(tmp[2], small - 2);
-	
 	write(2, "9", 1);
 	tmp[0] = realloc(tmp[1], small);
 	write(2, "a", 1);
@@ -126,11 +141,12 @@ int			main(void)
 	tmp[2] = malloc(tiny + 10);
 	write(2, ".", 1);
 	free(tmp[0]);
-	write(2, ".", 1);
-	tmp[2] = realloc(tmp[0], large);
-	write(2, ".", 1);
-	tmp[0] = malloc(large);
-	write(2, "", 1);
+	write(2, "2", 1);
+
+	//tmp[2] = realloc(tmp[0], large);
+	//write(2, ".", 1);
+	//tmp[0] = malloc(large);
+	//write(2, "", 1);
 	free(tmp[3]);
 	write(2, ".", 1);
 	tmp[1] = malloc(small - 10);
@@ -142,17 +158,6 @@ int			main(void)
 	free(tmp[1]);
 	write(2, ".", 1);
 	tmp[2] = realloc(tmp[3], small);
-	write(2, "END\n", 4);
-	printf("END\n");
-
-
-
-
-
-
-
-
-
 	show_histo_mem();
 	show_alloc_mem();
 	return (0);
