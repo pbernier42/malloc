@@ -67,7 +67,7 @@
 
 enum						e_error
 {
-	error_start,
+	error_start = -1,
 	unknown_error = 0,
 	munmap_fail	= 1,
 	ptr_invalid = 2,
@@ -155,7 +155,6 @@ struct						s_type
 	t_hist					histo[H_NB_BLOC];
 	enum e_fonction 		fonction;
 
-	bool					i;
 };
 
 void						*malloc(size_t size);
@@ -182,7 +181,7 @@ void						show_alloc_mem();
 void						p_posi(size_t number, size_t base);
 void						p_line(char **line, size_t *len, size_t number,
 								size_t base);
-size_t						p_bloc(t_bloc *bloc, size_t s_page, size_t octets);
+size_t						p_bloc(t_bloc *bloc, size_t s_page, size_t octet);
 
 void						show_dump_mem(void *ptr);
 void						p_dump(void *ptr, t_bloc *header, size_t size,

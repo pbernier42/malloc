@@ -14,17 +14,13 @@
 
 void		*realloc(void *ptr, size_t size)
 {
-	void	**start;
-	void	*page;
-	size_t	s_prev;
+	void		**start;
+	void		*page;
+	size_t		s_prev;
 	enum e_type	type;
 
 	if (!ptr || !size)
 		return (malloc(size));
-
-	if (size == small - 2)
-		g_mem.i = true;
-
 	if (!(start = check_ptr(ptr, ft_realloc)))
 		return (ptr);
 	page = start[0];
@@ -53,24 +49,24 @@ bool		move_bloc(void *ptr, size_t size, enum e_type type)
 
 	s_min = S_BLOC_MIN(PTR->size);
 	if (!ptr || type != TYPE(PTR->size) || (type == large && PTR->size < size)
-		|| (type != large && PTR->size > size && PTR->size <
-		(SIZE_HEAD + s_min + size)))
+		|| (type != large && PTR->size > size
+			&& PTR->size < (SIZE_HEAD + s_min + size)))
 		return (false);
 	s_page = S_PAGE(PTR->size);
 	cursor = (type == tiny) ? G_TINY : G_SMALL;
 	while (!(ptr >= cursor && ptr < (cursor + s_page)))
 		cursor = CURSOR->next;
-	if (((ptr + SIZE_HEAD + PTR->size) == cursor + s_page) ||
-		!(((t_bloc*)(ptr + SIZE_HEAD + PTR->size))->empty) ||
-		!(PTR->size + ((t_bloc*)(ptr + SIZE_HEAD + PTR->size))->size >
-		size + s_min))
+	if (((ptr + SIZE_HEAD + PTR->size) == cursor + s_page)
+		|| !(((t_bloc*)(ptr + SIZE_HEAD + PTR->size))->empty)
+		|| !(PTR->size + ((t_bloc*)(ptr + SIZE_HEAD + PTR->size))->size >
+			size + s_min))
 		return (false);
 	return (true);
 }
 
 void		*reset(t_bloc *page, void *ptr, size_t s_prev, size_t size)
 {
-	void 	*prev;
+	void	*prev;
 	void	*ret;
 
 	if (HISTORY)
@@ -78,6 +74,6 @@ void		*reset(t_bloc *page, void *ptr, size_t s_prev, size_t size)
 	delete_bloc(page, ptr);
 	ret = malloc(size);
 	add_histo((t_hist){true, ft_realloc, {prev, ret != prev ? ret : NULL},
-			{s_prev, ret ? ((t_bloc*)(ret - SIZE_HEAD))->size : 0}});
+		{s_prev, ret ? ((t_bloc*)(ret - SIZE_HEAD))->size : 0}});
 	return (ret);
 }

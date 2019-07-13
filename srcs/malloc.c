@@ -21,8 +21,8 @@ void		*malloc(size_t size)
 	void		*ret;
 
 	if (!(page = ((t_bloc**[4]){
-		NULL, &G_TINY, &G_SMALL, &G_LARGE})[ITERATOR(size)]) ||
-		!(type = TYPE(size)))
+		NULL, &G_TINY, &G_SMALL, &G_LARGE})[ITERATOR(size)])
+		|| !(type = TYPE(size)))
 		return (NULL);
 	while (!(ret = create_bloc(size, *page, type)))
 		if ((!(*page) || !ret) && !new_page(S_PAGE(size), page, type))
@@ -66,9 +66,9 @@ void		*create_bloc(size_t size, t_bloc *page, enum e_type type)
 	t_bloc	*better;
 
 	better = NULL;
-	if (!page || (type == large && !page->empty) ||
-		(type != large && !(better = find_best(size, page,
-		S_PAGE(size), S_BLOC_MIN(size)))))
+	if (!page || (type == large && !page->empty)
+		|| (type != large && !(better = find_best(size, page,
+			S_PAGE(size), S_BLOC_MIN(size)))))
 		return (NULL);
 	else if (type == large && page->empty)
 		better = page;
@@ -83,17 +83,17 @@ t_bloc		*find_best(size_t size, t_bloc *page, size_t s_page, size_t s_min)
 	size_t	parsed;
 
 	better = NULL;
-
 	while (page && (!better || (better && better->size != size)))
 	{
 		cursor = page;
 		parsed = 0;
 		while (parsed < s_page)
 		{
-			if ((CURSOR->empty) && (CURSOR->size == size ||
-				CURSOR->size >= size + SIZE_HEAD + s_min) && (!better ||
-				(better && (better->size < CURSOR->size ||
-				CURSOR->size == size))))
+			if ((CURSOR->empty)
+				&& (CURSOR->size == size
+					|| CURSOR->size >= size + SIZE_HEAD + s_min)
+				&& (!better || (better && (better->size < CURSOR->size
+					|| CURSOR->size == size))))
 				better = CURSOR;
 			parsed += CURSOR->size + SIZE_HEAD;
 			cursor += CURSOR->size + SIZE_HEAD;
@@ -110,8 +110,9 @@ void		place_header(size_t size, t_bloc *better, enum e_type type,
 	if (type == large || better->size == size)
 		return ;
 	((t_bloc*)(BETTER + (SIZE_HEAD + size)))->size = (fonction == ft_realloc) ?
-	((t_bloc*)(BETTER + (SIZE_HEAD + better->size)))->size -
-	(better->size - size) : (better->size - SIZE_HEAD - size);
+		((t_bloc*)(BETTER + (SIZE_HEAD + better->size)))->size -
+			(better->size - size) :
+		(better->size - SIZE_HEAD - size);
 	((t_bloc*)(BETTER + (SIZE_HEAD + size)))->empty = true;
 	better->size = size;
 	better->empty = false;

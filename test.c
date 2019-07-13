@@ -26,24 +26,50 @@ int			main(void)
 {
 
 	t_bloc *tmp[GG];
-	size_t i[2];
-
-	i[0] = 0;
-	i[1] = 0;
-	while (i[0] <= (5000))
-		tmp[i[0]++] = malloc(tiny);
-
-	while (i[1] <= (4500))
-	{
-		if (i[1] >= 500 && i[1] <= 4000)
-			free(tmp[i[1]]);
-		i[1]++;
-	}
+	//size_t i[2];
 
 
+	tmp[0] = malloc(small + 10);
+	tmp[1] = malloc(small + 10);
+	tmp[2] = malloc(small + 10);
+	tmp[3] = malloc(small + 10);
 
+	free(tmp[3]);
+	tmp[3] = malloc(small + 10);
 
+	// printf("1[%p][%zu][%d]\n1[%p]prev\n1[%p]next\n\n", G_LARGE, G_LARGE->size,
+	// 	G_LARGE->empty, G_LARGE->prev, G_LARGE->next);
 	show_alloc_mem();
+	show_dump_mem(tmp[2]);
+	show_histo_mem();
+
+
+
+
+	return(0);
+
+
+
+	//show_dump_mem(tmp[0]);
+	tmp[0] = malloc(large -10);
+	//show_dump_mem(tmp[0]);
+
+	free(tmp[0]);
+	//free(tmp[0]);
+
+	//tmp[1] = realloc(tmp[0], 10);
+	return(0);
+	show_alloc_mem();
+	show_dump_mem(tmp[1]);
+	show_histo_mem();
+
+	// while (i[1] <= (4500))
+	// {
+	// 	if (i[1] >= 500 && i[1] <= 4000)
+	// 		free(tmp[i[1]]);
+	// 	i[1]++;
+	// }
+
 	return(0);
 
 	--tmp[60];

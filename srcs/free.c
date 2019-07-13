@@ -70,140 +70,26 @@ bool		delete_page(t_bloc *page, size_t p_size, enum e_type type)
 	bool	null;
 	size_t	i;
 
-	null = false;
-	
 	i = ITERATOR(type) - 1;
-
-	if (type != large && page == LIST[i])
+	null = ((type != large && page == LIST[i] && !page->next) || (type == large
+		&& page->prev == page && page->next == page)) ? true : false;
+	if (type != large && page == LIST[i] && page->next)
 	{
-		if (page->next)
-		{
-			*(G_LIST[i]) = page->next;
-			(*(G_LIST[i]))->prev = NULL;
-		}
-		else
-			null = true;
+		*(G_LIST[i]) = page->next;
+		(*(G_LIST[i]))->prev = NULL;
 	}
-	else if (type != large ||
-			(type == large && page->prev != page && page->next != page))
+	else if (type != large || (type == large && !null))
 	{
 		if (page->prev)
 			page->prev->next = page->next;
 		if (page->next)
 			page->next->prev = page->prev;
 	}
-	else if (type == large && page->prev == page && page->next == page)
-		null = true;
-
-	if (munmap(page, p_size) == -1)
+	if (type == large && !null && page == LIST[i])
+		G_LARGE = page->next;
+	if (munmap(page, p_size) == MUNMAP_FAIL)
 		return (error(munmap_fail));
 	if (null)
 		*(G_LIST[i]) = NULL;
-	return (true);
-}
-
-void		**check_ptr(void *ptr, enum e_fonction fonction)
-{
-	size_t			i;
-	void			**start;
-	t_bloc			*list;
-	enum e_type		type;
-
-	i = 0;
-	start = NULL;
-	g_mem.fonction = fonction;
-	while (i < 3)
-	{
-		list = LIST[i];
-		type = ((enum e_type[3]){tiny, small, large})[i];
-		if ((start = check_list(ptr, list, type)))
-		 	return (start);
-		i++;
-	}
-	error(ptr_invalid);
-	g_mem.fonction = ft_null;
-	return (NULL);
-}
-
-void		**check_list(void *ptr, t_bloc *page, enum e_type type)
-{
-	size_t	p_limit[2];
-	size_t	p_size;
-	t_bloc	*bloc;
-
-	PAGE_START = 0;
-	PAGE_END = 0;
-	while (page)
-	{
-		if (!check_corrupt(page, true, type))
-			return (NULL);
-		if ((PAGE_START == 0 || PAGE_END == 0) || type == large)
-			p_size = S_PAGE(type != large ? type : page->size);
-		PAGE_START = (size_t)page;
-		PAGE_END = (size_t)page + p_size;
-		if (PAGE_START <= (size_t)ptr && PAGE_END >= (size_t)ptr)
-			return (!(bloc = check_page(ptr, page, p_size, type)) ?
-				NULL : ((void*[2]){page, bloc}));
-		if (type == large && page->next == g_mem.large)
-			return (NULL);
-		else
-			page = page->next;
-	}
-	return (NULL);
-}
-
-void		*check_page(void *ptr, t_bloc *page, size_t p_size, enum e_type type)
-{
-	size_t	b_limit[2];
-	void	*cursor;
-	size_t	i;
-
-	if (type == large)
-		return (page);
-	cursor = page;
-	i = ITERATOR(type);
-	while ((size_t)cursor < ((size_t)page + p_size))
-	{
-		if (page != LIST[i - 1])
-			check_corrupt(CURSOR, false, type);
-		BLOC_START = (size_t)cursor;
-		BLOC_END = (size_t)cursor + CURSOR->size + SIZE_HEAD;
-		if (BLOC_START <= (size_t)ptr && BLOC_END >= (size_t)ptr)
-		{
-			if (!(type != large && CURSOR->empty) || g_mem.fonction != ft_realloc)
-				return (cursor);
-			return(error(empty_tiny + (i - 1)));
-		}
-		cursor += CURSOR->size + SIZE_HEAD;
-	}
-	return (error(bloc_not_found));
-}
-
-bool		check_corrupt(t_bloc *ptr, bool page, enum e_type type)
-{
-	size_t			i;
-	enum e_error	corrupt;
-
-	i = ITERATOR(type);
-	corrupt = corrupt_start;
-	//TOUT TESTER
-	//verifier avec le dernier bloc qui est de la taille de a page
-	if ((!ptr->empty && ((type == tiny && (ptr->size > tiny)) ||
-		(type == small && (ptr->size <= tiny || ptr->size > small)) ||
-		(type == large && (ptr->size <= small || ptr->size > large)))) ||
-		(ptr->empty && (ptr->size > S_PAGE(type))))
-		return (error((page) ? corrupt + i : corrupt + i + 3));
-
-	//((size_t)(LIST[i - 1]) + S_PAGE(type) + SIZE_HEAD) - ((size_t)(ptr) + SIZE_HEAD), (size_t)(ptr));
-	//if (!page && (ptr->size > (((size_t)(LIST[i]) + type) - ((size_t)(ptr) + SIZE_HEAD))))
-	//si la taille restante est plus grande que ce qu'il reste vraiment
-
-	//verifier compartatif ptr
-	if (page && type != large && (ptr != LIST[i - 1] && !LIST[i - 1]->next))
-		return (error(corrupt + i + 6));
-	if (type == large && (!ptr->prev || !ptr->next))
-		return (error(corrupt + 9));
-	if (type == large && ptr->empty)
-		return (error(corrupt + 10));
 	return (true);
 }
