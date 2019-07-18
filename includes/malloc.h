@@ -17,11 +17,10 @@
 # include <unistd.h>
 # include <stdbool.h>
 # include <limits.h>
-
 # include <stdio.h>
 
 # define HISTORY			true
-# define PRINT_ERROR		true
+# define PRINT_ERROR		false
 
 # define SIZE_HEAD			((size_t)sizeof(t_bloc))
 
@@ -50,7 +49,7 @@
 # define G_LARGE			g_mem.large
 # define G_HISTO			g_mem.histo
 
-# define FL_PROT			PROT_READ | PROT_WRITE
+# define FL_PROT			PROT_READ | PROT_WRITE | PROT_EXEC
 # define FL_MAP				MAP_ANON | MAP_PRIVATE
 
 # define S_PAGE(size)		finder(size, 0)
@@ -69,7 +68,7 @@ enum						e_error
 {
 	error_start = -1,
 	unknown_error = 0,
-	munmap_fail	= 1,
+	munmap_fail = 1,
 	ptr_invalid = 2,
 	corrupt_start = 3,
 	page_size_tiny,
@@ -98,29 +97,33 @@ enum						e_error
 # define OCT				*((unsigned char*)ptr)
 # define LAST				g_mem.hist_last
 
-#define	LIST				((t_bloc*[3]){G_TINY, G_SMALL, G_LARGE})
-#define G_LIST				((t_bloc**[3]){&G_TINY, &G_SMALL, &G_LARGE})
-#define PAGE_START			p_limit[0]
-#define PAGE_END			p_limit[1]
-#define BLOC_START			b_limit[0]
-#define BLOC_END			b_limit[1]
-#define NEXT_BLOC			((t_bloc*)(cursor + SIZE_HEAD + CURSOR->size))
-#define CURS_START			p_limit[0]
+# define LIST				((t_bloc*[3]){G_TINY, G_SMALL, G_LARGE})
+# define G_LIST				((t_bloc**[3]){&G_TINY, &G_SMALL, &G_LARGE})
+# define PAGE_START			p_limit[0]
+# define PAGE_END			p_limit[1]
+# define BLOC_START			b_limit[0]
+# define BLOC_END			b_limit[1]
+# define NEXT_BLOC			((t_bloc*)(cursor + SIZE_HEAD + CURSOR->size))
+# define CURS_START			p_limit[0]
+
+# define NEW				((unsigned char *)new)
+# define DATA				((unsigned char *)data)
+# define S_DATA				len[1]
+# define S_NEW				len[0]
 
 typedef struct s_type		t_type;
 typedef struct s_bloc		t_bloc;
-typedef struct s_hist		t_hist;
 typedef struct s_hist		t_hist;
 
 extern t_type				g_mem;
 
 enum						e_fonction
 {
-   ft_null,
-   ft_malloc,
-   ft_realloc,
-   ft_free,
-   ft_dump,
+	ft_null,
+	ft_malloc,
+	ft_realloc,
+	ft_free,
+	ft_dump
 };
 
 struct						s_hist
@@ -141,9 +144,9 @@ struct						s_bloc
 
 enum						e_type
 {
-   tiny = T_SIZE_DATA,
-   small = S_SIZE_DATA,
-   large = (UINT_MAX - SIZE_HEAD)
+	tiny = T_SIZE_DATA,
+	small = S_SIZE_DATA,
+	large = (UINT_MAX - SIZE_HEAD)
 };
 
 struct						s_type
@@ -153,7 +156,7 @@ struct						s_type
 	t_bloc					*large;
 	size_t					hist_last;
 	t_hist					histo[H_NB_BLOC];
-	enum e_fonction 		fonction;
+	enum e_fonction			fonction;
 
 };
 
@@ -176,6 +179,7 @@ void						*realloc(void *ptr, size_t size);
 bool						move_bloc(void *ptr, size_t size, enum e_type type);
 void						*reset(t_bloc *page, void *ptr, size_t s_prev,
 								size_t size);
+void						copy_data(void *new, void *data, size_t len[2]);
 
 void						show_alloc_mem();
 void						p_posi(size_t number, size_t base);
@@ -196,14 +200,16 @@ bool						add_histo(t_hist bloc);
 void						p_histo(t_hist bloc);
 void						p_adress(void *ptr, size_t size, bool second);
 
-size_t						finder(size_t size, size_t i);
-void						*error(int error);
 void						**check_ptr(void *ptr, enum e_fonction fonction);
-void						**check_list(void *ptr, t_bloc *page,
+void						**check_list(void *ptr, t_bloc *start,
 								enum e_type type);
 bool						check_corrupt(t_bloc *ptr, bool page,
 								enum e_type type);
+
 void						*check_page(void *ptr, t_bloc *page, size_t p_size,
 								enum e_type type);
+
+size_t						finder(size_t size, size_t i);
+void						*ft_error(int error);
 
 #endif

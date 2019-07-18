@@ -29,7 +29,7 @@ void	show_alloc_mem(void)
 			if (page != G_LARGE)
 				s_page = (page == G_TINY) ? T_SIZE_PAGE : S_SIZE_PAGE;
 			else
-				page = page->next;
+				page = (page->empty) ? NULL : page->next;
 			while ((page))
 			{
 				p_line((char*[2]){((char*[3]){"TINY : 0x", "SMALL : 0x",

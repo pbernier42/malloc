@@ -12,6 +12,8 @@
 
 #include <malloc.h>
 
+t_type		g_mem;
+
 void		free(void *ptr)
 {
 	void			*prev;
@@ -51,7 +53,7 @@ bool		delete_bloc(t_bloc *page, t_bloc *bloc)
 	bloc->empty = true;
 	p_size = S_PAGE(bloc->size);
 	PAGE_END = (size_t)page + p_size;
-	while ((CURS_START = (size_t)cursor) < PAGE_END)
+	while (type != large && (CURS_START = (size_t)cursor) < PAGE_END)
 	{
 		if (CURSOR->empty && (CURS_START + SIZE_HEAD + CURSOR->size) < PAGE_END
 			&& NEXT_BLOC->empty)
@@ -59,37 +61,31 @@ bool		delete_bloc(t_bloc *page, t_bloc *bloc)
 		else
 			cursor += CURSOR->size + SIZE_HEAD;
 	}
-	if (type == large || (type != large && page->empty
-		&& (page->size == (p_size - SIZE_HEAD))))
+	if (type == large)
+		page->empty = true;
+	else if (type != large && page->empty
+		&& (page->size == (p_size - SIZE_HEAD)))
 		return (delete_page(page, p_size, type));
 	return (true);
 }
 
 bool		delete_page(t_bloc *page, size_t p_size, enum e_type type)
 {
-	bool	null;
 	size_t	i;
+	t_bloc	*save;
 
 	i = ITERATOR(type) - 1;
-	null = ((type != large && page == LIST[i] && !page->next) || (type == large
-		&& page->prev == page && page->next == page)) ? true : false;
-	if (type != large && page == LIST[i] && page->next)
-	{
-		*(G_LIST[i]) = page->next;
-		(*(G_LIST[i]))->prev = NULL;
-	}
-	else if (type != large || (type == large && !null))
-	{
-		if (page->prev)
-			page->prev->next = page->next;
-		if (page->next)
-			page->next->prev = page->prev;
-	}
-	if (type == large && !null && page == LIST[i])
-		G_LARGE = page->next;
-	if (munmap(page, p_size) == MUNMAP_FAIL)
-		return (error(munmap_fail));
-	if (null)
-		*(G_LIST[i]) = NULL;
+	if (page->prev && page->prev != page)
+		page->prev->next = page->next;
+	if (page->next && page->next != page)
+		page->next->prev = page->prev;
+	if (!(page == page->next && page == page->prev))
+		save = (page->next) ? page->next : page->prev;
+	else
+		save = NULL;
+	if (munmap(page, p_size) != 0)
+		return (ft_error(munmap_fail));
+	if (page == LIST[i])
+		*G_LIST[i] = save;
 	return (true);
 }

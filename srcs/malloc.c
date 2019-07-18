@@ -66,11 +66,16 @@ void		*create_bloc(size_t size, t_bloc *page, enum e_type type)
 	t_bloc	*better;
 
 	better = NULL;
+	if (page && type == large && page->empty && size != page->size)
+	{
+		delete_page(page, page->size + SIZE_HEAD, type);
+		return (NULL);
+	}
 	if (!page || (type == large && !page->empty)
 		|| (type != large && !(better = find_best(size, page,
 			S_PAGE(size), S_BLOC_MIN(size)))))
 		return (NULL);
-	else if (type == large && page->empty)
+	if (type == large && page->empty)
 		better = page;
 	place_header(size, better, type, ft_malloc);
 	return (BETTER + SIZE_HEAD);

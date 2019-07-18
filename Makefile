@@ -1,5 +1,5 @@
 ifeq ($(HOSTTYPE),)
-HOSTTYPE := $(shell uname -m)_$(shell uname -s)
+	HOSTTYPE := $(shell uname -m)_$(shell uname -s)
 endif
 
 PROJECT			=	MALLOC
@@ -10,7 +10,6 @@ NO_TO_BE		=	ON
 
 CC				=	gcc
 WFLAGS			=	-Wall -Werror -Wextra
-DFLAGS			=	$(WFLAGS) -fsanitize=address -g
 SOFLAGS			=	-shared -o
 
 DIR_OBJ			=	objs/
@@ -19,8 +18,11 @@ DIR_INC			=	includes/
 INCLUDES		=	-I $(DIR_INC)
 
 SRC_INCLUDE		=	malloc.h
-SRC_FIlE		=	malloc.c \
+SRC_FIlE		=	dump.c \
 					free.c \
+					history.c \
+					malloc.c \
+					parsing.c \
 					realloc.c \
 					show.c \
 					utils.c
@@ -40,15 +42,8 @@ endif
 
 help:
 	@printf "[$(PROJECT)] make \n"
-ifeq ($(suffix $(NAME)), $(LIB_SO))
-	@printf "  Shared Object mode\n"
-else
-	@printf "  Archive librarie mode\n"
-endif
 	@printf "    		-- compile the project '$(NAME)'\n"
 	@printf "  $(NAME)	-- compile the project '$(NAME)'\n"
-	@printf "  lldb		-- switch to lldb compile mode\n"
-	@printf "  normal	-- switch to normal compile mode\n"
 	@printf "  flag		-- shows what flags will be used with \'$(CC)\'\n"
 	@printf "  clean		-- remove \'$(DIR_OBJ)\' and all \'.o\' files from it\n"
 	@printf "  fclean	-- $(UND)clean$(RES) and remove '$(NAME)' and '$(LINK)'\n"
@@ -58,13 +53,9 @@ $(NAME): $(DIR_OBJ) $(OBJ)
 	@printf "[$(PROJECT)] Objs compilation done.                    \n"
 	@$(CC) $(SOFLAGS) $(NAME) $(OBJ)
 	@printf "[$(PROJECT)] "
-ifeq ($(FLAGS),$(DFLAGS))
-	@printf "(lldb mode) "
-endif
 	@printf "$(NAME) compiled"
 	@ln -fs $(NAME) $(LINK)
 	@printf " and linked to $(LINK).\n"
-
 
 $(DIR_OBJ)%.o: $(DIR_SRC)%.c $(INC) Makefile
 	@printf "[$(PROJECT)] Compiling $(notdir $<) to $(notdir $@)              \r"
@@ -73,31 +64,8 @@ $(DIR_OBJ)%.o: $(DIR_SRC)%.c $(INC) Makefile
 $(DIR_OBJ):
 	@mkdir -p $(DIR_OBJ)
 
-lldb:
-ifeq ($(FLAGS),$(WFLAGS))
-	@sed '/^FLAGS/ s/WFLAGS/DFLAGS/g' Makefile > Makefile.tmp
-	@mv	Makefile.tmp Makefile
-	@printf "[$(PROJECT)] Swap to lldb mode.\n"
-else
-	@printf "[$(PROJECT)] Already in lldb mode.\n"
-endif
-
-normal:
-ifeq ($(FLAGS),$(DFLAGS))
-	@sed '/^FLAGS/ s/DFLAGS/WFLAGS/g' Makefile > Makefile.tmp
-	@mv	Makefile.tmp Makefile
-	@printf "[$(PROJECT)] Swap to normal mode.\n"
-else
-	@printf "[$(PROJECT)] Already in normal mode.\n"
-endif
-
 flag:
-	@printf "[$(PROJECT)] {$(CC)} will use {$(FLAGS)} flags to compile \'.c\' files"
-ifeq ($(FLAGS),$(WFLAGS))
-	@printf " (normal mode).\n"
-else
-	@printf " (lldb mode).\n"
-endif
+	@printf "[$(PROJECT)] {$(CC)} will use {$(FLAGS)} flags to compile \'.c\' files\n"
 	@printf "[$(PROJECT)] Will be create using {$(SOFLAGS)} : $(UND)$(NAME)$(RES)\n"
 
 
@@ -112,4 +80,4 @@ fclean: clean
 
 re: fclean $(NAME)
 
-.PHONY: all al so lldb clean fclean re
+.PHONY: all help flag clean fclean re

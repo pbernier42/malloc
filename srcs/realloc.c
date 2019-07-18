@@ -12,6 +12,8 @@
 
 #include <malloc.h>
 
+t_type		g_mem;
+
 void		*realloc(void *ptr, size_t size)
 {
 	void		**start;
@@ -22,7 +24,7 @@ void		*realloc(void *ptr, size_t size)
 	if (!ptr || !size)
 		return (malloc(size));
 	if (!(start = check_ptr(ptr, ft_realloc)))
-		return (ptr);
+		return (NULL);
 	page = start[0];
 	ptr = start[1];
 	type = TYPE(size);
@@ -32,7 +34,7 @@ void		*realloc(void *ptr, size_t size)
 		return (reset(page, ptr + SIZE_HEAD, PTR->size, size));
 	if (type == large && PTR->size > size)
 		if (munmap(ptr + SIZE_HEAD + size, PTR->size - size) == MUNMAP_FAIL)
-			return (error(MUNMAP_FAIL));
+			return (ft_error(munmap_fail));
 	if (HISTORY)
 		s_prev = PTR->size;
 	place_header(size, ptr, type, ft_realloc);
@@ -71,9 +73,21 @@ void		*reset(t_bloc *page, void *ptr, size_t s_prev, size_t size)
 
 	if (HISTORY)
 		prev = ptr;
-	delete_bloc(page, ptr);
 	ret = malloc(size);
+	copy_data(ret, ptr, ((size_t[2]){size, s_prev}));
+	delete_bloc(page, ptr);
 	add_histo((t_hist){true, ft_realloc, {prev, ret != prev ? ret : NULL},
 		{s_prev, ret ? ((t_bloc*)(ret - SIZE_HEAD))->size : 0}});
 	return (ret);
+}
+
+void		copy_data(void *new, void *data, size_t len[2])
+{
+	size_t	i;
+	size_t	limit;
+
+	i = 0;
+	limit = S_NEW < S_DATA ? S_NEW : S_DATA;
+	while (i++ < limit)
+		NEW[i - 1] = DATA[i - 1];
 }
