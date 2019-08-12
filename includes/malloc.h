@@ -24,14 +24,14 @@
 
 # define SIZE_HEAD			((size_t)sizeof(t_bloc))
 
-# define T_SIZE_DATA		32
-# define T_SIZE_PAGE		(getpagesize() * 2)
+# define T_SIZE_DATA		480
+# define T_SIZE_PAGE		(getpagesize() * 13)
 # define T_SIZE_BLOC		(SIZE_HEAD + T_SIZE_DATA)
 # define T_SIZE_ZERO		(T_SIZE_PAGE % T_SIZE_BLOC)
 # define T_NB_BLOC			(T_SIZE_PAGE / (float)T_SIZE_BLOC)
 
-# define S_SIZE_DATA		96
-# define S_SIZE_PAGE		(getpagesize() * 4)
+# define S_SIZE_DATA		992
+# define S_SIZE_PAGE		(getpagesize() * 25)
 # define S_SIZE_BLOC		(SIZE_HEAD + S_SIZE_DATA)
 # define S_SIZE_ZERO		(S_SIZE_PAGE % S_SIZE_BLOC)
 # define S_NB_BLOC			(S_SIZE_PAGE / (float)S_SIZE_BLOC)
@@ -146,7 +146,7 @@ enum						e_type
 {
 	tiny = T_SIZE_DATA,
 	small = S_SIZE_DATA,
-	large = (UINT_MAX - SIZE_HEAD)
+	large = ULONG_MAX
 };
 
 struct						s_type

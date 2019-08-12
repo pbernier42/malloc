@@ -20,10 +20,16 @@ void		*malloc(size_t size)
 	enum e_type	type;
 	void		*ret;
 
+
+
 	if (!(page = ((t_bloc**[4]){
 		NULL, &G_TINY, &G_SMALL, &G_LARGE})[ITERATOR(size)])
 		|| !(type = TYPE(size)))
 		return (NULL);
+
+	//if (g_mem.fonction == ft_realloc)
+	//	printf("go\n");
+
 	while (!(ret = create_bloc(size, *page, type)))
 		if ((!(*page) || !ret) && !new_page(S_PAGE(size), page, type))
 			return (NULL);

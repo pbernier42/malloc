@@ -19,6 +19,8 @@ size_t		finder(size_t size, size_t i)
 	size_t	type;
 
 	type = 0;
+	//if (g_mem.fonction == ft_realloc)
+	//	printf("%zu\n%lu\n\n", size, large);
 	while (size > ((size_t[4]){0, tiny, small, size})[type] && size <= large)
 		++type;
 	return (((size_t[5]){
