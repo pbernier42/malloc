@@ -19,12 +19,12 @@ size_t		finder(size_t size, size_t i)
 	size_t	type;
 
 	type = 0;
-	//if (g_mem.fonction == ft_realloc)
+	//if (G_FONCTION == ft_realloc)
 	//	printf("%zu\n%lu\n\n", size, large);
 	while (size > ((size_t[4]){0, tiny, small, size})[type] && size <= large)
 		++type;
 	return (((size_t[5]){
-		(((size_t[4]){0, T_SIZE_PAGE, S_SIZE_PAGE, size + SIZE_HEAD})[type]),
+		(((size_t[4]){0, T_SIZE_PAGE, S_SIZE_PAGE, L_SIZE_PAGE(size)})[type]),
 		(((size_t[4]){0, tiny, small, large})[type]),
 		(((size_t[4]){0, T_SIZE_ZERO, S_SIZE_ZERO, 0})[type]),
 		(((size_t[4]){0, 1, T_SIZE_BLOC + 1, S_SIZE_BLOC + 1})[type]),
@@ -37,13 +37,13 @@ void		*ft_error(int error)
 		return (NULL);
 	else if (!(error > error_start && error < error_end))
 		error = unknown_error;
-	write(1, GREY, 9);
+	write(2, GREY, 9);
 	write(2, ((char*[5]){
 		"[???] - ", "[Malloc] - ", "[Realloc] - ", "[Free] - ",
-			"[Dump] - "})[g_mem.fonction],
-		((size_t[5]){8, 11, 12, 9, 9})[g_mem.fonction]);
-	write(1, RESET, 4);
-	write(2, ((char*[18]){
+			"[Dump] - "})[G_FONCTION],
+		((size_t[5]){8, 11, 12, 9, 9})[G_FONCTION]);
+	write(2, RESET, 4);
+	write(2, ((char*[23]){
 		"UNKNOWN ERROR\n", "PAS REUSSI A MUNMAP\n",
 		"NO VALIDE PTR FOUND IN OUR PAGES\n",
 		"PTR A NOUS MAIS PROBABLEMENT CORROMPU\n",
@@ -53,8 +53,11 @@ void		*ft_error(int error)
 		"TINY LIST LINK INVALID\n", "SMALL LIST LINK INVALID\n",
 		"LARGE LIST LINK INVALID\n", "LARGE EMPTY INVALID\n",
 		"TINY EMPTY INVALID\n", "SMALL EMPTY INVALID\n",
-		"BLOC NOT FOUND IN HIS PAGE\n"})[error],
-		((size_t[18]){14, 20, 33, 38, 26, 27, 27, 25, 26, 26, 23, 24, 24, 20,
-			19, 20, 27})[error]);
+		"BLOC NOT FOUND IN HIS PAGE\n", "TINY BLOC NOT ALIGN\n",
+		"SMALL BLOC NOT ALIGN\n", "LARGE BLOC NOT ALIGN\n",
+		"TINY PAGE NOT ALIGN\n", "SMALL PAGE NOT ALIGN\n",
+		"LARGE PAGE NOT ALIGN\n"})[error],
+		((size_t[23]){14, 20, 33, 38, 26, 27, 27, 25, 26, 26, 23, 24, 24, 20,
+			19, 20, 27, 20, 21, 21, 20, 21, 22})[error]);
 	return (NULL);
 }

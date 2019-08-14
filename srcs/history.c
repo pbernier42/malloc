@@ -59,7 +59,7 @@ void		p_adress(void *ptr, size_t size, bool second)
 
 bool		add_histo(t_hist bloc)
 {
-	g_mem.fonction = ft_null;
+	G_FONCTION = ft_null;
 	if (!HISTORY)
 		return (true);
 	G_HISTO[LAST] = bloc;

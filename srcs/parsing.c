@@ -23,17 +23,19 @@ void		**check_ptr(void *ptr, enum e_fonction fonction)
 
 	i = 0;
 	start = NULL;
-	g_mem.fonction = fonction;
+	G_FONCTION = fonction;
+
 	while (i < 3)
 	{
 		list = G_LIST[i];
 		type = ((enum e_type[3]){tiny, small, large})[i];
+
 		if ((start = check_list(ptr, *list, type)))
 			return (start);
 		i++;
 	}
 	ft_error(ptr_invalid);
-	g_mem.fonction = ft_null;
+	G_FONCTION = ft_null;
 	return (NULL);
 }
 
@@ -47,6 +49,7 @@ void		**check_list(void *ptr, t_bloc *page, enum e_type type)
 	PAGE_END = 0;
 	while (page)
 	{
+
 		if (!check_corrupt(page, true, type))
 			return (NULL);
 		if ((PAGE_START == 0 || PAGE_END == 0) || type == large)
@@ -72,6 +75,8 @@ void		*check_page(void *ptr, t_bloc *page, size_t p_size,
 	size_t	b_limit[2];
 	void	*cursor;
 	size_t	i;
+	size_t	align[1];
+	int q =1;
 
 	if (type == large)
 		return (page);
@@ -79,18 +84,44 @@ void		*check_page(void *ptr, t_bloc *page, size_t p_size,
 	i = ITERATOR(type);
 	while ((size_t)cursor < ((size_t)page + p_size))
 	{
+		printf("{{{{{%i}}}}}\n", q);
+		//printf("A=[%p]\nS=[%zu]\n[%p][%p]\n", CURSOR, CURSOR->size, CURSOR->prev, CURSOR->next);
+		//printf("[%zu]< [%zu] (%zu)\n", (size_t)cursor, ((size_t)page + p_size), p_size);
 		if (page != LIST[i - 1])
 			check_corrupt(CURSOR, false, type);
+		AS_CUR = A_SIZE(CURSOR->size);
+		printf("%zu  %zu\n\n", CURSOR->size, AS_CUR);
+
 		BLOC_START = (size_t)cursor;
-		BLOC_END = (size_t)cursor + CURSOR->size + SIZE_HEAD;
+		BLOC_END = (size_t)cursor + AS_CUR + SIZE_HEAD;
+		// printf("S = [%zu]\nC = [%zu]\nE = [%zu]\n\n",
+		// 	BLOC_START % 1000, (size_t)cursor % 1000, BLOC_END % 1000);
+		if  (q++ == 5)
+		{
+			while(1)
+				;
+		}
+
+		/////?????
+		printf("P[%zu]\ne[%zu]\n\n", (size_t)cursor, BLOC_END);
+		if (BLOC_START <= (size_t)ptr)
+			printf("1\n");
+		if (BLOC_END >= (size_t)ptr)
+			printf("2\n");
+
+		printf("%p\n", ptr);
 		if (BLOC_START <= (size_t)ptr && BLOC_END >= (size_t)ptr)
 		{
-			if (!(type != large && CURSOR->empty)
-				|| g_mem.fonction != ft_realloc)
+			printf("?\n");
+			if (!(type != large && CURSOR->empty) || G_FONCTION != ft_realloc)
 				return (cursor);
 			return (ft_error(empty_tiny + (i - 1)));
 		}
-		cursor += CURSOR->size + SIZE_HEAD;
+	//	printf("---%zu (%zu)\n", CURSOR->size, AS_CUR);
+		print
+		cursor += AS_CUR + SIZE_HEAD;
+	//	printf("[%zu]< [%zu] (%zu)\n\n",
+		//	(size_t)cursor % 1000, ((size_t)page + p_size) % 1000, p_size);
 	}
 	return (ft_error(bloc_not_found));
 }
@@ -101,6 +132,8 @@ bool		check_corrupt(t_bloc *ptr, bool page, enum e_type type)
 	enum e_error	corrupt;
 
 	i = ITERATOR(type);
+	if (((size_t)ptr % A_NB) != 0)
+		return(ft_error(((page) ? page_align_tiny : bloc_align_tiny) + i - 1));
 	corrupt = corrupt_start;
 	if (!ptr->size
 		|| (!ptr->empty

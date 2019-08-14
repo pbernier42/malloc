@@ -16,7 +16,6 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdbool.h>
-#include <limits.h>
 
 # define FL_PROT			PROT_READ | PROT_WRITE
 # define FL_MAP				MAP_ANON | MAP_PRIVATE
@@ -34,19 +33,13 @@ int		main()
 	int		i;
 
 	i = 0;
-
 	while (i++ < 500)
 	{
-		//ptr = NULL;
-		if (((ptr = mmap(NULL, getpagesize(), FL_PROT, FL_MAP, -1, 0)) == MAP_FAILED))
+		if ((ptr = mmap(NULL, getpagesize(), FL_PROT, FL_MAP, -1, 0)) == MAP_FAILED)
 		 	error("FAIL M\n");
-		//printf("addr = %zu\n", (size_t)ptr % getpagesize());
 		ptr[0] = 42;
 		if (munmap(ptr, getpagesize()) != 0)
 			error("FAIL F\n");
-		printf("%p\n", ptr);
-		ptr = NULL;
-
 	}
 	return (1);
 }

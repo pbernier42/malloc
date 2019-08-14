@@ -16,7 +16,30 @@
 
 int main()
 {
-	show_dump_mem(malloc(10));
-	show_dump_mem(malloc(10));
-	show_alloc_mem();
+	char *ptr1;
+	char *ptr2;
+	char *ptr3;
+	char *ptr4;
+
+	ptr1 = NULL;
+	ptr2 = NULL;
+	ptr3 = NULL;
+	ptr4 = NULL;
+
+	ptr1 = malloc(13);
+	ptr2 = malloc(1);
+	ptr3 = malloc(14);
+	free(ptr2);
+	ptr4 = malloc(9);
+
+	show_dump_mem(ptr1);
+	show_dump_mem(ptr2);
+	show_dump_mem(ptr3);
+	show_dump_mem(ptr4);
+	//show_alloc_mem();
+	return (0);
+
+	printf("[%zu]\n", ((t_bloc*)ptr2)->size);
+	show_dump_mem(ptr2);
+	return(0);
 }

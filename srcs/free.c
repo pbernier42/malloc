@@ -24,8 +24,8 @@ void		free(void *ptr)
 	if (!ptr || !(start = check_ptr(ptr, ft_free))
 		|| (start && ((t_bloc*)start[1])->empty))
 	{
-		if (g_mem.fonction == ft_free)
-			g_mem.fonction = ft_null;
+		if (G_FONCTION == ft_free)
+			G_FONCTION = ft_null;
 		return ;
 	}
 	if (HISTORY)
@@ -35,7 +35,7 @@ void		free(void *ptr)
 	}
 	if (!(delete_bloc(start[0], start[1])))
 	{
-		g_mem.fonction = ft_null;
+		G_FONCTION = ft_null;
 		return ;
 	}
 	add_histo((t_hist){true, ft_free, {prev, NULL}, {s_prev, 0}});
@@ -47,22 +47,25 @@ bool		delete_bloc(t_bloc *page, t_bloc *bloc)
 	enum e_type	type;
 	size_t		p_size;
 	size_t		p_limit[2];
+	size_t		align[1];
 
+	//printf("---%p\n", ((void*)bloc) + 32);
 	cursor = page;
 	type = TYPE(bloc->size);
 	bloc->empty = true;
 	p_size = S_PAGE(bloc->size);
-	PAGE_END = (size_t)page + p_size;
+	//PAGE_END = (size_t)page + p_size;
 	while (type != large && (CURS_START = (size_t)cursor) < PAGE_END)
 	{
-		if (CURSOR->empty && (CURS_START + SIZE_HEAD + CURSOR->size) < PAGE_END
+		AS_CUR = A_SIZE(CURSOR->size);
+		if (CURSOR->empty && (CURS_START + SIZE_HEAD + AS_CUR) < PAGE_END
 			&& NEXT_BLOC->empty)
-			CURSOR->size = CURSOR->size + SIZE_HEAD + NEXT_BLOC->size;
+			CURSOR->size = AS_CUR + SIZE_HEAD + NEXT_BLOC->size;
 		else
-			cursor += CURSOR->size + SIZE_HEAD;
+			cursor += AS_CUR + SIZE_HEAD;
 	}
 	if (type == large || (type != large && page->empty
-		&& (page->size == (p_size - SIZE_HEAD))))
+		&& (AS_CUR == (p_size - SIZE_HEAD))))
 		return (delete_page(page, p_size, type));
 	return (true);
 }

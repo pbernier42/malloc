@@ -20,7 +20,7 @@
 # include <stdio.h>
 
 # define HISTORY			true
-# define PRINT_ERROR		false
+# define PRINT_ERROR		true
 
 # define SIZE_HEAD			((size_t)sizeof(t_bloc))
 
@@ -36,6 +36,8 @@
 # define S_SIZE_ZERO		(S_SIZE_PAGE % S_SIZE_BLOC)
 # define S_NB_BLOC			(S_SIZE_PAGE / (float)S_SIZE_BLOC)
 
+# define L_SIZE_PAGE(size)	size + (!((size + SIZE_HEAD) % getpagesize()) ? 0 : (getpagesize() - (size + SIZE_HEAD % getpagesize())))
+
 # define T_TINY				((t_bloc*)g_mem.tiny)
 # define T_SMALL			((t_bloc*)g_mem.small)
 # define T_LARGE			((t_bloc*)g_mem.large)
@@ -48,6 +50,7 @@
 # define G_SMALL			g_mem.small
 # define G_LARGE			g_mem.large
 # define G_HISTO			g_mem.histo
+# define G_FONCTION			g_mem.fonction
 
 # define FL_PROT			PROT_READ | PROT_WRITE | PROT_EXEC
 # define FL_MAP				MAP_ANON | MAP_PRIVATE
@@ -60,12 +63,9 @@
 **	B = Better
 */
 
-# define AS_NEW				align[0]
-# define AS_BET				align[1]
-# define AS_CUR				align[2]
-
-
-
+# define AS_CUR				align[0]
+# define AS_NEW				align[1]
+# define AS_BET				align[2]
 # define AZ_CUR				A_ZERO(CURSOR->size)
 # define AZ_BET				A_ZERO(better->size)
 
@@ -105,6 +105,12 @@ enum						e_error
 	empty_tiny,
 	empty_small,
 	bloc_not_found,
+	bloc_align_tiny,
+	bloc_align_small,
+	bloc_align_large,
+	page_align_tiny,
+	page_align_small,
+	page_align_large,
 	error_end
 };
 
@@ -124,7 +130,7 @@ enum						e_error
 # define PAGE_END			p_limit[1]
 # define BLOC_START			b_limit[0]
 # define BLOC_END			b_limit[1]
-# define NEXT_BLOC			((t_bloc*)(cursor + SIZE_HEAD + CURSOR->size))
+# define NEXT_BLOC			((t_bloc*)(cursor + SIZE_HEAD + AS_CUR))
 # define CURS_START			p_limit[0]
 
 # define NEW				((unsigned char *)new)
@@ -182,7 +188,7 @@ struct						s_type
 };
 
 void						*malloc(size_t size);
-bool						new_page(size_t s_page, t_bloc **page,
+bool						new_page(size_t size, size_t s_page, t_bloc **page,
 								enum e_type type);
 void						*create_bloc(size_t size, t_bloc *page,
 								enum e_type type);

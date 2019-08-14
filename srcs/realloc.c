@@ -31,7 +31,7 @@ void		*realloc(void *ptr, size_t size)
 	page = start[0];
 	ptr = start[1];
 	type = TYPE(size);
-	if (PTR->size == size && !(g_mem.fonction = ft_null))
+	if (PTR->size == size && !(G_FONCTION = ft_null))
 		return (ptr + SIZE_HEAD);
 	//printf("4 = %zu\n", size);
 	if (!move_bloc(ptr, size, type))
