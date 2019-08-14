@@ -16,11 +16,7 @@
 
 int main()
 {
-	char *str, *ptr;
-	if (!(str = malloc(0)))
-		return 0;
-	printf("Malloc OK\n");
-	if (!(ptr = realloc(str, 0)))
-		return 0;
-	printf("Realloc OK\n");
+	show_dump_mem(malloc(10));
+	show_dump_mem(malloc(10));
+	show_alloc_mem();
 }

@@ -34,13 +34,19 @@ int		main()
 	int		i;
 
 	i = 0;
+
 	while (i++ < 500)
 	{
-		if (((ptr = mmap(0, getpagesize(), FL_PROT, FL_MAP, -1, 0)) == MAP_FAILED))
+		//ptr = NULL;
+		if (((ptr = mmap(NULL, getpagesize(), FL_PROT, FL_MAP, -1, 0)) == MAP_FAILED))
 		 	error("FAIL M\n");
+		//printf("addr = %zu\n", (size_t)ptr % getpagesize());
 		ptr[0] = 42;
 		if (munmap(ptr, getpagesize()) != 0)
 			error("FAIL F\n");
+		printf("%p\n", ptr);
+		ptr = NULL;
+
 	}
 	return (1);
 }

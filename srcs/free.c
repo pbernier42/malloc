@@ -61,10 +61,8 @@ bool		delete_bloc(t_bloc *page, t_bloc *bloc)
 		else
 			cursor += CURSOR->size + SIZE_HEAD;
 	}
-	if (type == large)
-		page->empty = true;
-	else if (type != large && page->empty
-		&& (page->size == (p_size - SIZE_HEAD)))
+	if (type == large || (type != large && page->empty
+		&& (page->size == (p_size - SIZE_HEAD))))
 		return (delete_page(page, p_size, type));
 	return (true);
 }

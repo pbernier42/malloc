@@ -52,6 +52,25 @@
 # define FL_PROT			PROT_READ | PROT_WRITE | PROT_EXEC
 # define FL_MAP				MAP_ANON | MAP_PRIVATE
 
+/*
+**	AS = Align Size
+**	AZ = Align Zero
+**	C = Cursor
+**	N = New
+**	B = Better
+*/
+
+# define AS_C				align
+# define AS_B				A_SIZE(better->size)
+# define AS_N				a_new
+
+# define AZ_C				A_ZERO(CURSOR->size)
+# define AZ_B				A_ZERO(better->size)
+
+# define A_NB				16
+# define A_ZERO(size)		(!(size % A_NB) ? 0 : (A_NB - (size % A_NB)))
+# define A_SIZE(size)		size + A_ZERO(size)
+
 # define S_PAGE(size)		finder(size, 0)
 # define TYPE(size)			finder(size, 1)
 # define S_ZERO(size)		finder(size, 2)
@@ -165,7 +184,7 @@ bool						new_page(size_t s_page, t_bloc **page,
 								enum e_type type);
 void						*create_bloc(size_t size, t_bloc *page,
 								enum e_type type);
-t_bloc						*find_best(size_t size, t_bloc *page, size_t s_page,
+t_bloc						*find_best(size_t a_new, t_bloc *page, size_t s_page,
 								size_t s_min);
 void						place_header(size_t size, t_bloc *better,
 								enum e_type type, enum e_fonction fonction);
