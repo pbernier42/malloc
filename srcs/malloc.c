@@ -67,7 +67,7 @@ void		*create_bloc(size_t size, t_bloc *page, enum e_type type)
 
 	better = NULL;
 	if (!page || (type == large && !page->empty)
-		|| (type != large && !(better = find_best(A_SIZE(size), page,
+		|| (type != large && !(better = find_best(size, page,
 			S_PAGE(size), S_BLOC_MIN(size)))))
 		return (NULL);
 	if (type == large && page->empty)
@@ -76,28 +76,31 @@ void		*create_bloc(size_t size, t_bloc *page, enum e_type type)
 	return (BETTER + SIZE_HEAD);
 }
 
-t_bloc		*find_best(size_t a_new, t_bloc *page, size_t s_page, size_t s_min)
+t_bloc		*find_best(size_t size, t_bloc *page, size_t s_page, size_t s_min)
 {
-	size_t	align;
+	size_t	align[3];
 	t_bloc	*better;
 	void	*cursor;
 	size_t	parsed;
 
 	better = NULL;
-	while (page && (!better || (better && !A_ZERO(better->size))))
+	AS_NEW = A_SIZE(size);
+	while (page && (!better || (better && AS_BET == AS_NEW && !AZ_BET)))
 	{
 		cursor = page;
 		parsed = 0;
 		while (parsed < s_page)
 		{
-			AS_C = A_SIZE(CURSOR->size);
+			AS_CUR = A_SIZE(CURSOR->size);
+			AS_BET = A_SIZE(better->size);
 			if ((CURSOR->empty)
-				&& (AS_C == AS_N || AS_C > AS_N + SIZE_HEAD + A_SIZE(s_min))
-				&& (!better || (better
-					&& (AS_B < AS_C || (AS_B == AS_C && AZ_B > AZ_C)))))
+				&& (AS_CUR == AS_NEW
+					|| AS_CUR > AS_NEW + SIZE_HEAD + A_SIZE(s_min))
+				&& (!better || (better && (AS_BET < AS_CUR
+					|| (AS_BET == AS_CUR && AZ_BET > AZ_CUR)))))
 				better = CURSOR;
-			parsed += AS_C + SIZE_HEAD;
-			cursor += AS_C + SIZE_HEAD;
+			parsed += AS_CUR + SIZE_HEAD;
+			cursor += AS_CUR + SIZE_HEAD;
 		}
 		page = page->next;
 	}
@@ -107,23 +110,22 @@ t_bloc		*find_best(size_t a_new, t_bloc *page, size_t s_page, size_t s_min)
 void		place_header(size_t size, t_bloc *better, enum e_type type,
 				enum e_fonction fonction)
 {
-	size_t	a_size;
+	size_t	align[2];
 
 	better->empty = false;
 	if (type == large || better->size == size)
 		return ;
 
-	a_size = A_SIZE(size);
+	AS_NEW = A_SIZE(size);
+	AS_BET = A_SIZE(better->size);
 
-	((t_bloc*)(BETTER + (SIZE_HEAD + size)))->size =
-
-	(fonction == ft_realloc) ?
-		((t_bloc*)(BETTER + (SIZE_HEAD + better->size)))->size -
-			(better->size - size) :
+	((t_bloc*)(BETTER + (SIZE_HEAD + AS_NEW)))->size =
+		(fonction == ft_realloc) ?
+			((t_bloc*)(BETTER + (SIZE_HEAD + AS_BET)))->size -
+				(better->size - size) :
 		(better->size - SIZE_HEAD - size);
 
-	((t_bloc*)(BETTER + (SIZE_HEAD + size)))->empty = true;
-
+	((t_bloc*)(BETTER + (SIZE_HEAD + AS_NEW)))->empty = true;
 	better->size = size;
 	better->empty = false;
 }

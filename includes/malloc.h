@@ -60,12 +60,14 @@
 **	B = Better
 */
 
-# define AS_C				align
-# define AS_B				A_SIZE(better->size)
-# define AS_N				a_new
+# define AS_NEW				align[0]
+# define AS_BET				align[1]
+# define AS_CUR				align[2]
 
-# define AZ_C				A_ZERO(CURSOR->size)
-# define AZ_B				A_ZERO(better->size)
+
+
+# define AZ_CUR				A_ZERO(CURSOR->size)
+# define AZ_BET				A_ZERO(better->size)
 
 # define A_NB				16
 # define A_ZERO(size)		(!(size % A_NB) ? 0 : (A_NB - (size % A_NB)))
@@ -184,7 +186,7 @@ bool						new_page(size_t s_page, t_bloc **page,
 								enum e_type type);
 void						*create_bloc(size_t size, t_bloc *page,
 								enum e_type type);
-t_bloc						*find_best(size_t a_new, t_bloc *page, size_t s_page,
+t_bloc						*find_best(size_t size, t_bloc *page, size_t s_page,
 								size_t s_min);
 void						place_header(size_t size, t_bloc *better,
 								enum e_type type, enum e_fonction fonction);
