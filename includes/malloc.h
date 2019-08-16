@@ -63,11 +63,14 @@
 **	B = Better
 */
 
+# define BETTER_PAGE		better[0]
+# define BETTER_BLOC		better[1]
+
 # define AS_CUR				align[0]
 # define AS_NEW				align[1]
 # define AS_BET				align[2]
 # define AZ_CUR				A_ZERO(CURSOR->size)
-# define AZ_BET				A_ZERO(better->size)
+# define AZ_BET				A_ZERO(BETTER_BLOC->size)
 
 # define A_NB				16
 # define A_ZERO(size)		(!(size % A_NB) ? 0 : (A_NB - (size % A_NB)))
@@ -80,7 +83,7 @@
 # define ITERATOR(size)		finder(size, 4)
 
 # define CURSOR				((t_bloc*)cursor)
-# define BETTER				((void*)better)
+# define BETTER				((void*)BETTER_BLOC)
 # define PTR				((t_bloc*)ptr)
 
 # define MUNMAP_FAIL		-1
@@ -192,9 +195,9 @@ bool						new_page(size_t size, size_t s_page, t_bloc **page,
 								enum e_type type);
 void						*create_bloc(size_t size, t_bloc *page,
 								enum e_type type);
-t_bloc						*find_best(size_t size, t_bloc *page, size_t s_page,
+t_bloc						**find_best(size_t size, t_bloc *page, size_t s_page,
 								size_t s_min);
-void						place_header(size_t size, t_bloc *better,
+void						place_header(size_t size, t_bloc *better[2],
 								enum e_type type, enum e_fonction fonction);
 
 void						free(void *ptr);

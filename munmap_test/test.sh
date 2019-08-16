@@ -1,5 +1,3 @@
-
-echo "TMP FREE\n"
-cc -o testfree srcs/tmpfree.c
-/usr/bin/time -l ./testfree
+gcc srcs/munmap_test.c
+/usr/bin/time -l ./a.out
 echo "\n"

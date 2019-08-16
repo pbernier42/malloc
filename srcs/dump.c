@@ -18,7 +18,7 @@ void		show_dump_mem(void *ptr)
 {
 	void	**start;
 
-	printf("1[%p]\n", ptr);
+	//printf("1[%p]\n", ptr);
 	if (!(start = check_ptr(ptr, ft_dump)))
 		return ;
 	//printf("A[%p]\n1[%p]\n\n", ptr - SIZE_HEAD, start[1]);

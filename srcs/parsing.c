@@ -76,7 +76,6 @@ void		*check_page(void *ptr, t_bloc *page, size_t p_size,
 	void	*cursor;
 	size_t	i;
 	size_t	align[1];
-	int q =1;
 
 	if (type == large)
 		return (page);
@@ -84,41 +83,36 @@ void		*check_page(void *ptr, t_bloc *page, size_t p_size,
 	i = ITERATOR(type);
 	while ((size_t)cursor < ((size_t)page + p_size))
 	{
-		printf("{{{{{%i}}}}}\n", q);
+		//printf("    {{{{{%i}}}}}\n", q);
 		//printf("A=[%p]\nS=[%zu]\n[%p][%p]\n", CURSOR, CURSOR->size, CURSOR->prev, CURSOR->next);
 		//printf("[%zu]< [%zu] (%zu)\n", (size_t)cursor, ((size_t)page + p_size), p_size);
-		if (page != LIST[i - 1])
+		if (cursor != page)
 			check_corrupt(CURSOR, false, type);
 		AS_CUR = A_SIZE(CURSOR->size);
-		printf("%zu  %zu\n\n", CURSOR->size, AS_CUR);
+		//printf("[%c]\n", *((char *)cursor + SIZE_HEAD));
+		//printf("%zu  %zu\n\n", CURSOR->size, AS_CUR);
 
 		BLOC_START = (size_t)cursor;
 		BLOC_END = (size_t)cursor + AS_CUR + SIZE_HEAD;
 		// printf("S = [%zu]\nC = [%zu]\nE = [%zu]\n\n",
 		// 	BLOC_START % 1000, (size_t)cursor % 1000, BLOC_END % 1000);
-		if  (q++ == 5)
-		{
-			while(1)
-				;
-		}
 
 		/////?????
-		printf("P[%zu]\ne[%zu]\n\n", (size_t)cursor, BLOC_END);
-		if (BLOC_START <= (size_t)ptr)
-			printf("1\n");
-		if (BLOC_END >= (size_t)ptr)
-			printf("2\n");
+		//printf("P[%zu]\ne[%zu]\n\n", (size_t)cursor, BLOC_END);
+		// if (BLOC_START <= (size_t)ptr)
+		// 	printf("1\n");
+		// if (BLOC_END >= (size_t)ptr)
+		// 	printf("2\n");
 
-		printf("%p\n", ptr);
+		//printf("%p\n", ptr);
 		if (BLOC_START <= (size_t)ptr && BLOC_END >= (size_t)ptr)
 		{
-			printf("?\n");
+			//printf("?\n");
 			if (!(type != large && CURSOR->empty) || G_FONCTION != ft_realloc)
 				return (cursor);
 			return (ft_error(empty_tiny + (i - 1)));
 		}
 	//	printf("---%zu (%zu)\n", CURSOR->size, AS_CUR);
-		print
 		cursor += AS_CUR + SIZE_HEAD;
 	//	printf("[%zu]< [%zu] (%zu)\n\n",
 		//	(size_t)cursor % 1000, ((size_t)page + p_size) % 1000, p_size);
@@ -132,6 +126,7 @@ bool		check_corrupt(t_bloc *ptr, bool page, enum e_type type)
 	enum e_error	corrupt;
 
 	i = ITERATOR(type);
+	//printf("CHECK = [%zu]\n", ptr->size);
 	if (((size_t)ptr % A_NB) != 0)
 		return(ft_error(((page) ? page_align_tiny : bloc_align_tiny) + i - 1));
 	corrupt = corrupt_start;

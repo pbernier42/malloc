@@ -39,13 +39,14 @@ void		*realloc(void *ptr, size_t size)
 		//printf("5 = %zu\n", size);
 		return (reset(page, ptr + SIZE_HEAD, PTR->size, size));
 	}
+
 	if (type == large && PTR->size > size)
 		if (munmap(ptr + SIZE_HEAD + size, PTR->size - size) == MUNMAP_FAIL)
 			return (ft_error(munmap_fail));
 
 	if (HISTORY)
 		s_prev = PTR->size;
-	place_header(size, ptr, type, ft_realloc);
+	place_header(size, ((t_bloc*[2]){page, ptr}), type, ft_realloc);
 	add_histo((t_hist){true, ft_realloc, {ptr + SIZE_HEAD, NULL},
 		{s_prev, size}});
 	return (ptr + SIZE_HEAD);

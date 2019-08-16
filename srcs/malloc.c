@@ -13,7 +13,6 @@
 #include <malloc.h>
 
 t_type		g_mem;
-int			x = 0;
 
 void		*malloc(size_t size)
 {
@@ -65,31 +64,33 @@ bool		new_page(size_t size, size_t s_page, t_bloc **page,
 
 void		*create_bloc(size_t size, t_bloc *page, enum e_type type)
 {
-	t_bloc	*better;
+	t_bloc	**better;
 
 	better = NULL;
 	if (!page || (type == large && !page->empty)
 		|| (type != large && !(better = find_best(size, page,
 			S_PAGE(size), S_BLOC_MIN(size)))))
 		return (NULL);
-	if (type == large && page->empty)
-		better = page;
-	place_header(size, better, type, ft_malloc);
-	return (BETTER + SIZE_HEAD);
+	place_header(size, (type == large && page->empty) ?
+		((t_bloc*[2]){page, page}) : ((t_bloc*[2]){BETTER_PAGE, BETTER_BLOC}),
+		type, ft_malloc);
+	return (BETTER_BLOC + SIZE_HEAD);
 }
 
-t_bloc		*find_best(size_t size, t_bloc *page, size_t s_page, size_t s_min)
+t_bloc		**find_best(size_t size, t_bloc *page, size_t s_page, size_t s_min)
 {
 	size_t	align[3];
-	t_bloc	*better;
+	t_bloc	*better[2];
 	void	*cursor;
 	size_t	parsed;
 
-	better = NULL;
+	BETTER_BLOC = NULL;
 	AS_NEW = A_SIZE(size);
 
-	while (page && (!better || (better && AS_BET == AS_NEW)))
+	//printf("1\n");
+	while (page && (!BETTER_BLOC || (BETTER_BLOC && AS_BET == AS_NEW)))
 	{
+
 		cursor = page;
 		parsed = 0;
 		while (parsed < s_page)
@@ -99,11 +100,12 @@ t_bloc		*find_best(size_t size, t_bloc *page, size_t s_page, size_t s_min)
 			if ((CURSOR->empty)
 				&& (AS_CUR == AS_NEW
 					|| AS_CUR > AS_NEW + SIZE_HEAD + A_SIZE(s_min))
-				&& (!better ||
-					(better && !(AS_BET == AS_NEW) && (AZ_BET > AZ_CUR))))
+				&& (!BETTER_BLOC ||
+					(BETTER_BLOC && !(AS_BET == AS_NEW) && (AZ_BET > AZ_CUR))))
 					{
-						better = CURSOR;
-						AS_BET = A_SIZE(better->size);
+						BETTER_PAGE = page;
+						BETTER_BLOC = CURSOR;
+						AS_BET = A_SIZE(BETTER_BLOC->size);
 					}
 			parsed += AS_CUR + SIZE_HEAD;
 			cursor += AS_CUR + SIZE_HEAD;
@@ -116,35 +118,56 @@ t_bloc		*find_best(size_t size, t_bloc *page, size_t s_page, size_t s_min)
 	//  	show_dump_mem(((t_bloc*)(better)));
 	//  	//show_dump_mem(((t_bloc*)(BETTER + (SIZE_HEAD + AS_NEW))));
 	// }
-	return (better);
+//	printf("%p\n", better);
+	return ((t_bloc*[2]){BETTER_PAGE, BETTER_BLOC});
 }
 
-void		place_header(size_t size, t_bloc *better, enum e_type type,
+void		place_header(size_t size, t_bloc *better[2], enum e_type type,
 				enum e_fonction fonction)
 {
 	size_t	align[3];
 
-	better->empty = false;
-	if (type == large || better->size == size)
+
+	BETTER_BLOC->empty = false;
+	if (type == large || BETTER_BLOC->size == size)
 		return ;
 
 
-
 	AS_NEW = A_SIZE(size);
-	AS_BET = A_SIZE(better->size);
+	//printf("?\n");
+	AS_BET = A_SIZE(BETTER_BLOC->size);
+	if (BETTER_PAGE != G_TINY)
+		printf("YEEEE\n");
+	//printf("[%p]\n[%zu]\n[%zu]\n\n",
+	//	G_TINY, (size_t)(BETTER + SIZE_HEAD + AS_BET), ((size_t)page) + S_PAGE(type));
 	// if (size == 9)
 	// {
 	//  	show_dump_mem(((t_bloc*)(BETTER)));
 	//  	//show_dump_mem(((t_bloc*)(BETTER + (SIZE_HEAD + AS_NEW))));
 	// }
+	// if (size)
+	// {
+	// 	printf("size = %zu\n", size);
+	//  	printf("size = %zu\n", better->size);
+	//  	printf("empty = %d\n", ((t_bloc*)(BETTER + (SIZE_HEAD + AS_NEW)))->empty);
+	//  	printf("???? = %zu %zu %zu\n\n", AS_BET, SIZE_HEAD, AS_NEW);
+	// }
 
 
-	((t_bloc*)(BETTER + (SIZE_HEAD + AS_NEW)))->size =
-		(fonction == ft_realloc) ?
-			((t_bloc*)(BETTER + (SIZE_HEAD + AS_BET)))->size -
-				(AS_BET - AS_NEW) :
-		(AS_BET - SIZE_HEAD - AS_NEW);
-	((t_bloc*)(BETTER + (SIZE_HEAD + AS_NEW)))->empty = true;
-	better->size = size;
-	better->empty = false;
+	if (((size_t)BETTER_BLOC + AS_NEW) - ((size_t)BETTER_PAGE + S_PAGE(BETTER_PAGE->size) < SIZE_HEAD + A_SIZE(MIIIIIIIN))
+
+		printf("%zu\n%zu\n", (size_t)BETTER_BLOC + AS_NEW + SIZE_HEAD, (size_t)BETTER_PAGE + SIZE_HEAD + S_PAGE(BETTER_PAGE->size));
+
+	if (((t_bloc*)(BETTER + (SIZE_HEAD + AS_NEW)))->size > type ||
+		!((t_bloc*)(BETTER + (SIZE_HEAD + AS_NEW)))->size)
+	{
+
+		((t_bloc*)(BETTER + (SIZE_HEAD + AS_NEW)))->size = (fonction == ft_realloc) ?
+			((t_bloc*)(BETTER + (SIZE_HEAD + AS_BET)))->size - (AS_BET - AS_NEW) :
+			(AS_BET - SIZE_HEAD - AS_NEW);
+		((t_bloc*)(BETTER + (SIZE_HEAD + AS_NEW)))->empty = true;
+	}
+	//printf("2\n");
+	BETTER_BLOC->size = size;
+
 }

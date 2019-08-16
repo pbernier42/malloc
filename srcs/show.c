@@ -49,22 +49,15 @@ size_t	p_bloc(t_bloc *bloc, size_t s_page, size_t octet)
 	size_t	parsed;
 	size_t	align;
 
-	int i = 0;
-
 	cursor = bloc;
 	parsed = 0;
 	while (parsed < s_page)
 	{
-		printf("%zu\n", ((t_bloc*)cursor)->size);
-		printf("%zu %zu ", parsed, s_page);
+		//printf("%zu\n", ((t_bloc*)cursor)->size);
+		//printf("%zu %zu ", parsed, s_page);
 		align = A_SIZE(CURSOR->size);
-		if (i++ == 5)
-		{
-			while (1)
-				;
-		}
-		printf("[%zu]\n", CURSOR->size);
-		if (!CURSOR->empty || CURSOR->empty)
+		//printf("[%zu]\n", CURSOR->size);
+		if (!CURSOR->empty)
 		{
 			//show_dump_mem(CURSOR);
 			p_line((char*[1]){"0x"}, (size_t[1]){2},

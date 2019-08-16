@@ -27,16 +27,38 @@ int main()
 	ptr4 = NULL;
 
 	ptr1 = malloc(13);
+	ptr1[0] = 'A';
+	printf("-----\n");
 	ptr2 = malloc(1);
+	ptr2[0] = 'B';
+	printf("-----\n");
 	ptr3 = malloc(14);
+	ptr3[0] = 'C';
+	printf("-----\n");
 	free(ptr2);
-	ptr4 = malloc(9);
+	printf("-----\n");
+	ptr4 = malloc(55);
+	ptr4[0] = 'D';
+	printf("-----\n");
 
+	int i = 0;
+
+	while (i++ < 300)
+	{
+		printf("NB TINY = %f - ", T_NB_BLOC);
+		printf("%d\n", i);
+		//if (i == 200)
+		//{
+			//show_dump_mem(ptr1);
+			//show_alloc_mem();
+		//}
+		(void)malloc(tiny - 1);
+	}
 	show_dump_mem(ptr1);
 	show_dump_mem(ptr2);
 	show_dump_mem(ptr3);
 	show_dump_mem(ptr4);
-	//show_alloc_mem();
+	show_alloc_mem();
 	return (0);
 
 	printf("[%zu]\n", ((t_bloc*)ptr2)->size);
