@@ -52,6 +52,15 @@
 # define G_HISTO			g_mem.histo
 # define G_FONCTION			g_mem.fonction
 
+# define P_BLOC				posi.bloc
+# define P_PAGE				posi.page
+# define BLOC				((void*)P_BLOC)
+# define PAGE				((void*)P_PAGE)
+# define P_NULL				((t_posi){NULL, NULL})
+
+# define TYPE_OLD			type[0]
+# define TYPE_NEW			type[1]
+
 # define FL_PROT			PROT_READ | PROT_WRITE | PROT_EXEC
 # define FL_MAP				MAP_ANON | MAP_PRIVATE
 
@@ -63,14 +72,14 @@
 **	B = Better
 */
 
-# define BETTER_PAGE		better[0]
-# define BETTER_BLOC		better[1]
+# define AS_OLD				align[0]
+# define AS_MIN				align[2]
 
 # define AS_CUR				align[0]
 # define AS_NEW				align[1]
 # define AS_BET				align[2]
 # define AZ_CUR				A_ZERO(CURSOR->size)
-# define AZ_BET				A_ZERO(BETTER_BLOC->size)
+# define AZ_BET				A_ZERO(P_BLOC->size)
 
 # define A_NB				16
 # define A_ZERO(size)		(!(size % A_NB) ? 0 : (A_NB - (size % A_NB)))
@@ -83,8 +92,6 @@
 # define ITERATOR(size)		finder(size, 4)
 
 # define CURSOR				((t_bloc*)cursor)
-# define BETTER				((void*)BETTER_BLOC)
-# define PTR				((t_bloc*)ptr)
 
 # define MUNMAP_FAIL		-1
 
@@ -133,7 +140,7 @@ enum						e_error
 # define PAGE_END			p_limit[1]
 # define BLOC_START			b_limit[0]
 # define BLOC_END			b_limit[1]
-# define NEXT_BLOC			((t_bloc*)(cursor + SIZE_HEAD + AS_CUR))
+# define NEXT_BLOC			((t_bloc*)(cursor + SIZE_HEAD + as_cur))
 # define CURS_START			p_limit[0]
 
 # define NEW				((unsigned char *)new)
@@ -143,6 +150,7 @@ enum						e_error
 
 typedef struct s_type		t_type;
 typedef struct s_bloc		t_bloc;
+typedef struct s_posi		t_posi;
 typedef struct s_hist		t_hist;
 
 extern t_type				g_mem;
@@ -172,6 +180,13 @@ struct						s_bloc
 	struct s_bloc			*next;
 };
 
+struct						s_posi
+{
+	t_bloc					*page;
+	t_bloc					*bloc;
+};
+
+
 enum						e_type
 {
 	tiny = T_SIZE_DATA,
@@ -195,20 +210,20 @@ bool						new_page(size_t size, size_t s_page, t_bloc **page,
 								enum e_type type);
 void						*create_bloc(size_t size, t_bloc *page,
 								enum e_type type);
-t_bloc						**find_best(size_t size, t_bloc *page, size_t s_page,
-								size_t s_min);
-void						place_header(size_t size, t_bloc *better[2],
+t_posi						find_best(size_t size, t_bloc *page, size_t s_page,
+								size_t as_min);
+void						place_header(size_t size, t_posi posi,
 								enum e_type type, enum e_fonction fonction);
 
 void						free(void *ptr);
-bool						delete_bloc(t_bloc *page, t_bloc *bloc);
+bool						delete_bloc(t_posi posi, enum e_type type);
 bool						delete_page(t_bloc *page, size_t p_size,
 								enum e_type type);
 
 void						*realloc(void *ptr, size_t size);
-bool						move_bloc(void *ptr, size_t size, enum e_type type);
-void						*reset(t_bloc *page, void *ptr, size_t s_prev,
-								size_t size);
+bool						move_bloc(t_posi posi, size_t size, enum e_type type[2]);
+void						*reset(t_posi posi, size_t s_prev,
+								size_t size, enum e_type type);
 void						copy_data(void *new, void *data, size_t len[2]);
 
 void						show_alloc_mem();
@@ -230,8 +245,8 @@ bool						add_histo(t_hist bloc);
 void						p_histo(t_hist bloc);
 void						p_adress(void *ptr, size_t size, bool second);
 
-void						**check_ptr(void *ptr, enum e_fonction fonction);
-void						**check_list(void *ptr, t_bloc *start,
+t_posi						check_ptr(void *ptr, enum e_fonction fonction);
+t_posi						check_list(void *ptr, t_bloc *start,
 								enum e_type type);
 bool						check_corrupt(t_bloc *ptr, bool page,
 								enum e_type type);

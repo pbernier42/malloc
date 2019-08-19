@@ -16,16 +16,13 @@ t_type		g_mem;
 
 void		show_dump_mem(void *ptr)
 {
-	void	**start;
+	t_posi	posi;
 
-	//printf("1[%p]\n", ptr);
-	if (!(start = check_ptr(ptr, ft_dump)))
+	posi = check_ptr(ptr, ft_dump);
+	if (!(ptr = P_BLOC))
 		return ;
-	//printf("A[%p]\n1[%p]\n\n", ptr - SIZE_HEAD, start[1]);
-	//printf("[%zu] - [%zu]\n\n", (t_bloc*)(ptr - SIZE_HEAD))
-	ptr = start[1];
-	p_dump(ptr, ((t_bloc*)(ptr)), 0, false);
-	p_dump(ptr + SIZE_HEAD, NULL, ((t_bloc*)(ptr))->size, true);
+	p_dump(BLOC, P_BLOC, 0, false);
+	p_dump(BLOC + SIZE_HEAD, NULL, P_BLOC->size, true);
 	G_FONCTION = ft_null;
 }
 

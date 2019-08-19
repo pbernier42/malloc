@@ -18,22 +18,22 @@ void		free(void *ptr)
 {
 	void			*prev;
 	size_t			s_prev;
-	void			**start;
+	t_posi			posi;
 
-	start = NULL;
-	if (!ptr || !(start = check_ptr(ptr, ft_free))
-		|| (start && ((t_bloc*)start[1])->empty))
+	if (!ptr)
+		return ;
+	posi = check_ptr(ptr, ft_free);
+	if (!P_BLOC || !P_PAGE || P_BLOC->empty)
 	{
-		if (G_FONCTION == ft_free)
-			G_FONCTION = ft_null;
+		G_FONCTION = ft_null;
 		return ;
 	}
 	if (HISTORY)
 	{
-		prev = start[1] + SIZE_HEAD;
-		s_prev = ((t_bloc*)start[1])->size;
+		prev = BLOC + SIZE_HEAD;
+		s_prev = P_BLOC->size;
 	}
-	if (!(delete_bloc(start[0], start[1])))
+	if (!(delete_bloc(posi, TYPE(P_BLOC->size))))
 	{
 		G_FONCTION = ft_null;
 		return ;
@@ -41,41 +41,29 @@ void		free(void *ptr)
 	add_histo((t_hist){true, ft_free, {prev, NULL}, {s_prev, 0}});
 }
 
-bool		delete_bloc(t_bloc *page, t_bloc *bloc)
+bool		delete_bloc(t_posi posi, enum e_type type)
 {
 	void		*cursor;
-	enum e_type	type;
 	size_t		p_size;
 	size_t		p_limit[2];
-	size_t		align[1];
+	size_t		as_cur;
 
-	//printf("---%p\n", ((void*)bloc) + 32);
-	cursor = page;
-	type = TYPE(bloc->size);
-	bloc->empty = true;
-	p_size = S_PAGE(bloc->size);
-	PAGE_END = (size_t)page + p_size;
+	cursor = P_PAGE;
+	P_BLOC->empty = true;
+	p_size = S_PAGE(P_BLOC->size);
+	PAGE_END = (size_t)P_PAGE + p_size;
 	while (type != large && (CURS_START = (size_t)cursor) < PAGE_END)
 	{
-
-		AS_CUR = A_SIZE(CURSOR->size);
-		//printf("{%zu}\n\n", AS_CUR);
-		if (CURSOR->empty && (CURS_START + SIZE_HEAD + AS_CUR) < PAGE_END
+		as_cur = A_SIZE(CURSOR->size);
+		if (CURSOR->empty && (CURS_START + SIZE_HEAD + as_cur) < PAGE_END
 			&& NEXT_BLOC->empty)
-			{
-		//		printf("Change\n");
-				CURSOR->size = AS_CUR + SIZE_HEAD + NEXT_BLOC->size;
-			}
+			CURSOR->size = as_cur + SIZE_HEAD + A_SIZE(NEXT_BLOC->size);
 		else
-		{
-		//	printf("GO\n");
-			cursor += AS_CUR + SIZE_HEAD;
-		}
+			cursor += as_cur + SIZE_HEAD;
 	}
-
-	if (type == large || (type != large && page->empty
-		&& (page->size == (p_size - SIZE_HEAD))))
-		return (delete_page(page, p_size, type));
+	if (type == large || (type != large && P_PAGE->empty
+		&& (P_PAGE->size == (p_size - SIZE_HEAD))))
+		return (delete_page(P_PAGE, p_size, type));
 	return (true);
 }
 

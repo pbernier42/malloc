@@ -16,77 +16,75 @@ t_type		g_mem;
 
 void		*realloc(void *ptr, size_t size)
 {
-	void		**start;
-	void		*page;
+	t_posi		posi;
+	enum e_type	type[2];
 	size_t		s_prev;
-	enum e_type	type;
 
-	//printf("1 = %zu\n", size);
 	if (!ptr || !size)
 		return (malloc(size));
-	//printf("2 = %zu\n", size);
-	if (!(start = check_ptr(ptr, ft_realloc)))
+	posi = check_ptr(ptr, ft_realloc);
+	if (!P_BLOC || !P_PAGE)
 		return (NULL);
-	//printf("3 = %zu\n", size);
-	page = start[0];
-	ptr = start[1];
-	type = TYPE(size);
-	if (PTR->size == size && !(G_FONCTION = ft_null))
-		return (ptr + SIZE_HEAD);
-	//printf("4 = %zu\n", size);
-	if (!move_bloc(ptr, size, type))
-	{
-		//printf("5 = %zu\n", size);
-		return (reset(page, ptr + SIZE_HEAD, PTR->size, size));
-	}
-
-	if (type == large && PTR->size > size)
-		if (munmap(ptr + SIZE_HEAD + size, PTR->size - size) == MUNMAP_FAIL)
+	if (P_BLOC->size == size && !(G_FONCTION = ft_null))
+		return (BLOC + SIZE_HEAD);
+	s_prev = P_BLOC->size;
+	TYPE_NEW = TYPE(size);
+	TYPE_OLD = TYPE(s_prev);
+	if (!move_bloc(posi, size, type))
+		return (reset(posi, s_prev, size, TYPE_OLD));
+	if (TYPE_NEW == large && s_prev > size)
+		if (munmap(BLOC + SIZE_HEAD + size, s_prev - size) == MUNMAP_FAIL)
 			return (ft_error(munmap_fail));
-
-	if (HISTORY)
-		s_prev = PTR->size;
-	place_header(size, ((t_bloc*[2]){page, ptr}), type, ft_realloc);
-	add_histo((t_hist){true, ft_realloc, {ptr + SIZE_HEAD, NULL},
+	place_header(size, posi, TYPE_NEW, ft_realloc);
+	add_histo((t_hist){true, ft_realloc, {BLOC + SIZE_HEAD, NULL},
 		{s_prev, size}});
-	return (ptr + SIZE_HEAD);
+	return (BLOC + SIZE_HEAD);
 }
 
-bool		move_bloc(void *ptr, size_t size, enum e_type type)
+bool		move_bloc(t_posi posi, size_t size, enum e_type type[2])
 {
-	size_t	s_min;
 	size_t	s_page;
-	void	*cursor;
+	size_t	align[3];
 
-	s_min = S_BLOC_MIN(PTR->size);
-	if (!ptr || type != TYPE(PTR->size) || (type == large && PTR->size < size)
-		|| (type != large && PTR->size > size
-			&& PTR->size < (SIZE_HEAD + s_min + size)))
+	if (!P_BLOC
+		|| (TYPE_NEW != TYPE_OLD))
 		return (false);
-	s_page = S_PAGE(PTR->size);
-	cursor = (type == tiny) ? G_TINY : G_SMALL;
-	while (!(ptr >= cursor && ptr < (cursor + s_page)))
-		cursor = CURSOR->next;
-	if (((ptr + SIZE_HEAD + PTR->size) == cursor + s_page)
-		|| !(((t_bloc*)(ptr + SIZE_HEAD + PTR->size))->empty)
-		|| !(PTR->size + ((t_bloc*)(ptr + SIZE_HEAD + PTR->size))->size >
-			size + s_min))
+
+	AS_NEW = A_SIZE(size);
+	AS_MIN = A_SIZE(S_BLOC_MIN(TYPE_OLD));
+	AS_OLD = A_SIZE(P_BLOC->size);
+	s_page = S_PAGE(TYPE_OLD);
+
+	if (TYPE_NEW == large)
+		return (AS_OLD > AS_NEW ? true : false);
+
+	if (((size_t)PAGE + s_page > ((size_t)BLOC + SIZE_HEAD + AS_OLD)
+		&& ((t_bloc *)(BLOC + SIZE_HEAD + AS_OLD))->empty))
+		AS_OLD += SIZE_HEAD + A_SIZE(((t_bloc *)(BLOC + SIZE_HEAD + AS_OLD))->size);
+		//ecraser header suivant ? reecrire ?
+	if (AS_OLD > AS_NEW)
+	{
+		if (AS_OLD > (SIZE_HEAD + AS_MIN + AS_NEW))
+			P_BLOC->size = AS_OLD;
+		else
+			return (false);
+	}
+	else if (AS_OLD < AS_NEW)
 		return (false);
 	return (true);
 }
 
-void		*reset(t_bloc *page, void *ptr, size_t s_prev, size_t size)
+void		*reset(t_posi posi, size_t s_prev, size_t size, enum e_type type)
 {
 	void	*prev;
 	void	*ret;
 
-
 	if (HISTORY)
-		prev = ptr;
+		prev = BLOC;
+
 	ret = malloc(size);
-	//printf("6 = %zu | %zu\n", size, s_prev);
-	copy_data(ret, ptr, ((size_t[2]){size, s_prev}));
-	delete_bloc(page, ptr);
+	copy_data(ret, BLOC + SIZE_HEAD, ((size_t[2]){size, s_prev}));
+	delete_bloc(posi, type);
 	add_histo((t_hist){true, ft_realloc, {prev, ret != prev ? ret : NULL},
 		{s_prev, ret ? ((t_bloc*)(ret - SIZE_HEAD))->size : 0}});
 	return (ret);
@@ -98,10 +96,7 @@ void		copy_data(void *new, void *data, size_t len[2])
 	size_t	limit;
 
 	i = 0;
-	//printf("7 = %zu | %zu\n", S_NEW, S_DATA);
 	limit = S_NEW < S_DATA ? S_NEW : S_DATA;
-	//printf("7 = %zu \n", limit);
-	//printf("8 = %p | %p\n", NEW, DATA);
 	while (i++ < limit)
 		NEW[i - 1] = DATA[i - 1];
 }

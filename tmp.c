@@ -26,6 +26,26 @@ int main()
 	ptr3 = NULL;
 	ptr4 = NULL;
 
+
+	ptr1 = malloc(4);
+	ptr1[0] = 'A';
+	ptr2 = malloc(400);
+	ptr2[0] = 'B';
+	ptr3 = malloc(40);
+	ptr3[0] = 'C';
+
+
+	ptr1 = realloc(ptr1, 100);
+
+	show_dump_mem(G_TINY);
+	show_dump_mem(ptr1);
+	// show_dump_mem(ptr2);
+	// show_dump_mem(ptr3);
+	// show_dump_mem(ptr4);
+
+	show_alloc_mem();
+	return (0);
+
 	ptr1 = malloc(13);
 	ptr1[0] = 'A';
 	printf("-----\n");
@@ -35,6 +55,7 @@ int main()
 	ptr3 = malloc(14);
 	ptr3[0] = 'C';
 	printf("-----\n");
+
 	free(ptr2);
 	printf("-----\n");
 	ptr4 = malloc(55);
@@ -43,10 +64,10 @@ int main()
 
 	int i = 0;
 
-	while (i++ < 300)
+	while (i++ < 1000)
 	{
-		printf("NB TINY = %f - ", T_NB_BLOC);
-		printf("%d\n", i);
+		//printf("NB TINY = %f - ", T_NB_BLOC);
+		//printf("%d\n", i);
 		//if (i == 200)
 		//{
 			//show_dump_mem(ptr1);
@@ -58,7 +79,7 @@ int main()
 	show_dump_mem(ptr2);
 	show_dump_mem(ptr3);
 	show_dump_mem(ptr4);
-	show_alloc_mem();
+	//show_alloc_mem();
 	return (0);
 
 	printf("[%zu]\n", ((t_bloc*)ptr2)->size);

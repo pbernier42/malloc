@@ -57,16 +57,21 @@ size_t	p_bloc(t_bloc *bloc, size_t s_page, size_t octet)
 		//printf("%zu %zu ", parsed, s_page);
 		align = A_SIZE(CURSOR->size);
 		//printf("[%zu]\n", CURSOR->size);
-		if (!CURSOR->empty)
+		if (!CURSOR->empty || CURSOR->empty)
 		{
-			//show_dump_mem(CURSOR);
 			p_line((char*[1]){"0x"}, (size_t[1]){2},
 				(size_t)(cursor + SIZE_HEAD), 16);
 			p_line((char*[1]){" - 0x"}, (size_t[1]){5},
 				(size_t)(cursor + align + SIZE_HEAD), 16);
-			p_line((char*[2]){" : ", " octets\n"},
+			//
+			p_line((char*[2]){" : ", " octets"},
 				(size_t[2]){3, 8}, CURSOR->size, 10);
-			octet += CURSOR->size;
+			if (!CURSOR->empty)
+				octet += CURSOR->size;
+			else
+				printf(" (EMPTY)");
+			printf("\n");
+
 		}
 		parsed += align + SIZE_HEAD;
 		cursor += align + SIZE_HEAD;
