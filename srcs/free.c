@@ -81,6 +81,7 @@ bool		delete_page(t_bloc *page, size_t p_size, enum e_type type)
 		save = (page->next) ? page->next : page->prev;
 	else
 		save = NULL;
+		
 	if (munmap(page, p_size) != 0)
 		return (ft_error(munmap_fail));
 	if (page == LIST[i])

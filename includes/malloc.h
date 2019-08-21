@@ -23,21 +23,21 @@
 # define P1		D("1\n");
 # define P2		D("2\n");
 # define P3		D("3\n");
-# define GPS	getpagesize()
 
 # define HISTORY			true
 # define PRINT_ERROR		false
 
 # define SIZE_HEAD			((size_t)sizeof(t_bloc))
+# define GPS				getpagesize()
 
 # define T_SIZE_DATA		480
-# define T_SIZE_PAGE		(getpagesize() * 13)
+# define T_SIZE_PAGE		(GPS * 13)
 # define T_SIZE_BLOC		(SIZE_HEAD + T_SIZE_DATA)
 # define T_SIZE_ZERO		(T_SIZE_PAGE % T_SIZE_BLOC)
 # define T_NB_BLOC			(T_SIZE_PAGE / (float)T_SIZE_BLOC)
 
 # define S_SIZE_DATA		992
-# define S_SIZE_PAGE		(getpagesize() * 25)
+# define S_SIZE_PAGE		(GPS * 25)
 # define S_SIZE_BLOC		(SIZE_HEAD + S_SIZE_DATA)
 # define S_SIZE_ZERO		(S_SIZE_PAGE % S_SIZE_BLOC)
 # define S_NB_BLOC			(S_SIZE_PAGE / (float)S_SIZE_BLOC)
