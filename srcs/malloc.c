@@ -38,6 +38,7 @@ bool		new_page(size_t size, size_t s_page, t_bloc **page,
 	t_bloc	*start;
 	t_bloc	*new;
 
+	printf("????\n");
 	start = *page;
 	while (type != large && (*page) && (*page)->next)
 		(*page) = (*page)->next;

@@ -57,6 +57,7 @@
 # define G_LARGE			g_mem.large
 # define G_HISTO			g_mem.histo
 # define G_FONCTION			g_mem.fonction
+# define G_BUFF				g_mem.buff
 
 # define P_BLOC				posi.bloc
 # define P_PAGE				posi.page
@@ -205,6 +206,7 @@ struct						s_type
 	t_bloc					*tiny;
 	t_bloc					*small;
 	t_bloc					*large;
+	t_bloc					*buff[3];
 	size_t					hist_last;
 	t_hist					histo[H_NB_BLOC];
 	enum e_fonction			fonction;
@@ -225,6 +227,9 @@ void						free(void *ptr);
 bool						delete_bloc(t_posi posi, enum e_type type);
 bool						delete_page(t_bloc *page, size_t p_size,
 								enum e_type type);
+bool						save_buff(t_bloc *page, size_t i, size_t p_size,
+								enum e_type type);
+t_bloc						*get_buff(enum e_type type);
 
 void						*realloc(void *ptr, size_t size);
 bool						move_bloc(t_posi posi, size_t size, enum e_type type[2]);
