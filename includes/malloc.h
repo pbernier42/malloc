@@ -19,8 +19,14 @@
 # include <limits.h>
 # include <stdio.h>
 
+# define D(i);	write(1, i, 2);
+# define P1		D("1\n");
+# define P2		D("2\n");
+# define P3		D("3\n");
+# define GPS	getpagesize()
+
 # define HISTORY			true
-# define PRINT_ERROR		true
+# define PRINT_ERROR		false
 
 # define SIZE_HEAD			((size_t)sizeof(t_bloc))
 
@@ -36,7 +42,7 @@
 # define S_SIZE_ZERO		(S_SIZE_PAGE % S_SIZE_BLOC)
 # define S_NB_BLOC			(S_SIZE_PAGE / (float)S_SIZE_BLOC)
 
-# define L_SIZE_PAGE(size)	size + (!((size + SIZE_HEAD) % getpagesize()) ? 0 : (getpagesize() - (size + SIZE_HEAD % getpagesize())))
+# define L_SIZE_PAGE(size)	(size + SIZE_HEAD) + (!((size + SIZE_HEAD) % GPS) ? 0 : (GPS - ((size + SIZE_HEAD) % GPS)))
 
 # define T_TINY				((t_bloc*)g_mem.tiny)
 # define T_SMALL			((t_bloc*)g_mem.small)
@@ -227,10 +233,10 @@ void						*reset(t_posi posi, size_t s_prev,
 void						copy_data(void *new, void *data, size_t len[2]);
 
 void						show_alloc_mem();
+size_t						p_page(t_bloc *page, char *text, enum e_type type);
+size_t						p_bloc(t_bloc *bloc, size_t s_page,
+								enum e_type type);
 void						p_posi(size_t number, size_t base);
-void						p_line(char **line, size_t *len, size_t number,
-								size_t base);
-size_t						p_bloc(t_bloc *bloc, size_t s_page, size_t octet);
 
 void						show_dump_mem(void *ptr);
 void						p_dump(void *ptr, t_bloc *header, size_t size,

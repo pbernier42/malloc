@@ -50,7 +50,7 @@ t_posi		check_list(void *ptr, t_bloc *page, enum e_type type)
 		if (!check_corrupt(page, true, type))
 			return (P_NULL);
 		if ((PAGE_START == 0 || PAGE_END == 0) || type == large)
-			p_size = S_PAGE(type != large ? type : page->size);
+			p_size = S_PAGE(page->size);
 		PAGE_START = (size_t)page;
 		PAGE_END = (size_t)page + p_size;
 		if (PAGE_START <= (size_t)ptr && PAGE_END >= (size_t)ptr)
@@ -82,7 +82,7 @@ void		*check_page(void *ptr, t_bloc *page, size_t p_size,
 	{
 		if (cursor != page)
 			check_corrupt(CURSOR, false, type);
-		AS_CUR = A_SIZE(CURSOR->size);
+		AS_CUR = (type != large) ? A_SIZE(CURSOR->size) : (p_size - SIZE_HEAD);
 		BLOC_START = (size_t)cursor;
 		BLOC_END = (size_t)cursor + AS_CUR + SIZE_HEAD;
 		if (BLOC_START <= (size_t)ptr && BLOC_END >= (size_t)ptr)

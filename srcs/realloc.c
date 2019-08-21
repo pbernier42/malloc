@@ -25,6 +25,7 @@ void		*realloc(void *ptr, size_t size)
 	posi = check_ptr(ptr, ft_realloc);
 	if (!P_BLOC || !P_PAGE)
 		return (NULL);
+
 	if (P_BLOC->size == size && !(G_FONCTION = ft_null))
 		return (BLOC + SIZE_HEAD);
 	s_prev = P_BLOC->size;
@@ -54,7 +55,6 @@ bool		move_bloc(t_posi posi, size_t size, enum e_type type[2])
 	AS_MIN = A_SIZE(S_BLOC_MIN(TYPE_OLD));
 	AS_OLD = A_SIZE(P_BLOC->size);
 	s_page = S_PAGE(TYPE_OLD);
-
 	if (TYPE_NEW == large)
 		return (AS_OLD > AS_NEW ? true : false);
 
@@ -79,9 +79,7 @@ void		*reset(t_posi posi, size_t s_prev, size_t size, enum e_type type)
 	void	*prev;
 	void	*ret;
 
-	if (HISTORY)
-		prev = BLOC;
-
+	prev = BLOC;
 	ret = malloc(size);
 	copy_data(ret, BLOC + SIZE_HEAD, ((size_t[2]){size, s_prev}));
 	delete_bloc(posi, type);

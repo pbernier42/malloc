@@ -44,10 +44,10 @@ bool		new_page(size_t size, size_t s_page, t_bloc **page,
 	if (((new = mmap(0, s_page, FL_PROT, FL_MAP, -1, 0)) == MAP_FAILED))
 		return (false);
 	if (type == large && !(*page))
-		*new = ((t_bloc){size - SIZE_HEAD, true, new, new});
+		*new = ((t_bloc){size, true, new, new});
 	else if (type == large && (*page))
 	{
-		*new = ((t_bloc){size - SIZE_HEAD, true, (*page), (*page)->next});
+		*new = ((t_bloc){size, true, (*page), (*page)->next});
 		(*page)->next->prev = new;
 	}
 	else if (type != large)
@@ -66,52 +66,18 @@ void		*create_bloc(size_t size, t_bloc *page, enum e_type type)
 {
 	t_posi	posi;
 
-	posi = (t_posi){NULL, NULL};
 	if (!page || (type == large && !page->empty))
 		return (NULL);
-	if (type != large)
-	{
-		posi = find_best(size, page, S_PAGE(size), A_SIZE(S_BLOC_MIN(size)));
-		if (!P_PAGE || !P_BLOC)
-			return (NULL);
-	}
-	place_header(size, (type == large && page->empty) ?
-		((t_posi){page, page}) : posi, type, ft_malloc);
+	posi = (type != large) ?
+		find_best(size, page, S_PAGE(size), A_SIZE(S_BLOC_MIN(size))) :
+		(t_posi){page, page};
+	if (!P_PAGE || !P_BLOC)
+		return (NULL);
+
+	place_header(size, posi, type, ft_malloc);
+
 	return (BLOC + SIZE_HEAD);
 }
-
-// t_posi		find_best(size_t size, t_bloc *page, size_t s_page, size_t as_min)
-// {
-// 	size_t	align[3];
-// 	t_posi	posi;
-// 	void	*cursor;
-// 	size_t	parsed;
-//
-// 	P_BLOC = NULL;
-// 	P_PAGE = NULL;
-// 	AS_NEW = A_SIZE(size);
-// 	while (page && (!P_BLOC || (P_BLOC && AS_BET == AS_NEW)))
-// 	{
-// 		cursor = page;
-// 		parsed = 0;
-// 		while (parsed < s_page)
-// 		{
-// 			AS_CUR = A_SIZE(CURSOR->size);
-// 			if ((CURSOR->empty)
-// 				&& (AS_CUR == AS_NEW || AS_CUR > AS_NEW + SIZE_HEAD + as_min)
-// 				&& (!P_BLOC || (P_BLOC && !(AS_BET == AS_NEW) && (AZ_BET > AZ_CUR))))
-// 			{
-// 				P_PAGE = page;
-// 				P_BLOC = CURSOR;
-// 				AS_BET = A_SIZE(P_BLOC->size);
-// 			}
-// 			parsed += AS_CUR + SIZE_HEAD;
-// 			cursor += AS_CUR + SIZE_HEAD;
-// 		}
-// 		page = page->next;
-// 	}
-// 	return (posi);
-// }
 
 t_posi		find_best(size_t size, t_bloc *page, size_t s_page, size_t as_min)
 {
@@ -150,35 +116,20 @@ void		place_header(size_t size, t_posi posi, enum e_type type,
 
 	P_BLOC->empty = false;
 	if (type == large || P_BLOC->size == size)
+	{
+		P_BLOC->size = size;
 		return ;
+	}
 	AS_NEW = A_SIZE(size);
 	AS_BET = A_SIZE(P_BLOC->size);
-	s_page = S_PAGE(type);
+	s_page = S_PAGE(size);
 	if (((size_t)PAGE + s_page > ((size_t)BLOC + AS_NEW + SIZE_HEAD) &&
 		((size_t)PAGE + s_page - ((size_t)BLOC + AS_NEW + SIZE_HEAD) > A_SIZE(S_BLOC_MIN(type)) + SIZE_HEAD)) &&
 		(AS_NEW != AS_BET))
 	{
-		// if (size == 60)
-		// {
-		// 	printf("[%zu]\n[%zu]\n",
-		// 		(size_t)(BLOC + (SIZE_HEAD + AS_NEW)),
-		// 		(size_t)(BLOC + (SIZE_HEAD + AS_BET)));
-		// 	while(1)
-		// 		;
-		// }
 		((t_bloc*)(BLOC + (SIZE_HEAD + AS_NEW)))->size = (AS_BET - SIZE_HEAD - AS_NEW);
 		((t_bloc*)(BLOC + (SIZE_HEAD + AS_NEW)))->empty = true;
-
 		(void)fonction;
-		// if (fonction == ft_realloc)
-		// {
-		// 		((t_bloc*)(BLOC + (SIZE_HEAD + AS_NEW)))->size =
-		// 			((t_bloc*)(BLOC + (SIZE_HEAD + AS_BET)))->size - (AS_BET - AS_NEW);
-		// }
-		// else
-		// {
-		//
-		// }
 	}
 	P_BLOC->size = size;
 }

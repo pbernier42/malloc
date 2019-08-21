@@ -62,7 +62,7 @@ bool		delete_bloc(t_posi posi, enum e_type type)
 			cursor += as_cur + SIZE_HEAD;
 	}
 	if (type == large || (type != large && P_PAGE->empty
-		&& (P_PAGE->size == (p_size - SIZE_HEAD))))
+		&& (A_SIZE(P_PAGE->size) == (p_size - SIZE_HEAD))))
 		return (delete_page(P_PAGE, p_size, type));
 	return (true);
 }
@@ -72,7 +72,6 @@ bool		delete_page(t_bloc *page, size_t p_size, enum e_type type)
 	size_t	i;
 	t_bloc	*save;
 
-	printf("!!!\n");
 	i = ITERATOR(type) - 1;
 	if (page->prev && page->prev != page)
 		page->prev->next = page->next;
