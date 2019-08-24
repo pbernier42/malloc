@@ -62,7 +62,7 @@ size_t	p_bloc(t_bloc *bloc, size_t s_page, enum e_type type)
 	while ((size_t)cursor < page_end)
 	{
 		align = (type != large) ? A_SIZE(CURSOR->size) : (s_page - SIZE_HEAD);
-		if (!CURSOR->empty || CURSOR->empty)
+		if (!CURSOR->empty)
 		{
 			write(1, "0x", 2);
 			p_posi((size_t)(cursor + SIZE_HEAD), 16);
@@ -70,13 +70,8 @@ size_t	p_bloc(t_bloc *bloc, size_t s_page, enum e_type type)
 			p_posi((size_t)(cursor + align + SIZE_HEAD), 16);
 			write(1, " : ", 3);
 			p_posi(CURSOR->size, 10);
-			write(1, " octets", 8);
-			if (!CURSOR->empty)
-				octet += CURSOR->size;
-			else
-				printf(" (EMPTY)");
-			printf("\n");
-
+			write(1, " octets\n", 8);
+			octet += CURSOR->size;
 		}
 		cursor += (align + SIZE_HEAD);
 	}

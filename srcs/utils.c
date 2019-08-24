@@ -19,8 +19,6 @@ size_t		finder(size_t size, size_t i)
 	size_t	type;
 
 	type = 0;
-	//if (G_FONCTION == ft_realloc)
-	//	printf("%zu\n%lu\n\n", size, large);
 	while (size > ((size_t[4]){0, tiny, small, size})[type] && size <= large)
 		++type;
 	return (((size_t[5]){
@@ -38,10 +36,8 @@ void		*ft_error(int error)
 	else if (!(error > error_start && error < error_end))
 		error = unknown_error;
 	write(2, GREY, 9);
-	write(2, ((char*[5]){
-		"[???] - ", "[Malloc] - ", "[Realloc] - ", "[Free] - ",
-			"[Dump] - "})[G_FONCTION],
-		((size_t[5]){8, 11, 12, 9, 9})[G_FONCTION]);
+	write(2, ((char*[5]){"[???] - ", "[Malloc] - ", "[Realloc] - ", "[Free] - ",
+		"[Dump] - "})[G_FONCTION], ((size_t[5]){8, 11, 12, 9, 9})[G_FONCTION]);
 	write(2, RESET, 4);
 	write(2, ((char*[23]){
 		"UNKNOWN ERROR\n", "PAS REUSSI A MUNMAP\n",

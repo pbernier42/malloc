@@ -27,7 +27,6 @@ t_posi		check_ptr(void *ptr, enum e_fonction fonction)
 	{
 		list = G_LIST[i];
 		type = ((enum e_type[3]){tiny, small, large})[i++];
-
 		posi = check_list(ptr, *list, type);
 		if (P_BLOC && P_PAGE)
 			return (posi);

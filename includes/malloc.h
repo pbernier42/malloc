@@ -19,11 +19,6 @@
 # include <limits.h>
 # include <stdio.h>
 
-# define D(i);	write(1, i, 2);
-# define P1		D("1\n");
-# define P2		D("2\n");
-# define P3		D("3\n");
-
 # define HISTORY			true
 # define PRINT_ERROR		false
 
@@ -42,7 +37,8 @@
 # define S_SIZE_ZERO		(S_SIZE_PAGE % S_SIZE_BLOC)
 # define S_NB_BLOC			(S_SIZE_PAGE / (float)S_SIZE_BLOC)
 
-# define L_SIZE_PAGE(size)	(size + SIZE_HEAD) + (!((size + SIZE_HEAD) % GPS) ? 0 : (GPS - ((size + SIZE_HEAD) % GPS)))
+# define L_SIZE_PAGE(size)	L_SIZE_BLOC + A_ZERO(L_SIZE_BLOC, GPS)
+# define L_SIZE_BLOC		(size + SIZE_HEAD)
 
 # define T_TINY				((t_bloc*)g_mem.tiny)
 # define T_SMALL			((t_bloc*)g_mem.small)
@@ -61,6 +57,9 @@
 
 # define P_BLOC				posi.bloc
 # define P_PAGE				posi.page
+# define P_NEW				posi.bloc
+# define P_START			posi.page
+
 # define BLOC				((void*)P_BLOC)
 # define PAGE				((void*)P_PAGE)
 # define P_NULL				((t_posi){NULL, NULL})
@@ -71,26 +70,19 @@
 # define FL_PROT			PROT_READ | PROT_WRITE | PROT_EXEC
 # define FL_MAP				MAP_ANON | MAP_PRIVATE
 
-/*
-**	AS = Align Size
-**	AZ = Align Zero
-**	C = Cursor
-**	N = New
-**	B = Better
-*/
-
 # define AS_OLD				align[0]
 # define AS_MIN				align[2]
 
 # define AS_CUR				align[0]
 # define AS_NEW				align[1]
 # define AS_BET				align[2]
-# define AZ_CUR				A_ZERO(CURSOR->size)
-# define AZ_BET				A_ZERO(P_BLOC->size)
+
+# define AZ_CUR				A_ZERO(CURSOR->size, 16)
+# define AZ_BET				A_ZERO(P_BLOC->size, 16)
 
 # define A_NB				16
-# define A_ZERO(size)		(!(size % A_NB) ? 0 : (A_NB - (size % A_NB)))
-# define A_SIZE(size)		size + A_ZERO(size)
+# define A_SIZE(size)		(size + A_ZERO(size, A_NB))
+# define A_ZERO(size, a_nb)	(!(size % a_nb) ? 0 : (a_nb - (size % a_nb)))
 
 # define S_PAGE(size)		finder(size, 0)
 # define TYPE(size)			finder(size, 1)
@@ -193,7 +185,6 @@ struct						s_posi
 	t_bloc					*bloc;
 };
 
-
 enum						e_type
 {
 	tiny = T_SIZE_DATA,
@@ -229,12 +220,13 @@ bool						delete_page(t_bloc *page, size_t p_size,
 								enum e_type type);
 bool						save_buff(t_bloc *page, size_t i, size_t p_size,
 								enum e_type type);
-t_bloc						*get_buff(enum e_type type);
+t_bloc						*get_buff(size_t s_page, enum e_type type);
 
 void						*realloc(void *ptr, size_t size);
-bool						move_bloc(t_posi posi, size_t size, enum e_type type[2]);
-void						*reset(t_posi posi, size_t s_prev,
-								size_t size, enum e_type type);
+bool						move_bloc(t_posi posi, size_t size,
+								enum e_type type[2]);
+void						*reset(t_posi posi, size_t s_prev, size_t size,
+								enum e_type type);
 void						copy_data(void *new, void *data, size_t len[2]);
 
 void						show_alloc_mem();

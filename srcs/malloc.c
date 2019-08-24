@@ -35,31 +35,30 @@ void		*malloc(size_t size)
 bool		new_page(size_t size, size_t s_page, t_bloc **page,
 				enum e_type type)
 {
-	t_bloc	*start;
-	t_bloc	*new;
+	t_posi	posi;
 
-	printf("????\n");
-	start = *page;
+	P_START = *page;
 	while (type != large && (*page) && (*page)->next)
 		(*page) = (*page)->next;
-	if (((new = mmap(0, s_page, FL_PROT, FL_MAP, -1, 0)) == MAP_FAILED))
-		return (false);
+	if (!(P_NEW = get_buff(s_page, type)))
+		if (((P_NEW = mmap(0, s_page, FL_PROT, FL_MAP, -1, 0)) == MAP_FAILED))
+			return (false);
 	if (type == large && !(*page))
-		*new = ((t_bloc){size, true, new, new});
+		*P_NEW = ((t_bloc){size, true, P_NEW, P_NEW});
 	else if (type == large && (*page))
 	{
-		*new = ((t_bloc){size, true, (*page), (*page)->next});
-		(*page)->next->prev = new;
+		*P_NEW = ((t_bloc){size, true, (*page), (*page)->next});
+		(*page)->next->prev = P_NEW;
 	}
 	else if (type != large)
-		*new = ((t_bloc){s_page - SIZE_HEAD, true, (*page), NULL});
+		*P_NEW = ((t_bloc){s_page - SIZE_HEAD, true, (*page), NULL});
 	if ((*page))
 	{
-		(*page)->next = new;
-		(*page) = (type != large) ? start : (*page)->next;
+		(*page)->next = P_NEW;
+		(*page) = (type != large) ? P_START : (*page)->next;
 	}
 	else
-		(*page) = new;
+		(*page) = P_NEW;
 	return (true);
 }
 
@@ -74,9 +73,7 @@ void		*create_bloc(size_t size, t_bloc *page, enum e_type type)
 		(t_posi){page, page};
 	if (!P_PAGE || !P_BLOC)
 		return (NULL);
-
 	place_header(size, posi, type, ft_malloc);
-
 	return (BLOC + SIZE_HEAD);
 }
 
@@ -125,10 +122,11 @@ void		place_header(size_t size, t_posi posi, enum e_type type,
 	AS_BET = A_SIZE(P_BLOC->size);
 	s_page = S_PAGE(size);
 	if (((size_t)PAGE + s_page > ((size_t)BLOC + AS_NEW + SIZE_HEAD) &&
-		((size_t)PAGE + s_page - ((size_t)BLOC + AS_NEW + SIZE_HEAD) > A_SIZE(S_BLOC_MIN(type)) + SIZE_HEAD)) &&
-		(AS_NEW != AS_BET))
+		((size_t)PAGE + s_page - ((size_t)BLOC + AS_NEW + SIZE_HEAD) >
+			A_SIZE(S_BLOC_MIN(type)) + SIZE_HEAD)) && (AS_NEW != AS_BET))
 	{
-		((t_bloc*)(BLOC + (SIZE_HEAD + AS_NEW)))->size = (AS_BET - SIZE_HEAD - AS_NEW);
+		((t_bloc*)(BLOC + (SIZE_HEAD + AS_NEW)))->size =
+			(AS_BET - SIZE_HEAD - AS_NEW);
 		((t_bloc*)(BLOC + (SIZE_HEAD + AS_NEW)))->empty = true;
 		(void)fonction;
 	}

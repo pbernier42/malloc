@@ -12,7 +12,6 @@
 
 #include <malloc.h>
 
-size_t		h = 0;
 t_type		g_mem;
 
 void		free(void *ptr)
@@ -21,7 +20,6 @@ void		free(void *ptr)
 	size_t			s_prev;
 	t_posi			posi;
 
-	h++;
 	if (!ptr)
 		return ;
 	posi = check_ptr(ptr, ft_free);
@@ -75,75 +73,70 @@ bool		delete_page(t_bloc *page, size_t p_size, enum e_type type)
 	t_bloc	*save;
 
 	i = ITERATOR(type) - 1;
+	save = NULL;
 	if (page->prev && page->prev != page)
 		page->prev->next = page->next;
 	if (page->next && page->next != page)
 		page->next->prev = page->prev;
 	if (!(page == page->next && page == page->prev))
-		save = (page->next) ? page->next : page->prev;
-	else
-		save = NULL;
-
-	if (!save_buff(page, i, p_size, type))
 	{
-		printf("!!\n");
+		save = (page->next) ? page->next : page->prev;
+		if (page->next)
+			page->next->prev = page->prev;
+		else if (page->prev && type != large)
+			page->prev->next = NULL;
+	}
+	if (!save_buff(page, i, p_size, type))
 		if (munmap(page, p_size) != 0)
 			return (ft_error(munmap_fail));
-	}
-
 	if (page == LIST[i])
 		*G_LIST[i] = save;
-
 	return (true);
 }
 
 bool		save_buff(t_bloc *page, size_t i, size_t p_size, enum e_type type)
 {
-	t_bloc *save;
+	size_t	b_size;
 
-	save = NULL;
 	if (G_BUFF[i] && type != large)
 		return (false);
 	if (G_BUFF[i] && type == large)
 	{
-		if (S_PAGE(G_BUFF[i]->size) < p_size)
-			save = G_BUFF[i];
-			//if (munmap(G_BUFF[i], S_PAGE(G_BUFF[i]->size)) != 0)
-			//	return (ft_error(munmap_fail));
+		b_size = S_PAGE(G_BUFF[i]->size);
+		if (b_size < p_size)
+		{
+			if (munmap(G_BUFF[i], b_size) != 0)
+				return (ft_error(munmap_fail));
+		}
 		else
 			return (false);
 	}
-
-	*G_BUFF[i] = *page;
-	printf("?\n");
-	*page = ((t_bloc){p_size, true, NULL, NULL});
-	if (save)
-	{
-		if (munmap(save, S_PAGE(save->size)) != 0)
-			return (ft_error(munmap_fail));
-	}
-	printf("%zu\n", G_BUFF[i]->size);
+	G_BUFF[i] = page;
 	return (true);
 }
 
-// t_bloc		*get_buff(enum e_type type)
-// {
-// 	size_t	i;
-// 	t_bloc	*ret;
-//
-//
-// 	i = ITERATOR(type) - 1;
-//
-//
-// 	if ((ret = G_BUFF[i]))
-// 	{
-// 		//printf("3.%zu\n", G_BUFF[i]->size);
-// 		//printf("3.%zu\n", G_LARGE->size);
-//
-// 		if (munmap(G_BUFF[i], S_PAGE(G_BUFF[i]->size)) != 0)
-// 			return (ft_error(munmap_fail));
-//
-// 		G_BUFF[i] = NULL;
-// 	}
-// 	return (ret);
-// }
+t_bloc		*get_buff(size_t s_page, enum e_type type)
+{
+	size_t	i;
+	size_t	align[2];
+	void	*ret;
+
+	i = ITERATOR(type) - 1;
+	if ((ret = G_BUFF[i]))
+	{
+		if (type == large)
+		{
+			AS_NEW = s_page;
+			AS_OLD = S_PAGE(G_BUFF[i]->size);
+			if (AS_OLD < AS_NEW)
+				return (NULL);
+			if (AS_OLD > AS_NEW)
+			{
+				if (munmap(ret + AS_NEW, AS_OLD - AS_NEW) == MUNMAP_FAIL)
+					return (ft_error(munmap_fail));
+			}
+		}
+		G_BUFF[i] = NULL;
+	}
+	return (ret);
+}
