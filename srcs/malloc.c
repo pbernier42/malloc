@@ -20,10 +20,8 @@ void		*malloc(size_t size)
 	enum e_type	type;
 	void		*ret;
 
-	if (!(page = ((t_bloc**[4]){
-		NULL, &G_TINY, &G_SMALL, &G_LARGE})[ITERATOR(size)])
-		|| !(type = TYPE(size)))
-		return (NULL);
+	page = ((t_bloc**[3]){&G_TINY, &G_SMALL, &G_LARGE})[ITERATOR(size)];
+	type = TYPE(size);
 	while (!(ret = create_bloc(size, *page, type)))
 		if ((!(*page) || !ret) && !new_page(size, S_PAGE(size), page, type))
 			return (NULL);
@@ -64,13 +62,17 @@ bool		new_page(size_t size, size_t s_page, t_bloc **page,
 
 void		*create_bloc(size_t size, t_bloc *page, enum e_type type)
 {
-	t_posi	posi;
+	t_posi		posi;
+	static bool	new = 0;
 
 	if (!page || (type == large && !page->empty))
+	{
+		new = 1;
 		return (NULL);
-	posi = (type != large) ?
-		find_best(size, page, S_PAGE(size), A_SIZE(S_BLOC_MIN(size))) :
-		(t_posi){page, page};
+	}
+	posi = (type != large && new == 0) ? find_best(size, page, S_PAGE(size),
+		A_SIZE(S_BLOC_MIN(size))) : (t_posi){page, page};
+	new = 0;
 	if (!P_PAGE || !P_BLOC)
 		return (NULL);
 	place_header(size, posi, type, ft_malloc);

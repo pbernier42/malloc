@@ -49,10 +49,10 @@ t_posi		check_list(void *ptr, t_bloc *page, enum e_type type)
 		if (!check_corrupt(page, true, type))
 			return (P_NULL);
 		if ((PAGE_START == 0 || PAGE_END == 0) || type == large)
-			p_size = S_PAGE(page->size);
+			p_size = S_PAGE((type == large) ? page->size : type);
 		PAGE_START = (size_t)page;
 		PAGE_END = (size_t)page + p_size;
-		if (PAGE_START <= (size_t)ptr && PAGE_END >= (size_t)ptr)
+		if (PAGE_START <= (size_t)ptr && PAGE_END > (size_t)ptr)
 		{
 			return (!(bloc = check_page(ptr, page, p_size, type)) ?
 				P_NULL : (t_posi){page, bloc});
@@ -88,7 +88,7 @@ void		*check_page(void *ptr, t_bloc *page, size_t p_size,
 		{
 			if (!(type != large && CURSOR->empty) || G_FONCTION != ft_realloc)
 				return (cursor);
-			return (ft_error(empty_tiny + (i - 1)));
+			return (ft_error(empty_tiny + i));
 		}
 		cursor += AS_CUR + SIZE_HEAD;
 	}
@@ -102,18 +102,17 @@ bool		check_corrupt(t_bloc *ptr, bool page, enum e_type type)
 
 	i = ITERATOR(type);
 	if (((size_t)ptr % A_NB) != 0)
-		return (ft_error(((page) ? page_align_tiny : bloc_align_tiny) + i - 1));
+		return (ft_error(((page) ? page_align_tiny : bloc_align_tiny) + i));
 	corrupt = corrupt_start;
-	if (!ptr->size
-		|| (!ptr->empty
+	if ((!ptr->empty
 			&& ((type == tiny && (ptr->size > tiny))
 			|| (type == small && (ptr->size <= tiny || ptr->size > small))
 			|| (type == large && (ptr->size <= small || ptr->size > large))))
 		|| (ptr->empty && (ptr->size > S_PAGE(type) - SIZE_HEAD)))
-		return (ft_error((page) ? corrupt + i : corrupt + i + 3));
-	if (page && type != large && (ptr != LIST[i - 1] && !LIST[i - 1]->next))
-		return (ft_error(corrupt + i + 6));
+		return (ft_error((page) ? corrupt + i + 1 : corrupt + i + 4));
+	if (page && type != large && (ptr != LIST[i] && !LIST[i]->next))
+		return (ft_error(corrupt + i + 7));
 	if (type == large && (!ptr->prev || !ptr->next))
-		return (ft_error(corrupt + 9));
+		return (ft_error(corrupt + 10));
 	return (true);
 }

@@ -20,7 +20,8 @@ void	show_alloc_mem(void)
 
 	octet = p_page(G_TINY, "TINY : 0x", tiny);
 	octet += p_page(G_SMALL, "SMALL : 0x", small);
-	octet += p_page(G_LARGE->next, "LARGE : 0x", large);
+	if (G_LARGE)
+		octet += p_page(G_LARGE->next, "LARGE : 0x", large);
 	write(1, "Total : ", 8);
 	p_posi(octet, 10);
 	write(1, " octets\n\n", 9);

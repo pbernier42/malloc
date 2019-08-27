@@ -45,7 +45,7 @@
 # define T_LARGE			((t_bloc*)g_mem.large)
 
 # define H_SIZE_HIST		((size_t)sizeof(t_hist))
-# define H_NB_BLOC			100
+# define H_NB_BLOC			1000
 # define H_SIZE_PAGE		(H_SIZE_HIST * H_NB_BLOC)
 
 # define G_TINY				g_mem.tiny
@@ -125,6 +125,10 @@ enum						e_error
 
 # define RESET				"\033[0m"
 # define GREY				"\033[38;5;8m"
+# define RED				"\033[31;5;8m"
+# define GREEN				"\033[32;5;8m"
+# define BLUE				"\033[34;5;8m"
+# define WINK				"\033[7m"
 
 # define PART				8
 # define LINE				i[0]

@@ -34,8 +34,8 @@ void		show_histo_mem(void)
 void		p_histo(t_hist bloc)
 {
 	write(1, GREY, 9);
-	write(1, ((char*[3]){"[Malloc]\n", "[Realloc]\n",
-		"[Free]\n"})[bloc.fonction - 1],
+	write(1, ((char*[3]){"[Malloc] ", "[Realloc] ",
+		"[Free] "})[bloc.fonction - 1],
 			((size_t[3]){9, 10, 7})[bloc.fonction - 1]);
 	write(1, RESET, 4);
 	p_adress(bloc.ptr[0], bloc.size[0], false);

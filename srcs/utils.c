@@ -19,13 +19,13 @@ size_t		finder(size_t size, size_t i)
 	size_t	type;
 
 	type = 0;
-	while (size > ((size_t[4]){0, tiny, small, size})[type] && size <= large)
+	while (size > ((size_t[4]){tiny, small, size})[type])
 		++type;
 	return (((size_t[5]){
-		(((size_t[4]){0, T_SIZE_PAGE, S_SIZE_PAGE, L_SIZE_PAGE(size)})[type]),
-		(((size_t[4]){0, tiny, small, large})[type]),
-		(((size_t[4]){0, T_SIZE_ZERO, S_SIZE_ZERO, 0})[type]),
-		(((size_t[4]){0, 1, T_SIZE_BLOC + 1, S_SIZE_BLOC + 1})[type]),
+		(((size_t[3]){T_SIZE_PAGE, S_SIZE_PAGE, L_SIZE_PAGE(size)})[type]),
+		(((size_t[3]){tiny, small, large})[type]),
+		(((size_t[3]){T_SIZE_ZERO, S_SIZE_ZERO, 0})[type]),
+		(((size_t[3]){1, T_SIZE_BLOC + 1, S_SIZE_BLOC + 1})[type]),
 		type})[i]);
 }
 

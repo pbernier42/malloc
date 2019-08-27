@@ -72,7 +72,7 @@ bool		delete_page(t_bloc *page, size_t p_size, enum e_type type)
 	size_t	i;
 	t_bloc	*save;
 
-	i = ITERATOR(type) - 1;
+	i = ITERATOR(type);
 	save = NULL;
 	if (page->prev && page->prev != page)
 		page->prev->next = page->next;
@@ -121,7 +121,7 @@ t_bloc		*get_buff(size_t s_page, enum e_type type)
 	size_t	align[2];
 	void	*ret;
 
-	i = ITERATOR(type) - 1;
+	i = ITERATOR(type);
 	if ((ret = G_BUFF[i]))
 	{
 		if (type == large)

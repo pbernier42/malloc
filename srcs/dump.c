@@ -19,7 +19,7 @@ void		show_dump_mem(void *ptr)
 	t_posi	posi;
 
 	posi = check_ptr(ptr, ft_dump);
-	if (!(ptr = P_BLOC))
+	if (!(P_BLOC))
 		return ;
 	p_dump(BLOC, P_BLOC, 0, false);
 	p_dump(BLOC + SIZE_HEAD, NULL, P_BLOC->size, true);
@@ -32,8 +32,7 @@ void		p_dump(void *ptr, t_bloc *header, size_t size, bool data)
 	char	raw[PART * 2];
 
 	I = 0;
-	while (((!data) && I < 4)
-		|| (data && (LINE * (PART * 2) < size)))
+	while (((!data) && I < 4) || (data && (LINE * (PART * 2) < size)))
 	{
 		COL = 0;
 		write(1, "0x", 2);
